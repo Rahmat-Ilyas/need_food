@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('inventori/getalat', 'RestfullApiController@invGetsalat');
     Route::get('inventori/getalat/{id}', 'RestfullApiController@invGetalat');
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
+    Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
 
     // SUPPLIER
     Route::get('getsupplier', 'RestfullApiController@getsSupplier');

@@ -33,6 +33,14 @@
   <link href="{{ asset('assets/plugins/datatables/dataTables.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('assets/plugins/datatables/fixedColumns.dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
 
+  {{-- Form Advance --}}
+  <link href="{{ asset('assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/plugins/switchery/css/switchery.min.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/plugins/multiselect/css/multi-select.css') }}"  rel="stylesheet" type="text/css" />
+  <link href="{{ asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+  <link href="{{ asset('assets/plugins/bootstrap-select/css/bootstrap-select.min.css') }}" rel="stylesheet" />
+  <link href="{{ asset('assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+
   <script src="{{ asset('assets/js/modernizr.min.js') }}"></script>
 </head>
 
@@ -235,6 +243,10 @@
   <script src="{{ asset('assets/js/jquery.scrollTo.min.js') }}"></script>
 
   <script src="{{ asset('assets/plugins/peity/jquery.peity.min.js') }}"></script>
+  
+  {{-- Form Advance --}}
+  <script src="{{ asset('assets/plugins/select2/js/select2.min.js') }}" type="text/javascript"></script>
+  <script src="{{ asset('assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js') }}" type="text/javascript"></script>
 
   <!-- DataTables -->
   <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
@@ -271,9 +283,8 @@
   <script src="{{ asset('assets/plugins/isotope/js/isotope.pkgd.min.js') }}"></script>
   <script src="{{ asset('assets/plugins/magnific-popup/js/jquery.magnific-popup.min.js') }}"></script>
 
-  {{-- Form Advance --}}
-  <script src="{{ asset('assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.js') }}"></script>
-
+  
+  <script src="{{ asset('assets/js/sweetalert2/sweetalert2.all.js') }}"></script>
 
   <script src="{{ asset('assets/js/jquery.core.js') }}"></script>
   <script src="{{ asset('assets/js/jquery.app.js') }}"></script>
@@ -284,6 +295,7 @@
 
   <script type="text/javascript">
     jQuery(document).ready(function($) {
+      $(".select2").select2();
       $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
 
       $('.buttonText').text('Pilih Foto');

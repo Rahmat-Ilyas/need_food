@@ -23,6 +23,3 @@ Route::group(['prefix' => 'admin'], function () {
 });
 
 Route::post('/configuration', 'ConfigController@config');
-Route::get('/tess', function() {
-	echo phpinfo();
-});
