@@ -180,6 +180,7 @@
               <ul class="list-unstyled">
                 <li><a href="{{ url('admin/inventori/dataalat') }}">Data Alat</a></li>
                 <li><a href="{{ url('admin/inventori/databahan') }}">Data Bahan</a></li>
+                <li><a href="{{ url('admin/inventori/setkategori') }}">Set Kategori</a></li>
               </ul>
             </li>
             <li class="has_sub">
