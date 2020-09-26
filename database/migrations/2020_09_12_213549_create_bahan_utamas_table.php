@@ -13,7 +13,7 @@ class CreateBahanUtamasTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_bahan_utama', function (Blueprint $table) {
+        Schema::create('tb_item_paket', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('paket_id');
             $table->string('nama_bahan');

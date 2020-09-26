@@ -17,8 +17,11 @@ class CreateBahansTable extends Migration
             $table->bigIncrements('id');
             $table->string('kd_bahan');
             $table->string('nama');
+            $table->string('foto');
             $table->string('kategori');
-            $table->string('stok');
+            $table->integer('jumlah_alat');
+            $table->integer('alat_keluar')->nullable();
+            $table->string('satuan');
             $table->timestamps();
         });
     }
