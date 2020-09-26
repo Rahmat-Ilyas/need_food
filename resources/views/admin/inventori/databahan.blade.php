@@ -147,3 +147,43 @@
     </div>
 </div>
 @endsection
+
+@section('javascript')
+<script>
+    $(document).ready(function() {
+        var url = $('#configurl').val();
+        var host = $('#host').val();
+
+        var headers = {
+            "Accept"        : "application/json",
+            "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+        }
+
+        //GET SUPPLIER
+        $.ajax({
+            url     : host+"/api/getsupplier",
+            method  : "GET",
+            headers : headers,
+            data    : { kategori: 'bahan' },
+            success : function(data) {
+                $.each(data.result, function(key, val) {
+                    $('#supplier').append('<option value="' + val.id + '">' + val.nama_supplier + '</option>');
+                    $('#supplier_').append('<option value="' + val.id + '">' + val.nama_supplier + '</option>');
+                });
+            }
+        });
+
+        //GET ALAT
+        $.ajax({
+            url     : host+"/api/inventori/getalat",
+            method  : "GET",
+            headers : headers,
+            success : function(data) {
+                $.each(data.result, function(key, val) {
+                    $('#nama_alat').append('<option value="'+ val.id +'">'+ val.kd_alat +'/'+ val.nama +'</option>');
+                });
+            }
+        });
+    });
+</script>
+@endsection
