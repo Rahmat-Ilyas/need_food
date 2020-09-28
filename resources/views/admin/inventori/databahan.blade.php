@@ -83,14 +83,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myLargeModalLabel">Tambah Inventori Alat</h4>
+                <h4 class="modal-title" id="myLargeModalLabel">Tambah Inventori Bahan</h4>
             </div>
             <div class="modal-body" style="padding: 20px 50px 0 50px">
-                <form id="fromAlat" action="#" enctype="multipart/form-data">
+                <form id="fromBahan" action="#" enctype="multipart/form-data">
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Nama Alat</label>
+                        <label class="col-sm-3 col-form-label">Nama Bahan</label>
                         <div class="col-sm-9">
-                            <input type="text" class="nb-edt form-control" required="" autocomplete="off" placeholder="Nama Alat" name="nama" id="nama">
+                            <input type="text" class="nb-edt form-control" required="" autocomplete="off" placeholder="Nama Bahan" name="nama" id="nama">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -106,16 +106,23 @@
                         <label class="col-sm-3 control-label">Kategori</label>
                         <div class="col-sm-9">
                             <select name="kategori" id="kategori" class="form-control">
-                                <option>Alat Dapur</option>
-                                <option>Alat Service</option>
-                                <option>Alat Dapur & Service</option>
+                                <option>Bahan Dapur</option>
+                                <option>Bahan Service</option>
+                                <option>Bahan Dapur & Service</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Jumlah Beli</label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-7">
                             <input type="number" class="form-control" required="" placeholder="Jumlah Beli" name="jumlah_alat" id="jumlah_alat">
+                        </div>
+                        <div class="col-sm-2">
+                            <select name="kategori" id="kategori" class="form-control">
+                                <option>Pieces (pcs)</option>
+                                <option>Kilogram (kg)</option>
+                                <option>Gram (g)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -137,7 +144,7 @@
                     <div class="form-group row">
                         <div class="col-sm-3"></div>
                         <div class="col-sm-9">
-                            <button type="submit" name="simpanAlat" class="btn btn-default" id="upload">Simpan</button>
+                            <button type="submit" name="simpanBahan" class="btn btn-default" id="upload">Simpan</button>
                             <button type="" class="btn btn-primary" id="batal" data-dismiss="modal" aria-hidden="true">Batal</button>
                         </div>
                     </div>

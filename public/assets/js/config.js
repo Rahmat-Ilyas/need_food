@@ -201,4 +201,70 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	// GET KATEGORI
+	getKategori();
+	function getKategori() {
+		var dataTable = $('#tableKategori').DataTable();
+		$.ajax({
+			url     : host+"/api/inventori/getkategori",
+			method  : "GET",
+			headers	: headers,
+			success : function(data) {
+				dataTable.clear().draw();
+				var no = 1;
+				$.each(data.result, function(key, val) {
+					dataTable.row.add([
+						no,
+						val.kategori,
+						val.jenis,
+						`<div class="text-center">
+						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></button>
+						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></button>
+						</div>`,
+						]).draw(false);
+					no = no + 1;
+				});
+			}
+		});
+	}
+
+	// SET KATEGORI
+	$('#fromKategori').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+
+		$.ajax({
+			url     : host+"/api/inventori/setkategori",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				$('#fromKategori')[0].reset();
+				getKategori();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data alat baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				var error = '';
+				result = data.responseJSON.message;
+				$.each(result, function(key, val) {
+					error = error + ' ' + val[0];
+				});
+
+				Swal.fire({
+					title: 'Gagal Diproses',
+					text: error,
+					type: 'error'
+				});
+			}
+		});
+	});
 });

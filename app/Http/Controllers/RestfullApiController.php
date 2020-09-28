@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddAlat;
 use App\Model\Alat;
@@ -143,6 +144,56 @@ class RestfullApiController extends Controller
 			$add_alat = $request->all();
 			$add_alat['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
 			AddAlat::create($add_alat);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// KATEGORI
+	public function getsKategori()
+	{
+		if (isset($request->jenis_kategori) && $request->jenis_kategori == 'alat')
+			$data = Kategori::where('jenis_kategori', 'Kategori Alat')->get();
+		else if (isset($request->jenis_kategori) && $request->jenis_kategori == 'bahan')
+			$data = Kategori::where('jenis_kategori', '!=', 'Kategori Bahan')->get();
+		else 
+			$data = Kategori::all();
+
+		$result = $data;
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result'  => $result
+		], 200);
+	}
+
+	public function setKategori(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'kategori' => 'required',
+			'jenis' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data = $request->all();
+			Kategori::create($data);
 
 			return response()->json([
 				'success' => true,
