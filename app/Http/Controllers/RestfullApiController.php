@@ -158,14 +158,14 @@ class RestfullApiController extends Controller
 	}
 
 	// KATEGORI
-	public function getsKategori()
+	public function getsKategori(Request $request)
 	{
-		if (isset($request->jenis_kategori) && $request->jenis_kategori == 'alat')
-			$data = Kategori::where('jenis_kategori', 'Kategori Alat')->get();
-		else if (isset($request->jenis_kategori) && $request->jenis_kategori == 'bahan')
-			$data = Kategori::where('jenis_kategori', '!=', 'Kategori Bahan')->get();
+		if (isset($request->kategori) && $request->kategori == 'alat')
+			$data = Kategori::where('jenis', 'Kategori Alat')->get();
+		else if (isset($request->kategori) && $request->kategori == 'bahan')
+			$data = Kategori::where('jenis', 'Kategori Bahan')->get();
 		else 
-			$data = Kategori::all();
+			$data = Kategori::orderBy('jenis', 'desc')->get();
 
 		$result = $data;
 
@@ -174,6 +174,25 @@ class RestfullApiController extends Controller
 			'message' => 'Success get data',
 			'result'  => $result
 		], 200);
+	}
+
+	public function getKategori($id)
+	{
+		$data = Kategori::where('id', $id)->first();
+		if ($data) {
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
 	}
 
 	public function setKategori(Request $request)
@@ -198,6 +217,57 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function putKategori(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'kategori' => 'required',
+			'jenis' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Kategori::find($id);
+			$update->kategori = $request->kategori;
+			$update->jenis = $request->jenis;
+			$update->save();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteKategori($id)
+	{
+		try {
+			$delete = Kategori::find($id);
+			$delete->delete();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
 			], 200);
 		} catch(QueryException $ex) {
 			return response()->json([
@@ -257,6 +327,97 @@ class RestfullApiController extends Controller
 				'success' => false,
 				'message' => 'Data not found'
 			], 404);
+		}
+	}
+
+	public function setSupplier(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama_supplier' => 'required',
+			'alamat' => 'required',
+			'telepon' => 'required',
+			'email' => 'required',
+			'kategori' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data = $request->all();
+			Supplier::create($data);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function putSupplier(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama_supplier' => 'required',
+			'alamat' => 'required',
+			'telepon' => 'required',
+			'email' => 'required',
+			'kategori' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Supplier::find($id);
+			$update->nama_supplier = $request->nama_supplier;
+			$update->alamat = $request->alamat;
+			$update->telepon = $request->telepon;
+			$update->email = $request->email;
+			$update->kategori = $request->kategori;
+			$update->save();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteSupplier($id)
+	{
+		try {
+			$delete = Supplier::find($id);
+			$delete->delete();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
 		}
 	}
 }

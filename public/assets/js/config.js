@@ -13,6 +13,20 @@ $(document).ready(function() {
 		show: false
 	});
 
+	function setError(data) {
+		var error = '';
+		result = data.responseJSON.message;
+		$.each(result, function(key, val) {
+			error = error + ' ' + val[0];
+		});
+
+		Swal.fire({
+			title: 'Gagal Diproses',
+			text: error,
+			type: 'error'
+		});
+	}
+
 	//GET ALAT
 	getAlat();
 	function getAlat() {
@@ -148,17 +162,7 @@ $(document).ready(function() {
 				$('#batal').removeAttr('disabled');
 				$('#progress').text('0%');
 
-				var error = '';
-				result = data.responseJSON.message;
-				$.each(result, function(key, val) {
-					error = error + ' ' + val[0];
-				});
-
-				Swal.fire({
-					title: 'Gagal Diproses',
-					text: error,
-					type: 'error'
-				});
+				setError(data);
 			}
 		});
 	});
@@ -187,17 +191,7 @@ $(document).ready(function() {
 				});
 			}, 
 			error: function(data) {
-				var error = '';
-				result = data.responseJSON.message;
-				$.each(result, function(key, val) {
-					error = error + ' ' + val[0];
-				});
-
-				Swal.fire({
-					title: 'Gagal Diproses',
-					text: error,
-					type: 'error'
-				});
+				setError(data);
 			}
 		});
 	});
@@ -219,8 +213,8 @@ $(document).ready(function() {
 						val.kategori,
 						val.jenis,
 						`<div class="text-center">
-						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></button>
-						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></button>
+						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
+						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
 						</div>`,
 						]).draw(false);
 					no = no + 1;
@@ -253,18 +247,180 @@ $(document).ready(function() {
 				});
 			}, 
 			error: function(data) {
-				var error = '';
-				result = data.responseJSON.message;
-				$.each(result, function(key, val) {
-					error = error + ' ' + val[0];
-				});
-
-				Swal.fire({
-					title: 'Gagal Diproses',
-					text: error,
-					type: 'error'
-				});
+				setError(data);
 			}
 		});
 	});
+
+	// PUT KATEGORI
+	$('#fromEdtKategori').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+		var id = $('#edt_id').val();
+
+		$.ajax({
+			url     : host+"/api/inventori/editkategori/"+id,
+			method  : "PUT",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				$('#fromEdtKategori')[0].reset();
+				getKategori();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// DELETE KATEGORI
+	$('#delete-kategori').click(function() {
+		var id = $(this).attr('data-id');
+
+		$.ajax({
+			url     : host+"/api/inventori/deletekategori/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getKategori();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// GET SUPPLIER
+	getSupplier();
+	function getSupplier() {
+		var dataTable = $('#tableSupplier').DataTable();
+		$.ajax({
+			url     : host+"/api/getsupplier",
+			method  : "GET",
+			headers	: headers,
+			success : function(data) {
+				dataTable.clear().draw();
+				var no = 1;
+				$.each(data.result, function(key, val) {
+					dataTable.row.add([
+						no,
+						val.nama_supplier,
+						val.alamat,
+						val.telepon,
+						val.email,
+						val.kategori,
+						`<div class="text-center">
+						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-supplier" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
+						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-supplier" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
+						</div>`,
+						]).draw(false);
+					no = no + 1;
+				});
+			}
+		});
+	}
+
+	// SET KATEGORI
+	$('#fromSupplier').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+
+		$.ajax({
+			url     : host+"/api/setsupplier",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				$('#fromSupplier')[0].reset();
+				getSupplier();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data supplier baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// PUT SUPPLIER
+	$('#fromEdtSupplier').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+		var id = $('#id').val();
+
+		$.ajax({
+			url     : host+"/api/editsupplier/"+id,
+			method  : "PUT",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				$('#fromEdtSupplier')[0].reset();
+				getSupplier();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// DELETE SUPPLIER
+	$('#delete-supplier').click(function() {
+		var id = $(this).attr('data-id');
+
+		$.ajax({
+			url     : host+"/api/deletesupplier/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getSupplier();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+	
 });

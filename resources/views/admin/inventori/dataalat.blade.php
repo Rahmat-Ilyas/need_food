@@ -79,9 +79,7 @@
 						<label class="col-sm-3 control-label">Kategori</label>
 						<div class="col-sm-9">
 							<select name="kategori" id="kategori" class="form-control">
-								<option>Alat Dapur</option>
-								<option>Alat Service</option>
-								<option>Alat Dapur & Service</option>
+								
 							</select>
 						</div>
 					</div>
@@ -272,6 +270,19 @@
 			"Accept"		: "application/json",
 			"Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
 		}
+
+		//GET KATEGORI
+		$.ajax({
+			url     : host+"/api/inventori/getkategori",
+			method  : "GET",
+			headers	: headers,
+			data	: { kategori: 'alat' },
+			success : function(data) {
+				$.each(data.result, function(key, val) {
+					$('#kategori').append('<option>' + val.kategori + '</option>');
+				});
+			}
+		});
 
 		//GET SUPPLIER
 		$.ajax({

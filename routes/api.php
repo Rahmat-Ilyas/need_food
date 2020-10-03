@@ -28,11 +28,17 @@ Route::group(['middleware' => 'auth:api'], function(){
 
     // KATEGORI
     Route::get('inventori/getkategori', 'RestfullApiController@getsKategori');
+    Route::get('inventori/getkategori/{id}', 'RestfullApiController@getKategori');
     Route::post('inventori/setkategori', 'RestfullApiController@setKategori');
+    Route::put('inventori/editkategori/{id}', 'RestfullApiController@putKategori');
+    Route::delete('inventori/deletekategori/{id}', 'RestfullApiController@deleteKategori');
 
     // SUPPLIER
     Route::get('getsupplier', 'RestfullApiController@getsSupplier');
     Route::get('getsupplier/{id}', 'RestfullApiController@getSupplier');
+    Route::post('setsupplier', 'RestfullApiController@setSupplier');
+    Route::put('editsupplier/{id}', 'RestfullApiController@putSupplier');
+    Route::delete('deletesupplier/{id}', 'RestfullApiController@deleteSupplier');
 
 });
 

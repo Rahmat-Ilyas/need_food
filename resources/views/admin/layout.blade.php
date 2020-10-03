@@ -191,7 +191,7 @@
               </ul>
             </li>
             <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="ti-truck"></i> <span> Data Supplier </span></a>
+              <a href="{{ url('admin/datasupplier') }}" class="waves-effect"><i class="ti-truck"></i> <span> Data Supplier </span></a>
             </li>
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="ti-id-badge"></i> <span> Data Driver </span></a>
