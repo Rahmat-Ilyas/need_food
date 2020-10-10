@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\PaketPesanan;
+use App\Model\AdtPesanan;
+use App\Model\Additional;
+use App\Model\Pemesanan;
+use App\Model\Transaksi;
 use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddAlat;
+use App\Model\Paket;
 use App\Model\Alat;
 
 use Illuminate\Http\Request;
@@ -243,9 +249,16 @@ class RestfullApiController extends Controller
 
 		try {
 			$update = Kategori::find($id);
-			$update->kategori = $request->kategori;
-			$update->jenis = $request->jenis;
-			$update->save();
+			if ($update) {
+				$update->kategori = $request->kategori;
+				$update->jenis = $request->jenis;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
 
 			return response()->json([
 				'success' => true,
@@ -263,7 +276,13 @@ class RestfullApiController extends Controller
 	{
 		try {
 			$delete = Kategori::find($id);
-			$delete->delete();
+			if ($delete) $delete->delete();
+			else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
 
 			return response()->json([
 				'success' => true,
@@ -384,12 +403,19 @@ class RestfullApiController extends Controller
 
 		try {
 			$update = Supplier::find($id);
-			$update->nama_supplier = $request->nama_supplier;
-			$update->alamat = $request->alamat;
-			$update->telepon = $request->telepon;
-			$update->email = $request->email;
-			$update->kategori = $request->kategori;
-			$update->save();
+			if ($update) {
+				$update->nama_supplier = $request->nama_supplier;
+				$update->alamat = $request->alamat;
+				$update->telepon = $request->telepon;
+				$update->email = $request->email;
+				$update->kategori = $request->kategori;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
 
 			return response()->json([
 				'success' => true,
@@ -407,11 +433,327 @@ class RestfullApiController extends Controller
 	{
 		try {
 			$delete = Supplier::find($id);
-			$delete->delete();
+			if ($delete) $delete->delete();
+			else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
 
 			return response()->json([
 				'success' => true,
 				'message' => 'Success delete data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// PEMESANAN
+	public function setPesanan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'no_telepon' => 'required',
+			'no_wa' => 'required',
+			'tanggal_antar' => 'required',
+			'waktu_antar' => 'required',
+			'deskripsi_lokasi' => 'required',
+			'latitude' => 'required',
+			'logitude' => 'required',
+			'paket_id' => 'required',
+			'jumlah_paket' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			// set kode
+			$getId = Pemesanan::orderBy('id', 'desc')->first();
+			$date = date('dmY');
+			if ($getId) {
+				$findId = sprintf('%02s', $getId->id+1);
+				$kd_pemesanan = 'NFC-'.$findId.$date;
+			}
+			else $kd_pemesanan = 'NFC-01'.$date;
+
+			// set data
+			$pemesanan = $request->all();
+			$pemesanan['kd_pemesanan'] = $kd_pemesanan;
+			$pemesanan['status'] = 'waiting';
+			$request->catatan ? $request->catatan : $pemesanan['catatan'] = '-';
+			unset($pemesanan['paket_id']);
+			unset($pemesanan['jumlah_paket']);
+			unset($pemesanan['additional_id']);
+			unset($pemesanan['jumlah_adt']);
+			$pmsn = Pemesanan::create($pemesanan);
+
+			$harga_paket = 0;
+			$harga_additional = 0;
+
+			foreach ($request->paket_id as $i => $paket_id) {
+				$getPaket = Paket::where('id', $paket_id)->first();
+				$paket = [];
+				$paket['pemesanan_id'] = $pmsn->id;
+				$paket['paket_id'] = $paket_id;
+				$paket['jumlah'] = $request->jumlah_paket[$i];
+				$paket['total_harga'] = $request->jumlah_paket[$i] * $getPaket->harga;
+				$setPaket = PaketPesanan::create($paket);
+				$harga_paket = $harga_paket + $request->jumlah_paket[$i] * $getPaket->harga;
+			}
+
+			if ($request->additional_id) {
+				foreach ($request->additional_id as $i => $adt_id) {
+					$getAdt = Additional::where('id', $adt_id)->first();
+					$adt = [];
+					$adt['pemesanan_id'] = $pmsn->id;
+					$adt['additional_id'] = $adt_id;
+					$adt['jumlah'] = $request->jumlah_adt[$i];
+					$adt['total_harga'] = $request->jumlah_adt[$i] * $getAdt->harga;
+					$setPaket = AdtPesanan::create($adt);
+					$harga_additional = $harga_additional + $request->jumlah_adt[$i] * $getAdt->harga;
+				}
+			}
+
+			$transaksi = [];
+			$transaksi['pemesanan_id'] = $pmsn->id;
+			$transaksi['harga_paket'] = $harga_paket;
+			$transaksi['harga_additional'] = $harga_additional;
+			$transaksi['biaya_pengiriman'] = 0;
+			$transaksi['harga_lainnya'] = 0;
+			$transaksi['total_harga'] = $harga_paket + $harga_additional;
+			Transaksi::create($transaksi);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function getsPesanan(Request $request)
+	{
+		if ($request->status) $pemesanan = Pemesanan::where('status', $request->status)->get();
+		else $pemesanan = Pemesanan::all();
+
+		$result = $this->getDataPesanan($pemesanan);
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function getPesanan($id)
+	{
+		$pemesanan = Pemesanan::where('id', $id)->first();
+		$result = $this->getDataPesanan($pemesanan, $id);
+
+		if ($result) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function getStatusPesanan($status)
+	{
+		$pemesanan = Pemesanan::where('status', $status)->get();
+		$result = $this->getDataPesanan($pemesanan);
+
+		if ($result) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	protected function getDataPesanan($pemesanan, $id = null)
+	{
+		if ($pemesanan) {
+			if ($id) {
+				$getPaket = PaketPesanan::where('pemesanan_id', $id)->get();
+				foreach ($getPaket as $i => $pkt) {
+					$getPkt = Paket::where('id', $pkt->paket_id)->first();
+					$paket[$i]['pemesanan_id'] = $pkt->pemesanan_id;
+					$paket[$i]['paket_id'] = $pkt->paket_id;
+					$paket[$i]['nama_paket'] = $getPkt->nama;
+					$paket[$i]['harga'] = $getPkt->harga;
+					$paket[$i]['jumlah'] = $pkt->jumlah;
+					$paket[$i]['total_harga'] = $pkt->total_harga;
+				}
+
+				$getAdditional = AdtPesanan::where('pemesanan_id', $id)->get();
+				$additional = [];
+				if ($getAdditional) {
+					foreach ($getAdditional as $i => $adt) {
+						$getAdt = Additional::where('id', $adt->additional_id)->first();
+						$additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
+						$additional[$i]['additional_id'] = $adt->additional_id;
+						$additional[$i]['nama_daging'] = $getAdt->nama_daging;
+						$additional[$i]['harga'] = $getAdt->harga;
+						$additional[$i]['berat'] = $getAdt->berat;
+						$additional[$i]['jumlah'] = $adt->jumlah;
+						$additional[$i]['total_harga'] = $adt->total_harga;
+					}
+				}
+
+				$transaksi = Transaksi::where('pemesanan_id', $id)->first();
+				unset($transaksi['created_at']);
+				unset($transaksi['updated_at']);
+
+				$pemesanan['paket'] = $paket;
+				$pemesanan['additional'] = $additional;
+				$pemesanan['transaksi'] = $transaksi;
+			} else {
+				foreach ($pemesanan as $i => $pesanan) {
+					$getPaket = PaketPesanan::where('pemesanan_id', $pesanan->id)->get();
+					foreach ($getPaket as $i => $pkt) {
+						$getPkt = Paket::where('id', $pkt->paket_id)->first();
+						$paket[$i]['pemesanan_id'] = $pkt->pemesanan_id;
+						$paket[$i]['paket_id'] = $pkt->paket_id;
+						$paket[$i]['nama_paket'] = $getPkt->nama;
+						$paket[$i]['harga'] = $getPkt->harga;
+						$paket[$i]['jumlah'] = $pkt->jumlah;
+						$paket[$i]['total_harga'] = $pkt->total_harga;
+					}
+
+					$getAdditional = AdtPesanan::where('pemesanan_id', $pesanan->id)->get();
+					$additional = [];
+					if ($getAdditional) {
+						foreach ($getAdditional as $i => $adt) {
+							$getAdt = Additional::where('id', $adt->additional_id)->first();
+							$additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
+							$additional[$i]['additional_id'] = $adt->additional_id;
+							$additional[$i]['nama_daging'] = $getAdt->nama_daging;
+							$additional[$i]['harga'] = $getAdt->harga;
+							$additional[$i]['berat'] = $getAdt->berat;
+							$additional[$i]['jumlah'] = $adt->jumlah;
+							$additional[$i]['total_harga'] = $adt->total_harga;
+						}
+					}
+
+					$transaksi = Transaksi::where('pemesanan_id', $pesanan->id)->first();
+					unset($transaksi['created_at']);
+					unset($transaksi['updated_at']);
+
+					$pesanan['paket'] = $paket;
+					$pesanan['additional'] = $additional;
+					$pesanan['transaksi'] = $transaksi;
+				}
+			}
+		}
+		return $pemesanan;
+	}
+
+	public function updateStatusPesanan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'status' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+		
+		try {
+			$update = Pemesanan::find($id);
+			if ($update) {
+				$update->status = $request->status;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function updateTransaksiPesanan(Request $request, $id)
+	{
+		if (!$request->biaya_pengiriman && !$request->harga_lainnya) {
+			return response()->json([
+				'success' => false,
+				'message' => 'biaya_pengiriman atau harga_lainnya tidak boleh kosong'
+			], 401);  
+		}
+
+		try {
+			$update = Transaksi::where('pemesanan_id', $id)->first();
+			if ($update) {
+				if ($request->biaya_pengiriman && $request->harga_lainnya) {
+					$update->biaya_pengiriman = $request->biaya_pengiriman;
+					$update->harga_lainnya = $request->harga_lainnya;
+				} else if ($request->biaya_pengiriman) {
+					$update->biaya_pengiriman = $request->biaya_pengiriman;
+				} else if ($request->harga_lainnya) {
+					$update->harga_lainnya = $request->harga_lainnya;
+				}
+				$total_harga = $update->harga_paket + $update->harga_additional + $update->biaya_pengiriman + $update->harga_lainnya;
+				$update->total_harga = $total_harga;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
 			], 200);
 		} catch(QueryException $ex) {
 			return response()->json([

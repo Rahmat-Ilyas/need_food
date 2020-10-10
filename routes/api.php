@@ -40,6 +40,14 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('editsupplier/{id}', 'RestfullApiController@putSupplier');
     Route::delete('deletesupplier/{id}', 'RestfullApiController@deleteSupplier');
 
+    // PEMESANAN
+    Route::get('datapesanan', 'RestfullApiController@getsPesanan');
+    Route::get('datapesanan/{id}', 'RestfullApiController@getPesanan');
+    Route::get('datapesanan/{status}', 'RestfullApiController@getStatusPesanan');
+    Route::post('datapesanan/store', 'RestfullApiController@setPesanan');
+    Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
+    Route::put('datapesanan/updatetransaksi/{id}', 'RestfullApiController@updateTransaksiPesanan');
+
 });
 
 Route::fallback(function() {
