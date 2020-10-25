@@ -26,6 +26,12 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
     Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
 
+    // INVENTORI BAHAN  
+    Route::get('inventori/getbahan', 'RestfullApiController@invGetsbahan');
+    Route::get('inventori/getbahan/{id}', 'RestfullApiController@invGetbahan');
+    Route::post('inventori/setbahan', 'RestfullApiController@invSetbahan');
+    Route::post('inventori/setstokbahan', 'RestfullApiController@setStokbahan');
+
     // KATEGORI
     Route::get('inventori/getkategori', 'RestfullApiController@getsKategori');
     Route::get('inventori/getkategori/{id}', 'RestfullApiController@getKategori');
@@ -48,6 +54,10 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
     Route::put('datapesanan/updatetransaksi/{id}', 'RestfullApiController@updateTransaksiPesanan');
 
+    // PAKET MENU
+    Route::get('getpaket', 'RestfullApiController@invGetsalat');
+    Route::get('getpaket/{id}', 'RestfullApiController@invGetalat');
+    Route::post('setpaket', 'RestfullApiController@invSetalat');
 });
 
 Route::fallback(function() {

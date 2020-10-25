@@ -9,8 +9,10 @@ use App\Model\Pemesanan;
 use App\Model\Transaksi;
 use App\Model\Kategori;
 use App\Model\Supplier;
+use App\Model\AddBahan;
 use App\Model\AddAlat;
 use App\Model\Paket;
+use App\Model\Bahan;
 use App\Model\Alat;
 
 use Illuminate\Http\Request;
@@ -150,6 +152,144 @@ class RestfullApiController extends Controller
 			$add_alat = $request->all();
 			$add_alat['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
 			AddAlat::create($add_alat);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// INVENTORI BAHAN 
+	public function invGetsbahan()
+	{
+		$data = Bahan::orderBy('id', 'desc')->get();
+		$result = [];
+		foreach ($data as $dta) {
+			$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
+
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$dta->riwayat_beli = $riwayat_beli;
+
+			$result[] = $dta;
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result'  => $result
+		], 200);
+	}
+
+	public function invGetbahan($id)
+	{
+		$data = Bahan::where('id', $id)->first();
+		if ($data) {
+			$riwayat = AddBahan::where('bahan_id', $data->id)->get();
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$data->riwayat_beli = $riwayat_beli;
+
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function invSetbahan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			'kategori' => 'required',
+			'jumlah_bahan' => 'required|integer',
+			'total_harga' => 'required|integer',
+			'supplier_id' => 'required|integer',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data_bahan = $request->except('foto', 'total_harga', 'supplier_id');
+			$data_bahan['kd_bahan'] = $this->generate($request->nama);
+			$foto = $request->file('foto');
+			$nama_foto = 'img_bahan_'.time().'.'.$foto->getClientOriginalExtension();
+			$data_bahan['foto'] = $nama_foto;
+			$bahan = Bahan::create($data_bahan);
+
+			$path = 'assets/images/bahan';
+			$foto->move($path, $bahan->foto);
+
+			$supplier = Supplier::where('id', $request->supplier_id)->first();
+			$add_bahan = $request->only('total_harga', 'supplier_id');
+			$add_bahan['jumlah_beli'] = $request->jumlah_bahan;
+			$add_bahan['bahan_id'] = $bahan->id;
+			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
+			$beli = AddBahan::create($add_bahan);
+			$result = $bahan;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function setStokbahan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'bahan_id' => 'required|integer',
+			'jumlah_beli' => 'required|integer',
+			'total_harga' => 'required|integer',
+			'supplier_id' => 'required|integer',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$supplier = Supplier::where('id', $request->supplier_id)->first();
+			$add_bahan = $request->all();
+			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
+			AddBahan::create($add_bahan);
 
 			return response()->json([
 				'success' => true,

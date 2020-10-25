@@ -28,7 +28,6 @@ $(document).ready(function() {
 	}
 
 	//GET ALAT
-	getAlat();
 	function getAlat() {
 		var dataTable = $('#dataTableAlat').DataTable();
 		$.ajax({
@@ -95,7 +94,7 @@ $(document).ready(function() {
 		});
 	});
 
-	// VIEW GAMBAR
+	// VIEW GAMBAR ALAT
 	$(document).on('click', '#view-gambar-alat', function() {
 		var id = $(this).attr('data-id');
 		$('#setImage').attr('src', '');
@@ -196,8 +195,141 @@ $(document).ready(function() {
 		});
 	});
 
+	//GET BAHAN
+	function getBahan() {
+		var dataTable = $('#dataTableBahan').DataTable();
+		$.ajax({
+			url     : host+"/api/inventori/getbahan",
+			method  : "GET",
+			headers	: headers,
+			success : function(data) {
+				dataTable.clear().draw();
+				var no = 1;
+				$.each(data.result, function(key, val) {
+					dataTable.row.add([
+						no,
+						`<a href="#" id="view-gambar-bahan" data-toggle="modal" data-target="#modal-gambar-bahan" data-id="`+ val.id +`">
+						<img src="`+ host +`/assets/images/bahan/`+ val.foto +`" class="img-responsive thumb-md">
+						</a>`,
+						val.kd_bahan,
+						val.nama,
+						val.kategori,
+						val.jumlah_bahan+' '+val.satuan,
+						`<div class="text-center">
+						<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
+						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
+						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></a>
+						</div>`,
+						]).draw(false);
+					no = no + 1;
+				});
+			}
+		});
+	}
+
+	// VIEW GAMBAR BAHAN
+	$(document).on('click', '#view-gambar-bahan', function() {
+		var id = $(this).attr('data-id');
+		$('#setImage').attr('src', '');
+
+		$.ajax({
+			url     : host+"/api/inventori/getbahan/"+id,
+			method  : "GET",
+			headers	: headers,
+			success : function(data) {
+				$('#setImage').attr('src', host + '/assets/images/bahan/' + data.result.foto);
+			}
+		});
+	});
+
+	// ADD BAHAN
+	$('#fromBahan').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData($(this)[0]);
+
+		$.ajax({
+			url     : host+"/api/inventori/setbahan",
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			success : function(data) {
+				console.log(data);
+				getBahan();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromBahan')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add-bahan').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
+
+	// ADD STOK ALAT
+	$('#fromStokBahan').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+
+		$.ajax({
+			url     : host+"/api/inventori/setstokbahan",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				$('#fromStokBahan')[0].reset();
+				$('#nama_bahan').select2({ placeholder: 'Pilih Bahan', allowClear: true });
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add-stok').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
 	// GET KATEGORI
-	getKategori();
 	function getKategori() {
 		var dataTable = $('#tableKategori').DataTable();
 		$.ajax({
@@ -309,7 +441,6 @@ $(document).ready(function() {
 	});
 
 	// GET SUPPLIER
-	getSupplier();
 	function getSupplier() {
 		var dataTable = $('#tableSupplier').DataTable();
 		$.ajax({
@@ -422,5 +553,62 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
+
+	// ADD PAKET
+	$('#fromPaket').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData($(this)[0]);
+
+		$.ajax({
+			url     : host+"/api/inventori/setbahan",
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			success : function(data) {
+				console.log(data);
+				getBahan();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromBahan')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add-bahan').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
 });

@@ -12,7 +12,7 @@
                         <a href="#">NeedFood</a>
                     </li>
                     <li class="active">
-                        Dahboard
+                        Dashboard
                     </li>
                 </ol>
             </div>

@@ -174,6 +174,30 @@
             $('#delete-kategori').attr('data-id', id);
         });
 
+        // GET KATEGORI
+        var dataTable = $('#tableKategori').DataTable();
+        $.ajax({
+            url     : host+"/api/inventori/getkategori",
+            method  : "GET",
+            headers : headers,
+            success : function(data) {
+                dataTable.clear().draw();
+                var no = 1;
+                $.each(data.result, function(key, val) {
+                    dataTable.row.add([
+                        no,
+                        val.kategori,
+                        val.jenis,
+                        `<div class="text-center">
+                        <button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
+                        </div>`,
+                        ]).draw(false);
+                    no = no + 1;
+                });
+            }
+        });
+
     });
 </script>
 @endsection
