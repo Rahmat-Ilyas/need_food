@@ -1033,4 +1033,9 @@ class RestfullApiController extends Controller
 			], 500);	
 		}
 	}
+
+	public function loginMobile(Request $request)
+	{
+		
+	}
 }
