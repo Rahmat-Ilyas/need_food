@@ -57,6 +57,17 @@ return [
             'provider' => 'admins',
             'hash' => false,
         ],
+
+        'kitchen' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+
+        'api-kitchen' => [
+            'driver' => 'token',
+            'provider' => 'admins',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -83,6 +94,11 @@ return [
         ],
 
         'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Model\AuthLogin::class,
+        ],
+
+        'kitchen' => [
             'driver' => 'eloquent',
             'model' => App\Model\AuthLogin::class,
         ],
@@ -113,6 +129,13 @@ return [
 
         'admins' => [
             'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'kitchens' => [
+            'provider' => 'kitchens',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

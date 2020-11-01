@@ -28,6 +28,7 @@
                         <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Foto</th>
                                 <th>Nama Kategori</th>
                                 <th>Jenis Kategori</th>
                                 <th>Aksi</th>
@@ -67,6 +68,15 @@
                                 <option>Kategori Alat</option>
                                 <option>Kategori Bahan</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Foto</label>
+                        <div class="col-sm-8 bootstrap-filestyle">
+                            <input type="file" class="filestyle" data-placeholder="Belum ada foto" name="foto" id="foto" required="">
+                            <div class="row text-info" id="viewProgress" hidden="">
+                                <span class="col-sm-5">Sedang mengapload foto... <b><i id="progress">0%</i></b></span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -138,6 +148,20 @@
         </div>
     </div>
 </div>
+
+<!-- MODAL VIEW GAMBAR -->
+<div class="modal fade" tabindex="-1" role="dialog" id="modal-gambar-kategori">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content p-0 text-right">
+            <div style="margin-right: -25px;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-close"></i></button>
+            </div>
+            <div class="modal-body">
+                <img id="setImage" src="" style="width: 100%;margin: -20px 0px -20px 0px;">
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('javascript')
@@ -167,6 +191,21 @@
             });
         });
 
+        // VIEW GAMBAR ALAT
+        $(document).on('click', '#view-gambar-kategori', function() {
+            var id = $(this).attr('data-id');
+            $('#setImage').attr('src', '');
+
+            $.ajax({
+                url     : host+"/api/inventori/getkategori/"+id,
+                method  : "GET",
+                headers : headers,
+                success : function(data) {
+                    $('#setImage').attr('src', host + '/assets/images/kategori/' + data.result.foto);
+                }
+            });
+        });
+
         //HAPUS KATEGORI
         $(document).on('click', '#hapus-kategori', function() {
             var id = $(this).attr('data-id');
@@ -186,6 +225,9 @@
                 $.each(data.result, function(key, val) {
                     dataTable.row.add([
                         no,
+                        `<a href="#" id="view-gambar-kategori" data-toggle="modal" data-target="#modal-gambar-kategori" data-id="`+ val.id +`">
+                        <img src="`+ host +`/assets/images/kategori/`+ val.foto +`" class="img-responsive thumb-md">
+                        </a>`,
                         val.kategori,
                         val.jenis,
                         `<div class="text-center">

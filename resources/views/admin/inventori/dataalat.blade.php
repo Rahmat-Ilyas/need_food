@@ -78,7 +78,7 @@
 					<div class="form-group row">
 						<label class="col-sm-3 control-label">Kategori</label>
 						<div class="col-sm-9">
-							<select name="kategori" id="kategori" class="form-control">
+							<select name="kategori_id" id="kategori" class="form-control">
 								
 							</select>
 						</div>
@@ -279,7 +279,7 @@
 			data	: { kategori: 'alat' },
 			success : function(data) {
 				$.each(data.result, function(key, val) {
-					$('#kategori').append('<option>' + val.kategori + '</option>');
+					$('#kategori').append('<option value="'+ val.id +'">' + val.kategori + '</option>');
 				});
 			}
 		});

@@ -342,6 +342,9 @@ $(document).ready(function() {
 				$.each(data.result, function(key, val) {
 					dataTable.row.add([
 						no,
+						`<a href="#" id="view-gambar-kategori" data-toggle="modal" data-target="#modal-gambar-kategori" data-id="`+ val.id +`">
+						<img src="`+ host +`/assets/images/kategori/`+ val.foto +`" class="img-responsive thumb-md">
+						</a>`,
 						val.kategori,
 						val.jenis,
 						`<div class="text-center">
@@ -358,16 +361,39 @@ $(document).ready(function() {
 	// SET KATEGORI
 	$('#fromKategori').submit(function(ev) {
 		ev.preventDefault();
-		var data = $(this).serialize();
+		var data = new FormData($(this)[0]);
 
 		$.ajax({
 			url     : host+"/api/inventori/setkategori",
+			enctype : "multipart/form-data",
 			method  : "POST",
 			data    : data,
 			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
 			success : function(data) {
-				$('#fromKategori')[0].reset();
 				getKategori();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromKategori')[0].reset();
 
 				Swal.fire({
 					title: 'Berhasil Diproses',
@@ -379,6 +405,11 @@ $(document).ready(function() {
 				});
 			}, 
 			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
 				setError(data);
 			}
 		});
@@ -554,13 +585,39 @@ $(document).ready(function() {
 		});
 	});
 
+	// GET KATEGORI
+	function getPaket() {
+		var dataTable = $('#tableKategori').DataTable();
+		$.ajax({
+			url     : host+"/api/inventori/getkategori",
+			method  : "GET",
+			headers	: headers,
+			success : function(data) {
+				dataTable.clear().draw();
+				var no = 1;
+				$.each(data.result, function(key, val) {
+					dataTable.row.add([
+						no,
+						val.kategori,
+						val.jenis,
+						`<div class="text-center">
+						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
+						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
+						</div>`,
+						]).draw(false);
+					no = no + 1;
+				});
+			}
+		});
+	}
+
 	// ADD PAKET
 	$('#fromPaket').submit(function(e) {
 		e.preventDefault();
 		var data = new FormData($(this)[0]);
 
 		$.ajax({
-			url     : host+"/api/inventori/setbahan",
+			url     : host+"/api/kelolamenu/setpaket",
 			enctype : "multipart/form-data",
 			method  : "POST",
 			data    : data,
@@ -585,19 +642,22 @@ $(document).ready(function() {
 			processData: false,
 			success : function(data) {
 				console.log(data);
-				getBahan();
+				getPaket();
 				$('#viewProgress').attr('hidden', '');
 				$('#upload').removeAttr('disabled');
 				$('#batal').removeAttr('disabled');
 				$('#progress').text('0%');
-				$('#fromBahan')[0].reset();
+				$('#fromPaket')[0].reset();
+				$('#item').html('');
+				$('#tambah-item').removeClass('disabled');
+				$('#reset').css('display', 'none');
 
 				Swal.fire({
 					title: 'Berhasil Diproses',
-					text: 'Data bahan baru berhasil ditambah',
+					text: 'Data paket baru berhasil ditambah',
 					type: 'success',
 					onClose: () => {
-						$('.modal-add-bahan').modal('hide');
+						$('.modal-add-paket').modal('hide');
 					}
 				});
 			}, 
