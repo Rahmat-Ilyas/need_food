@@ -22,4 +22,15 @@ Route::group(['prefix' => 'admin'], function () {
 	Route::get('/{dir}/{page}', 'AdminController@setpagedir');
 });
 
+// Admin
+Route::group(['prefix' => 'kitchen'], function () {
+	Route::get('/login', 'Auth\AuthKitchenController@showLoginForm')->name('kitchen.login');
+	Route::post('/login', 'Auth\AuthKitchenController@login')->name('kitchen.login.submit');
+	Route::get('/logout', 'Auth\AuthKitchenController@logout')->name('kitchen.logout');
+	Route::get('/', 'KitchenController@home')->name('kitchen.home');
+
+	Route::get('/{page}', 'KitchenController@setpageonly');
+	Route::get('/{dir}/{page}', 'KitchenController@setpagedir');
+});
+
 Route::post('/configuration', 'ConfigController@config');

@@ -7,6 +7,7 @@ use App\Model\AdtPesanan;
 use App\Model\Additional;
 use App\Model\Pemesanan;
 use App\Model\Transaksi;
+use App\Model\ItemPaket;
 use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddBahan;
@@ -31,6 +32,8 @@ class RestfullApiController extends Controller
 			if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
 			$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar;
 			$riwayat = AddAlat::where('alat_id', $dta->id)->get();
+			$kategori = Kategori::where('id', $dta->kategori_id)->first();
+			$dta['kategori'] = $kategori->kategori;
 
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
@@ -58,6 +61,43 @@ class RestfullApiController extends Controller
 			$data->sisa_alat = $data->jumlah_alat - $data->alat_keluar;
 
 			$riwayat = AddAlat::where('alat_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$data->riwayat_beli = $riwayat_beli;
+
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function invGetalatkategori($id)
+	{
+		$data = Alat::where('kategori_id', $id)->first();
+		if ($data) {
+			if (is_null($data->alat_keluar)) $data->alat_keluar = 0;
+			$data->sisa_alat = $data->jumlah_alat - $data->alat_keluar;
+
+			$riwayat = AddAlat::where('alat_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
@@ -86,7 +126,7 @@ class RestfullApiController extends Controller
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-			'kategori' => 'required',
+			'kategori_id' => 'required|integer',
 			'jumlah_alat' => 'required|integer',
 			'total_harga' => 'required|integer',
 			'supplier_id' => 'required|integer',
@@ -172,6 +212,8 @@ class RestfullApiController extends Controller
 		$result = [];
 		foreach ($data as $dta) {
 			$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
+			$kategori = Kategori::where('id', $dta->kategori_id)->first();
+			$dta['kategori'] = $kategori->kategori;
 
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
@@ -196,6 +238,9 @@ class RestfullApiController extends Controller
 		$data = Bahan::where('id', $id)->first();
 		if ($data) {
 			$riwayat = AddBahan::where('bahan_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+			
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
@@ -211,7 +256,38 @@ class RestfullApiController extends Controller
 				'message' => 'Success get data',
 				'result'  => $result
 			], 200);
-		} else {
+		} else { 
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function invGetbahankategori($id)
+	{
+		$data = Bahan::where('kategori_id', $id)->first();
+		if ($data) {
+			$riwayat = AddBahan::where('bahan_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+			
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$data->riwayat_beli = $riwayat_beli;
+
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else { 
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
@@ -224,7 +300,7 @@ class RestfullApiController extends Controller
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-			'kategori' => 'required',
+			'kategori_id' => 'required|integer',
 			'jumlah_bahan' => 'required|integer',
 			'total_harga' => 'required|integer',
 			'supplier_id' => 'required|integer',
@@ -346,6 +422,7 @@ class RestfullApiController extends Controller
 		$validator = Validator::make($request->all(), [
 			'kategori' => 'required',
 			'jenis' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
 		]);
 
 
@@ -358,7 +435,14 @@ class RestfullApiController extends Controller
 
 		try {
 			$data = $request->all();
-			Kategori::create($data);
+
+			$foto = $request->file('foto');
+			$nama_foto = 'img_kategori_'.time().'.'.$foto->getClientOriginalExtension();
+			$data['foto'] = $nama_foto;
+			$kategori = Kategori::create($data);
+
+			$path = 'assets/images/kategori';
+			$foto->move($path, $kategori->foto);
 
 			return response()->json([
 				'success' => true,
@@ -894,6 +978,53 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => true,
 				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// PEMESANAN
+	public function setPaket(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'harga' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			'item' => 'required',
+			'keterangan' => 'required'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data_paket = $request->except('item');
+			$foto = $request->file('foto');
+			$nama_foto = 'img_paket_'.time().'.'.$foto->getClientOriginalExtension();
+			$data_paket['foto'] = $nama_foto;
+			$paket = Paket::create($data_paket);
+
+			$path = 'assets/images/paket';
+			$foto->move($path, $paket->foto);
+			foreach ($request->item as $item) {
+				$item_paket = [];
+				$item_paket['paket_id'] = $paket->id;
+				$item_paket['nama_bahan'] = $item;
+				ItemPaket::create($item_paket);
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
 			], 200);
 		} catch(QueryException $ex) {
 			return response()->json([

@@ -22,7 +22,7 @@
         <div class="col-md-12">
             <div class="card-box">
                 <h4 class="header-title m-t-0"><b>Data Paket Menu</b></h4>
-                <button type="button" class="btn btn-default btn-rounded waves-effect waves-light m-t-10" data-toggle="modal" data-target=".modal-add"><i class="fa fa-plus-circle"></i> &nbsp;Tambah Paket</button>
+                <button type="button" class="btn btn-default btn-rounded waves-effect waves-light m-t-10" data-toggle="modal" data-target=".modal-add-paket"><i class="fa fa-plus-circle"></i> &nbsp;Tambah Paket</button>
                 <div class="row m-t-20">
                     <div class="col-md-4">
                         <div class="price_card text-center">
@@ -108,7 +108,7 @@
 </div>
 
 <!-- Modal Tambah Paket -->
-<div class="modal modal-add" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+<div class="modal modal-add-paket" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -147,13 +147,6 @@
                             <div class="m-t-5" id="item">
                             </div>
                         </div>
-                        <div hidden="" id="content-item">
-                            <div class="m-b-5">
-                                <select class="form-control select2-add" name="item[]" id="val-item" required="">
-                                    <option value="">Pilih Bahan</option>
-                                </select>
-                            </div>
-                        </div>
                         <div class="col-sm-12 text-right">
                             <a href="#" class="btn btn-danger btn-sm" id="reset" style="display: none;"><i class="fa fa-refresh"></i> Reset Pilihan</a>
                             <a href="#" class="btn btn-default btn-sm" id="tambah-item"><i class="fa fa-plus-circle"></i> Tambah Item</a>
@@ -175,6 +168,14 @@
                 </form>
             </div>
         </div>
+    </div>
+</div>
+
+<div hidden="" id="content-item">
+    <div class="m-b-5">
+        <select class="form-control select2-add" name="item[]" id="val-item" required="">
+            <option value="">Pilih Bahan</option>
+        </select>
     </div>
 </div>
 
@@ -202,7 +203,7 @@
             headers : headers,
             success : function(data) {
                 $.each(data.result, function(key, val) {
-                    $('#val-item').append('<option value="'+ val.id +'">'+ val.nama +'</option>');
+                    $('#val-item').append('<option value="'+ val.nama +'">'+ val.nama +'</option>');
                 });
             }
         });
@@ -225,7 +226,7 @@
                 data    : data+'&req=seleksibahanpaket',
                 success : function(data) {
                     $.each(data, function(key, val) {
-                        $('#item').find('#val-item').last().append('<option value="'+ val.id +'">'+ val.nama +'</option>');
+                        $('#item').find('#val-item').last().append('<option value="'+ val.nama +'">'+ val.nama +'</option>');
                     });
                 }
             });

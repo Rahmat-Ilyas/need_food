@@ -24,6 +24,11 @@ class RedirectIfAuthenticated
                     return redirect()->route('admin.home');
                 }
                 break;
+            case 'kitchen':
+                if (Auth::guard($guard)->check()) {
+                    return redirect()->route('kitchen.home');
+                }
+                break;
         }
 
         return $next($request);

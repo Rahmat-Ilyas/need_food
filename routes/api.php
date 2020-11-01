@@ -23,12 +23,14 @@ Route::group(['middleware' => 'auth:api'], function(){
     // INVENTORI ALAT 
     Route::get('inventori/getalat', 'RestfullApiController@invGetsalat');
     Route::get('inventori/getalat/{id}', 'RestfullApiController@invGetalat');
+    Route::get('inventori/getalat/kategori/{id}', 'RestfullApiController@invGetalatkategori');
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
     Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
 
     // INVENTORI BAHAN  
     Route::get('inventori/getbahan', 'RestfullApiController@invGetsbahan');
     Route::get('inventori/getbahan/{id}', 'RestfullApiController@invGetbahan');
+    Route::get('inventori/getbahan/kategori/{id}', 'RestfullApiController@invGetbahankategori');
     Route::post('inventori/setbahan', 'RestfullApiController@invSetbahan');
     Route::post('inventori/setstokbahan', 'RestfullApiController@setStokbahan');
 
@@ -55,9 +57,13 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('datapesanan/updatetransaksi/{id}', 'RestfullApiController@updateTransaksiPesanan');
 
     // PAKET MENU
-    Route::get('getpaket', 'RestfullApiController@invGetsalat');
-    Route::get('getpaket/{id}', 'RestfullApiController@invGetalat');
-    Route::post('setpaket', 'RestfullApiController@invSetalat');
+    Route::get('kelolamenu/getpaket', 'RestfullApiController@getsPaket');
+    Route::get('kelolamenu/getpaket/{id}', 'RestfullApiController@getPaket');
+    Route::post('kelolamenu/setpaket', 'RestfullApiController@setPaket');
+
+    // LOGIN FOR MOBILE
+    Route::post('login/mobile', 'RestfullApiController@loginMobile');
+
 });
 
 Route::fallback(function() {
