@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use File;
 
 class RestfullApiController extends Controller
 {
@@ -191,11 +192,41 @@ class RestfullApiController extends Controller
 			$supplier = Supplier::where('id', $request->supplier_id)->first();
 			$add_alat = $request->all();
 			$add_alat['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
-			AddAlat::create($add_alat);
+			$crt = AddAlat::create($add_alat);
+			$updt = Alat::where('id', $crt->alat_id)->first();
+			$updt->jumlah_alat = $updt->jumlah_alat + $crt->jumlah_beli;
+			$updt->save();
 
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteAlat($id)
+	{
+		try {
+			$delete = Alat::find($id);
+
+			if ($delete) {
+				$delete->delete();
+				File::delete(public_path('assets/images/alat/'.$delete->foto));
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
 			], 200);
 		} catch(QueryException $ex) {
 			return response()->json([
@@ -365,11 +396,41 @@ class RestfullApiController extends Controller
 			$supplier = Supplier::where('id', $request->supplier_id)->first();
 			$add_bahan = $request->all();
 			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
-			AddBahan::create($add_bahan);
+			$crt = AddBahan::create($add_bahan);
+			$updt = Bahan::where('id', $crt->bahan_id)->first();
+			$updt->jumlah_bahan = $updt->jumlah_bahan + $crt->jumlah_beli;
+			$updt->save();
 
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteBahan($id)
+	{
+		try {
+			$delete = Bahan::find($id);
+
+			if ($delete) {
+				$delete->delete();
+				File::delete(public_path('assets/images/bahan/'.$delete->foto));
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
 			], 200);
 		} catch(QueryException $ex) {
 			return response()->json([
@@ -500,7 +561,25 @@ class RestfullApiController extends Controller
 	{
 		try {
 			$delete = Kategori::find($id);
-			if ($delete) $delete->delete();
+			$alat = Alat::where('kategori_id', $id)->get();
+			$bahan = Bahan::where('kategori_id', $id)->get();
+			if ($alat) {
+				foreach ($alat as $dta) {
+					$dta->delete();
+					File::delete(public_path('assets/images/alat/'.$dta->foto));
+				}
+			}
+			if ($bahan) {
+				foreach ($bahan as $dta) {
+					$dta->delete();
+					File::delete(public_path('assets/images/bahan/'.$dta->foto));
+				}
+			}
+
+			if ($delete) {
+				$delete->delete();
+				File::delete(public_path('assets/images/kategori/'.$delete->foto));
+			}
 			else {
 				return response()->json([
 					'success' => false,

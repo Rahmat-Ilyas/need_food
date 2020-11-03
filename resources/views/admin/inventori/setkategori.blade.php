@@ -75,7 +75,7 @@
                         <div class="col-sm-8 bootstrap-filestyle">
                             <input type="file" class="filestyle" data-placeholder="Belum ada foto" name="foto" id="foto" required="">
                             <div class="row text-info" id="viewProgress" hidden="">
-                                <span class="col-sm-5">Sedang mengapload foto... <b><i id="progress">0%</i></b></span>
+                                <span class="col-sm-12">Mengapload... <b><i id="progress">0%</i></b></span>
                             </div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@
                 <h5 class="modal-title" id="staticModalLabel">Hapus Data</h5>
             </div>
             <div class="modal-body">
-                <p>Yakin ingin menghapus data ini?</p>
+                <p>Semua data Alat atau Bahan dengan kategori ini akan terhapus!</p>
             </div>
             <div class="modal-footer form-inline">
                 <button type="button" class="btn btn-danger" id="delete-kategori">Hapus</button>

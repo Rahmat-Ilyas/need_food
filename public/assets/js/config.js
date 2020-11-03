@@ -52,7 +52,7 @@ $(document).ready(function() {
 						`<div class="text-center">
 						<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
 						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
-						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></a>
+						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 						</div>`,
 						]).draw(false);
 					no = no + 1;
@@ -177,6 +177,7 @@ $(document).ready(function() {
 			data    : data,
 			headers	: headers,
 			success : function(data) {
+				getAlat();
 				$('#fromStokAlat')[0].reset();
 				$('#nama_alat').select2({ placeholder: 'Pilih Alat', allowClear: true });
 
@@ -186,6 +187,32 @@ $(document).ready(function() {
 					type: 'success',
 					onClose: () => {
 						$('.modal-add-stok').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// DELETE ALAT
+	$('#delete-alat').click(function() {
+		var id = $(this).attr('data-id');
+
+		$.ajax({
+			url     : host+"/api/inventori/deletealat/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getAlat();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
 					}
 				});
 			}, 
@@ -272,7 +299,6 @@ $(document).ready(function() {
 			contentType : false,
 			processData: false,
 			success : function(data) {
-				console.log(data);
 				getBahan();
 				$('#viewProgress').attr('hidden', '');
 				$('#upload').removeAttr('disabled');
@@ -311,6 +337,7 @@ $(document).ready(function() {
 			data    : data,
 			headers	: headers,
 			success : function(data) {
+				getBahan();
 				$('#fromStokBahan')[0].reset();
 				$('#nama_bahan').select2({ placeholder: 'Pilih Bahan', allowClear: true });
 
@@ -320,6 +347,32 @@ $(document).ready(function() {
 					type: 'success',
 					onClose: () => {
 						$('.modal-add-stok').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// DELETE ALAT
+	$('#delete-bahan').click(function() {
+		var id = $(this).attr('data-id');
+
+		$.ajax({
+			url     : host+"/api/inventori/deletebahan/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getBahan();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
 					}
 				});
 			}, 
@@ -585,7 +638,7 @@ $(document).ready(function() {
 		});
 	});
 
-	// GET KATEGORI
+	// GET PAKET
 	function getPaket() {
 		var dataTable = $('#tableKategori').DataTable();
 		$.ajax({

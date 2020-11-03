@@ -245,6 +245,24 @@
 	</div><!-- /.modal-dialog -->
 </div>
 
+<!-- MODAL HAPUS -->
+<div class="modal modal-delete" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticModalLabel">Hapus Data</h5>
+            </div>
+            <div class="modal-body">
+                <p>Yakin ingin menghapus data ini?</p>
+            </div>
+            <div class="modal-footer form-inline">
+                <button type="button" class="btn btn-danger" id="delete-alat">Hapus</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL VIEW GAMBAR -->
 <div class="modal fade" tabindex="-1" role="dialog" id="modal-gambar-alat">
 	<div class="modal-dialog modal-lg" role="document">
@@ -299,15 +317,23 @@
 		});
 
 		//GET ALAT
-		$.ajax({
-			url     : host+"/api/inventori/getalat",
-			method  : "GET",
-			headers	: headers,
-			success : function(data) {
-				$.each(data.result, function(key, val) {
-					$('#nama_alat').append('<option value="'+ val.id +'">'+ val.kd_alat +'/'+ val.nama +'</option>');
-				});
-			}
+		getDataAlat();
+		function getDataAlat() {
+			$('#nama_alat').html('<option value="">Pilih Alat</option>');
+			$.ajax({
+				url     : host+"/api/inventori/getalat",
+				method  : "GET",
+				headers	: headers,
+				success : function(data) {
+					$.each(data.result, function(key, val) {
+						$('#nama_alat').append('<option value="'+ val.id +'">'+ val.kd_alat +'/'+ val.nama +'</option>');
+					});
+				}
+			});
+		}
+
+		$('.modal-add-stok').on('shown.bs.modal', function() {
+			getDataAlat();
 		});
 
 		var dataTable = $('#dataTableAlat').DataTable();
@@ -333,13 +359,19 @@
 						`<div class="text-center">
 						<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
 						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
-						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></a>
+						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 						</div>`,
 						]).draw(false);
 					no = no + 1;
 				});
 			}
 		});
+
+		//HAPUS DATA ALAT
+        $(document).on('click', '#hapus-alat', function() {
+            var id = $(this).attr('dta-id');
+            $('#delete-alat').attr('data-id', id);
+        });
 	});
 </script>
 @endsection

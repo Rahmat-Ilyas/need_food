@@ -238,7 +238,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="riwayat-beli">
-                                        
+
                                     </tbody>
                                 </table>
                             </div> 
@@ -251,6 +251,24 @@
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
+</div>
+
+<!-- MODAL HAPUS -->
+<div class="modal modal-delete" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticModalLabel">Hapus Data</h5>
+            </div>
+            <div class="modal-body">
+                <p>Yakin ingin menghapus data ini?</p>
+            </div>
+            <div class="modal-footer form-inline">
+                <button type="button" class="btn btn-danger" id="delete-bahan">Hapus</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Batal</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL VIEW GAMBAR -->
@@ -307,15 +325,23 @@
         });
 
         //GET BAHAN
-        $.ajax({
-            url     : host+"/api/inventori/getbahan",
-            method  : "GET",
-            headers : headers,
-            success : function(data) {
-                $.each(data.result, function(key, val) {
-                    $('#nama_bahan').append('<option value="'+ val.id +'">'+ val.kd_bahan +'/'+ val.nama +'</option>');
-                });
-            }
+        getDataBahan();
+        function getDataBahan() {
+            $('#nama_bahan').html('<option value="">Pilih Bahan</option>');
+            $.ajax({
+                url     : host+"/api/inventori/getbahan",
+                method  : "GET",
+                headers : headers,
+                success : function(data) {
+                    $.each(data.result, function(key, val) {
+                        $('#nama_bahan').append('<option value="'+ val.id +'">'+ val.kd_bahan +'/'+ val.nama +'</option>');
+                    });
+                }
+            });
+        }
+
+        $('.modal-add-stok').on('shown.bs.modal', function() {
+            getDataBahan();
         });
 
         // SET SATUAN 
@@ -353,12 +379,18 @@
                         `<div class="text-center">
                         <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
                         <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
-                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></a>
+                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
                         </div>`,
                         ]).draw(false);
                     no = no + 1;
                 });
             }
+        });
+
+        //HAPUS DATA BAHAN
+        $(document).on('click', '#hapus-bahan', function() {
+            var id = $(this).attr('dta-id');
+            $('#delete-bahan').attr('data-id', id);
         });
     });
 </script>

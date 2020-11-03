@@ -14,12 +14,9 @@ class Driver extends Model
 
     protected $table = 'tb_driver';
     protected $guard = 'driver';
-
-    protected $fillable = [
-        'nama', 'role', 'username', 'password',
-    ];
+    protected $guarded = [];
 
     protected $hidden = [
-        'id', 'remember_token',
+    	'remember_token'
     ];
 }
