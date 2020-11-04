@@ -126,7 +126,7 @@ class RestfullApiController extends Controller
 	{
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
-			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
 			'kategori_id' => 'required|integer',
 			'jumlah_alat' => 'required|integer',
 			'total_harga' => 'required|integer',
@@ -330,7 +330,7 @@ class RestfullApiController extends Controller
 	{
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
-			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
 			'kategori_id' => 'required|integer',
 			'jumlah_bahan' => 'required|integer',
 			'total_harga' => 'required|integer',
@@ -483,7 +483,7 @@ class RestfullApiController extends Controller
 		$validator = Validator::make($request->all(), [
 			'kategori' => 'required',
 			'jenis' => 'required',
-			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240'
 		]);
 
 
@@ -1072,7 +1072,7 @@ class RestfullApiController extends Controller
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'harga' => 'required',
-			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
 			'item' => 'required',
 			'keterangan' => 'required'
 		]);
