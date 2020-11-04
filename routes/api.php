@@ -13,12 +13,19 @@ use Illuminate\Http\Request;
 |
 */
 
+// LOGIN API
 Route::post('login', 'Auth\AuthApiController@login');
 Route::post('register', 'Auth\AuthApiController@register');
+
+// LOGIN FOR MOBILE
+Route::post('login/mobile', 'Auth\AuthMobileController@loginMobile');
 
 Route::group(['middleware' => 'auth:api'], function(){
 	// GET AUTH
     Route::post('getauth', 'Auth\AuthApiController@getauth');
+    Route::get('mobileauth/admin/{params}', 'Auth\AuthMobileController@getAdmin');
+    Route::get('mobileauth/kitchen/{params}', 'Auth\AuthMobileController@getKitchen');
+    Route::get('mobileauth/driver/{params}', 'Auth\AuthMobileController@getDriver');
 
     // INVENTORI ALAT 
     Route::get('inventori/getalat', 'RestfullApiController@invGetsalat');
@@ -63,8 +70,6 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('kelolamenu/getpaket/{id}', 'RestfullApiController@getPaket');
     Route::post('kelolamenu/setpaket', 'RestfullApiController@setPaket');
 
-    // LOGIN FOR MOBILE
-    Route::post('login/mobile', 'Auth\AuthMobileController@loginMobile');
 
 });
 
