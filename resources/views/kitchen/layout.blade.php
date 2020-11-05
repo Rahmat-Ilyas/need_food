@@ -185,7 +185,11 @@
               </ul>
             </li>
             <li class="has_sub">
-              <a href="{{ url('kitchen/printlabel') }}" class="waves-effect"><i class="fa fa-print"></i> <span> Print Label Pesanan </span></a>
+              <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-print"></i> <span> Print </span> <span class="menu-arrow"></span> </a>
+              <ul class="list-unstyled">
+                <li><a href="{{ url('kitchen/printlabel') }}">Label Pesanan</a></li>
+                <li><a href="{{ url('kitchen/printalatpesan') }}">Alat Pesanan</a></li>
+              </ul>
             </li>
           </ul>
           <div class="clearfix"></div>
@@ -276,6 +280,7 @@
   <script src="{{ asset('assets/js/jquery.core.js') }}"></script>
   <script src="{{ asset('assets/js/jquery.app.js') }}"></script>
   <script src="{{ asset('assets/js/config.js') }}"></script>
+  <script src="{{ asset('assets/js/jquery.PrintArea.js') }}"></script>
 
   @yield('javascript')
 
