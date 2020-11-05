@@ -111,7 +111,7 @@
 							<div style="width: 50%; float: left; padding-left: 10px;">
 							<div class="card-box text-center" style="font-size: 11px;">
 							<h4 class="m-t-0"><b>`+ val.kd_pemesanan +`</b></h4>
-							<p class="m-b-0">`+ val.nama +`</p>
+							<p class="m-b-0"><b>`+ val.nama +`</b></p>
 							<p class="m-b-0">`+ val.no_telepon +`/`+ val.no_wa +`</p>
 							<p class="m-b-0">`+ val.deskripsi_lokasi +`</p>
 							</div>
