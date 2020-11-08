@@ -79,6 +79,12 @@ class ConfigController extends Controller
 					'message' => 'Success get data',
 					'result'  => $result
 				], 200);
+			} else if ($request->req == 'geteditalat') {
+				$data = Alat::where('id', $request->id)->first();
+				return response()->json($data, 200);
+			} else if ($request->req == 'geteditbahan') {
+				$data = Bahan::where('id', $request->id)->first();
+				return response()->json($data, 200);
 			}
 		}
 	}

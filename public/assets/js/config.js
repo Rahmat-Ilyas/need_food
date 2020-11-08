@@ -51,7 +51,7 @@ $(document).ready(function() {
 						val.sisa_alat+' pcs',
 						`<div class="text-center">
 						<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
-						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
+						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-alat"><i class="fa fa-edit"></i></a>
 						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 						</div>`,
 						]).draw(false);
@@ -166,6 +166,65 @@ $(document).ready(function() {
 		});
 	});
 
+	// EDIT ALAT
+	$('#fromEditAlat').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData(this);
+		var id = $('#edt_id').val();
+
+		$.ajax({
+			url     : host+"/api/inventori/editalat/"+ id,
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			cache: false,
+			success : function(data) {
+				getAlat();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromEditAlat')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data alat berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit-alat').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
+
 	// ADD STOK ALAT
 	$('#fromStokAlat').submit(function(ev) {
 		ev.preventDefault();
@@ -244,7 +303,7 @@ $(document).ready(function() {
 						val.jumlah_bahan+' '+val.satuan,
 						`<div class="text-center">
 						<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
-						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
+						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-bahan"><i class="fa fa-edit"></i></a>
 						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 						</div>`,
 						]).draw(false);
@@ -312,6 +371,65 @@ $(document).ready(function() {
 					type: 'success',
 					onClose: () => {
 						$('.modal-add-bahan').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
+
+	// EDIT BAHAN
+	$('#fromEditBahan').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData(this);
+		var id = $('#edt_id').val();
+
+		$.ajax({
+			url     : host+"/api/inventori/editbahan/"+ id,
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			cache: false,
+			success : function(data) {
+				getBahan();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromEditBahan')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit-bahan').modal('hide');
 					}
 				});
 			}, 
@@ -471,21 +589,45 @@ $(document).ready(function() {
 	// PUT KATEGORI
 	$('#fromEdtKategori').submit(function(ev) {
 		ev.preventDefault();
-		var data = $(this).serialize();
+		var data = new FormData($(this)[0]);
 		var id = $('#edt_id').val();
 
 		$.ajax({
-			url     : host+"/api/inventori/editkategori/"+id,
-			method  : "PUT",
+			url     : host+"/api/inventori/editkategori/"+ id,
+			enctype : "multipart/form-data",
+			method  : "POST",
 			data    : data,
 			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			cache: false,
 			success : function(data) {
-				$('#fromEdtKategori')[0].reset();
 				getKategori();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromEdtKategori')[0].reset();
 
 				Swal.fire({
 					title: 'Berhasil Diproses',
-					text: 'Data berhasil diupdate',
+					text: 'Data kategori berhasil diupdate',
 					type: 'success',
 					onClose: () => {
 						$('.modal-edit').modal('hide');
@@ -493,6 +635,11 @@ $(document).ready(function() {
 				});
 			}, 
 			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
 				setError(data);
 			}
 		});

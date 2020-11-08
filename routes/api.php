@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('inventori/getalat/kategori/{id}', 'RestfullApiController@invGetalatkategori');
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
     Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
+    Route::post('inventori/editalat/{id}', 'RestfullApiController@invPutalat');
     Route::delete('inventori/deletealat/{id}', 'RestfullApiController@deleteAlat');
 
     // INVENTORI BAHAN  
@@ -41,13 +42,14 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('inventori/getbahan/kategori/{id}', 'RestfullApiController@invGetbahankategori');
     Route::post('inventori/setbahan', 'RestfullApiController@invSetbahan');
     Route::post('inventori/setstokbahan', 'RestfullApiController@setStokbahan');
+    Route::post('inventori/editbahan/{id}', 'RestfullApiController@invPutbahan');
     Route::delete('inventori/deletebahan/{id}', 'RestfullApiController@deleteBahan');
 
     // KATEGORI
     Route::get('inventori/getkategori', 'RestfullApiController@getsKategori');
     Route::get('inventori/getkategori/{id}', 'RestfullApiController@getKategori');
     Route::post('inventori/setkategori', 'RestfullApiController@setKategori');
-    Route::put('inventori/editkategori/{id}', 'RestfullApiController@putKategori');
+    Route::post('inventori/editkategori/{id}', 'RestfullApiController@putKategori');
     Route::delete('inventori/deletekategori/{id}', 'RestfullApiController@deleteKategori');
 
     // SUPPLIER

@@ -171,6 +171,58 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function invPutalat(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'kategori_id' => 'required|integer',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Alat::find($id);
+			if ($update) {
+				$update->nama = $request->nama;
+				$update->kategori_id = $request->kategori_id;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_alat_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/alat';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete(public_path('assets/images/alat/'.$update->foto));
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
 	public function setStokalat(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
@@ -375,6 +427,58 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function invPutbahan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'kategori_id' => 'required|integer',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Bahan::find($id);
+			if ($update) {
+				$update->nama = $request->nama;
+				$update->kategori_id = $request->kategori_id;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_bahan_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/bahan';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete(public_path('assets/images/bahan/'.$update->foto));
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
 	public function setStokbahan(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
@@ -537,6 +641,18 @@ class RestfullApiController extends Controller
 			if ($update) {
 				$update->kategori = $request->kategori;
 				$update->jenis = $request->jenis;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_kategori_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/kategori';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete(public_path('assets/images/kategori/'.$update->foto));
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
 				$update->save();
 			} else {
 				return response()->json([

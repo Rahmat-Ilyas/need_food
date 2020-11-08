@@ -92,7 +92,7 @@
     </div>
 </div>
 
-<!-- MODAL TAMBAH EDIT ALAT-->
+<!-- MODAL EDIT ALAT-->
 <div class="modal modal-edit" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -116,6 +116,15 @@
                                 <option>Kategori Alat</option>
                                 <option>Kategori Bahan</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Foto</label>
+                        <div class="col-sm-8 bootstrap-filestyle">
+                            <input type="file" name="foto" id="edt_foto">
+                            <div class="row text-info" id="viewProgress" hidden="">
+                                <span class="col-sm-12">Mengapload... <b><i id="progress">0%</i></b></span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -187,6 +196,7 @@
                     $('#edt_id').val(data.result.id);
                     $('#edt_namaKtgr').val(data.result.kategori);
                     $('#edt_jenisKtgr').val(data.result.jenis);
+                    $('#edt_foto').filestyle({placeholder: data.result.foto, buttonText: 'Pilih Foto'});
                 }
             });
         });

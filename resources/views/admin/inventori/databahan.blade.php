@@ -179,6 +179,59 @@
     </div>
 </div>
 
+<!-- MODAL TAMBAH BAHAN-->
+<div class="modal modal-edit-bahan" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myLargeModalLabel">Tambah Inventori Bahan</h4>
+            </div>
+            <div class="modal-body" style="padding: 20px 50px 0 50px">
+                <form id="fromEditBahan" action="#" enctype="multipart/form-data">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Kode Bahan</label>
+                        <div class="col-sm-9">
+                            <input type="hidden" name="id" id="edt_id">
+                            <input type="text" class="nb-edt form-control" autocomplete="off" placeholder="Kode Bahan" name="kd_bahan" id="edt_kd_bahan" readonly="">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Nama Bahan</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="nb-edt form-control" required="" autocomplete="off" placeholder="Nama Bahan" name="nama" id="edt_nama_bahan">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Foto</label>
+                        <div class="col-sm-9 bootstrap-filestyle">
+                            <input type="file" name="foto" id="edt_foto">
+                            <div class="row text-info" id="viewProgress" hidden="">
+                                <span class="col-sm-5">Sedang mengapload foto... <b><i id="progress">0%</i></b></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label">Kategori</label>
+                        <div class="col-sm-9">
+                            <select name="kategori_id" id="edt_kategori" class="form-control">
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9">
+                            <button type="submit" name="simpanBahan" class="btn btn-default" id="upload">Simpan</button>
+                            <button type="" class="btn btn-primary" id="batal" data-dismiss="modal" aria-hidden="true">Batal</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL DETAIL -->
 <div class="modal detail-bahan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -295,6 +348,7 @@
         var headers = {
             "Accept"        : "application/json",
             "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+            'X-CSRF-TOKEN'  : $('meta[name="csrf-token"]').attr('content')
         }
 
         //GET KATEGORI
@@ -306,6 +360,7 @@
             success : function(data) {
                 $.each(data.result, function(key, val) {
                     $('#kategori').append('<option value="'+ val.id +'">' + val.kategori + '</option>');
+                    $('#edt_kategori').append('<option value="'+ val.id +'">' + val.kategori + '</option>');
                 });
             }
         });
@@ -378,13 +433,31 @@
                         val.jumlah_bahan+' '+val.satuan,
                         `<div class="text-center">
                         <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
-                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
+                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-bahan"><i class="fa fa-edit"></i></a>
                         <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
                         </div>`,
                         ]).draw(false);
                     no = no + 1;
                 });
             }
+        });
+
+        //HAPUS DATA ALAT
+        $(document).on('click', '#edit-bahan', function() {
+            var id = $(this).attr('dta-id');
+            $.ajax({
+                url     : host+"/configuration",
+                method  : "POST",
+                headers : headers,
+                data    : { req: 'geteditbahan', id: id },
+                success : function(data) {
+                    $('#edt_id').val(data.id);
+                    $('#edt_kd_bahan').val(data.kd_bahan);
+                    $('#edt_nama_bahan').val(data.nama);
+                    $('#edt_foto').filestyle({placeholder: data.foto, buttonText: 'Pilih Foto'});
+                    $('#edt_kategori').val(data.kategori_id);
+                }
+            });
         });
 
         //HAPUS DATA BAHAN
