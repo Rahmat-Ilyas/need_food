@@ -413,33 +413,19 @@
         });
 
         // GET BAHAN
-        var dataTable = $('#dataTableBahan').DataTable();
-        $.ajax({
-            url     : host+"/api/inventori/getbahan",
-            method  : "GET",
-            headers : headers,
-            success : function(data) {
-                dataTable.clear().draw();
-                var no = 1;
-                $.each(data.result, function(key, val) {
-                    dataTable.row.add([
-                        no,
-                        `<a href="#" id="view-gambar-bahan" data-toggle="modal" data-target="#modal-gambar-bahan" data-id="`+ val.id +`">
-                        <img src="`+ host +`/assets/images/bahan/`+ val.foto +`" class="img-responsive thumb-md">
-                        </a>`,
-                        val.kd_bahan,
-                        val.nama,
-                        val.kategori,
-                        val.jumlah_bahan+' '+val.satuan,
-                        `<div class="text-center">
-                        <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
-                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-bahan"><i class="fa fa-edit"></i></a>
-                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
-                        </div>`,
-                        ]).draw(false);
-                    no = no + 1;
-                });
-            }
+        $('#dataTableBahan').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: host+'/datatable?req=dtGetBahan',
+            columns: [
+                { data: 'no', name: 'no' },
+                { data: 'foto', name: 'foto', orderable: false, searchable: false },
+                { data: 'kd_bahan', name: 'kd_bahan' },
+                { data: 'nama', name: 'nama' },
+                { data: 'kategori', name: 'kategori' },
+                { data: 'jumlah_bahan', name: 'jumlah_bahan' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
         });
 
         //HAPUS DATA ALAT

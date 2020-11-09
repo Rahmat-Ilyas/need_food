@@ -16,6 +16,7 @@ use App\Model\Bahan;
 use App\Model\Alat;
 
 use Illuminate\Http\Request;
+use DataTables;
 use Validator;
 
 class ConfigController extends Controller
@@ -86,6 +87,82 @@ class ConfigController extends Controller
 				$data = Bahan::where('id', $request->id)->first();
 				return response()->json($data, 200);
 			}
+		}
+	}
+
+	public function datatable(Request $request)
+	{
+		if ($request->req == 'dtKategori') {
+			$result = Kategori::all();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$dta->no = $no;
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('foto', function($dta) {
+				$url = url('/');
+				return '<a href="#" id="view-gambar-kategori" data-toggle="modal" data-target="#modal-gambar-kategori" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/kategori/'.$dta->foto.'" class="img-responsive thumb-md"> </a>';
+			})->addColumn('action', function($dta) {
+				return '<div class="text-center">
+						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="'.$dta->id.'"><i class="fa fa-edit"></i></button>
+						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="'.$dta->id.'"><i class="fa fa-trash"></i></button>
+						</div>';
+			})->rawColumns(['foto', 'action'])->toJson();
+		} else if ($request->req == 'dtGetBahan') {
+			$result = Bahan::all();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$ktgr = Kategori::where('id', $dta->kategori_id)->first();
+				$dta->no = $no;
+				$dta->jumlah_bahan = $dta->jumlah_bahan.' '.$dta->satuan;
+				$dta->kategori = $ktgr->kategori;
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('foto', function($dta) {
+				$url = url('/');
+				return '<a href="#" id="view-gambar-bahan" data-toggle="modal" data-target="#modal-gambar-bahan" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/bahan/'.$dta->foto.'" class="img-responsive thumb-md"> </a>';
+			})->addColumn('action', function($dta) {
+				return '<div class="text-center">
+                        <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
+                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-bahan"><i class="fa fa-edit"></i></a>
+                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+                        </div>';
+			})->rawColumns(['foto', 'action'])->toJson();
+		}  else if ($request->req == 'dtGetAlat') {
+			$result = Alat::all();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$ktgr = Kategori::where('id', $dta->kategori_id)->first();
+				if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
+				$dta->no = $no;
+				$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar.' pcs';
+				$dta->jumlah_alat = $dta->jumlah_alat.' pcs';
+				$dta->alat_keluar = $dta->alat_keluar.' pcs';
+				$dta->kategori = $ktgr->kategori;
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('foto', function($dta) {
+				$url = url('/');
+				return '<a href="#" id="view-gambar-alat" data-toggle="modal" data-target="#modal-gambar-alat" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/alat/'.$dta->foto.'" class="img-responsive thumb-md"> </a>';
+			})->addColumn('action', function($dta) {
+				return '<div class="text-center">
+                        <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
+                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-alat"><i class="fa fa-edit"></i></a>
+                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+                        </div>';
+			})->rawColumns(['foto', 'action'])->toJson();
 		}
 	}
 }

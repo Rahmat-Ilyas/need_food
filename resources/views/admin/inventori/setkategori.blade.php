@@ -27,7 +27,7 @@
                     <table id="tableKategori" class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th style="width: 10px;">No</th>
                                 <th>Foto</th>
                                 <th>Nama Kategori</th>
                                 <th>Jenis Kategori</th>
@@ -182,6 +182,7 @@
         var headers = {
             "Accept"        : "application/json",
             "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+            'X-CSRF-TOKEN'  : $('meta[name="csrf-token"]').attr('content')
         }
 
         //EDIT KATEGORI
@@ -224,30 +225,17 @@
         });
 
         // GET KATEGORI
-        var dataTable = $('#tableKategori').DataTable();
-        $.ajax({
-            url     : host+"/api/inventori/getkategori",
-            method  : "GET",
-            headers : headers,
-            success : function(data) {
-                dataTable.clear().draw();
-                var no = 1;
-                $.each(data.result, function(key, val) {
-                    dataTable.row.add([
-                        no,
-                        `<a href="#" id="view-gambar-kategori" data-toggle="modal" data-target="#modal-gambar-kategori" data-id="`+ val.id +`">
-                        <img src="`+ host +`/assets/images/kategori/`+ val.foto +`" class="img-responsive thumb-md">
-                        </a>`,
-                        val.kategori,
-                        val.jenis,
-                        `<div class="text-center">
-                        <button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
-                        </div>`,
-                        ]).draw(false);
-                    no = no + 1;
-                });
-            }
+        $('#tableKategori').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: host+'/datatable?req=dtKategori',
+            columns: [
+                { data: 'no', name: 'no' },
+                { data: 'foto', name: 'foto', orderable: false, searchable: false },
+                { data: 'kategori', name: 'kategori' },
+                { data: 'jenis', name: 'jenis' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
         });
 
     });

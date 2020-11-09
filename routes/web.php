@@ -22,7 +22,7 @@ Route::group(['prefix' => 'admin'], function () {
 	Route::get('/{dir}/{page}', 'AdminController@setpagedir');
 });
 
-// Admin
+// Dapur
 Route::group(['prefix' => 'kitchen'], function () {
 	Route::get('/login', 'Auth\AuthKitchenController@showLoginForm')->name('kitchen.login');
 	Route::post('/login', 'Auth\AuthKitchenController@login')->name('kitchen.login.submit');
@@ -34,3 +34,4 @@ Route::group(['prefix' => 'kitchen'], function () {
 });
 
 Route::post('/configuration', 'ConfigController@config');
+Route::get('/datatable', 'ConfigController@datatable');
