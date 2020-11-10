@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\QueryException;
 use Validator;
 
-
 class AuthApiController extends Controller
 {
 	public $successStatus = 200;
@@ -32,6 +31,7 @@ class AuthApiController extends Controller
 				return response()->json(['success' => $success], $this->successStatus);
 			}
 		}
+
 		return response()->json(['error'=>'Unauthorised'], 401);
 	}
 

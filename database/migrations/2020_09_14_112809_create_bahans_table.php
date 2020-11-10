@@ -18,9 +18,8 @@ class CreateBahansTable extends Migration
             $table->string('kd_bahan');
             $table->string('nama');
             $table->string('foto');
-            $table->string('kategori');
-            $table->integer('jumlah_alat');
-            $table->integer('alat_keluar')->nullable();
+            $table->integer('kategori_id');
+            $table->integer('jumlah_bahan');
             $table->string('satuan');
             $table->timestamps();
         });

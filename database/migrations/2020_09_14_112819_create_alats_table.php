@@ -18,7 +18,7 @@ class CreateAlatsTable extends Migration
             $table->string('kd_alat');
             $table->string('nama');
             $table->string('foto');
-            $table->string('kategori');
+            $table->integer('kategori_id');
             $table->integer('jumlah_alat');
             $table->integer('alat_keluar')->nullable();
             $table->timestamps();

@@ -28,38 +28,24 @@ $(document).ready(function() {
 	}
 
 	//GET ALAT
-	getAlat();
 	function getAlat() {
-		var dataTable = $('#dataTableAlat').DataTable();
-		$.ajax({
-			url     : host+"/api/inventori/getalat",
-			method  : "GET",
-			headers	: headers,
-			success : function(data) {
-				dataTable.clear().draw();
-				var no = 1;
-				$.each(data.result, function(key, val) {
-					dataTable.row.add([
-						no,
-						`<a href="#" id="view-gambar-alat" data-toggle="modal" data-target="#modal-gambar-alat" data-id="`+ val.id +`">
-						<img src="`+ host +`/assets/images/alat/`+ val.foto +`" class="img-responsive thumb-md">
-						</a>`,
-						val.kd_alat,
-						val.nama,
-						val.kategori,
-						val.jumlah_alat+' pcs',
-						val.alat_keluar+' pcs',
-						val.sisa_alat+' pcs',
-						`<div class="text-center">
-						<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
-						<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-edit"></i></a>
-						<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".detail-barang"><i class="fa fa-trash"></i></a>
-						</div>`,
-						]).draw(false);
-					no = no + 1;
-				});
-			}
-		});
+		$("#dataTableAlat").dataTable().fnDestroy();
+		$('#dataTableAlat').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: host+'/datatable?req=dtGetAlat',
+            columns: [
+                { data: 'no', name: 'no' },
+                { data: 'foto', name: 'foto', orderable: false, searchable: false },
+                { data: 'kd_alat', name: 'kd_alat' },
+                { data: 'nama', name: 'nama' },
+                { data: 'kategori', name: 'kategori' },
+                { data: 'jumlah_alat', name: 'jumlah_alat' },
+                { data: 'alat_keluar', name: 'alat_keluar' },
+                { data: 'sisa_alat', name: 'sisa_alat' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
+        });
 	}
 
 	// DETAIL ALAT
@@ -95,7 +81,7 @@ $(document).ready(function() {
 		});
 	});
 
-	// VIEW GAMBAR
+	// VIEW GAMBAR ALAT
 	$(document).on('click', '#view-gambar-alat', function() {
 		var id = $(this).attr('data-id');
 		$('#setImage').attr('src', '');
@@ -167,6 +153,65 @@ $(document).ready(function() {
 		});
 	});
 
+	// EDIT ALAT
+	$('#fromEditAlat').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData(this);
+		var id = $('#edt_id').val();
+
+		$.ajax({
+			url     : host+"/api/inventori/editalat/"+ id,
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			cache: false,
+			success : function(data) {
+				getAlat();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromEditAlat')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data alat berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit-alat').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
+
 	// ADD STOK ALAT
 	$('#fromStokAlat').submit(function(ev) {
 		ev.preventDefault();
@@ -178,6 +223,7 @@ $(document).ready(function() {
 			data    : data,
 			headers	: headers,
 			success : function(data) {
+				getAlat();
 				$('#fromStokAlat')[0].reset();
 				$('#nama_alat').select2({ placeholder: 'Pilih Alat', allowClear: true });
 
@@ -196,46 +242,291 @@ $(document).ready(function() {
 		});
 	});
 
-	// GET KATEGORI
-	getKategori();
-	function getKategori() {
-		var dataTable = $('#tableKategori').DataTable();
+	// DELETE ALAT
+	$('#delete-alat').click(function() {
+		var id = $(this).attr('data-id');
+
 		$.ajax({
-			url     : host+"/api/inventori/getkategori",
+			url     : host+"/api/inventori/deletealat/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getAlat();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	//GET BAHAN
+	function getBahan() {
+		$("#dataTableBahan").dataTable().fnDestroy();
+		$('#dataTableBahan').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: host+'/datatable?req=dtGetBahan',
+            columns: [
+                { data: 'no', name: 'no' },
+                { data: 'foto', name: 'foto', orderable: false, searchable: false },
+                { data: 'kd_bahan', name: 'kd_bahan' },
+                { data: 'nama', name: 'nama' },
+                { data: 'kategori', name: 'kategori' },
+                { data: 'jumlah_bahan', name: 'jumlah_bahan' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
+        });
+	}
+
+	// VIEW GAMBAR BAHAN
+	$(document).on('click', '#view-gambar-bahan', function() {
+		var id = $(this).attr('data-id');
+		$('#setImage').attr('src', '');
+
+		$.ajax({
+			url     : host+"/api/inventori/getbahan/"+id,
 			method  : "GET",
 			headers	: headers,
 			success : function(data) {
-				dataTable.clear().draw();
-				var no = 1;
-				$.each(data.result, function(key, val) {
-					dataTable.row.add([
-						no,
-						val.kategori,
-						val.jenis,
-						`<div class="text-center">
-						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
-						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
-						</div>`,
-						]).draw(false);
-					no = no + 1;
-				});
+				$('#setImage').attr('src', host + '/assets/images/bahan/' + data.result.foto);
 			}
 		});
+	});
+
+	// ADD BAHAN
+	$('#fromBahan').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData($(this)[0]);
+
+		$.ajax({
+			url     : host+"/api/inventori/setbahan",
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			success : function(data) {
+				getBahan();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromBahan')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add-bahan').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
+
+	// EDIT BAHAN
+	$('#fromEditBahan').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData(this);
+		var id = $('#edt_id').val();
+
+		$.ajax({
+			url     : host+"/api/inventori/editbahan/"+ id,
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			cache: false,
+			success : function(data) {
+				getBahan();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromEditBahan')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit-bahan').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
+
+	// ADD STOK ALAT
+	$('#fromStokBahan').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+
+		$.ajax({
+			url     : host+"/api/inventori/setstokbahan",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				getBahan();
+				$('#fromStokBahan')[0].reset();
+				$('#nama_bahan').select2({ placeholder: 'Pilih Bahan', allowClear: true });
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data bahan baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add-stok').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// DELETE ALAT
+	$('#delete-bahan').click(function() {
+		var id = $(this).attr('data-id');
+
+		$.ajax({
+			url     : host+"/api/inventori/deletebahan/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getBahan();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// GET KATEGORI
+	function getKategori() {
+		$("#tableKategori").dataTable().fnDestroy();
+		$('#tableKategori').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: host+'/datatable?req=dtKategori',
+            columns: [
+                { data: 'no', name: 'no' },
+                { data: 'foto', name: 'foto', orderable: false, searchable: false },
+                { data: 'kategori', name: 'kategori' },
+                { data: 'jenis', name: 'jenis' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ],
+        });
 	}
 
 	// SET KATEGORI
 	$('#fromKategori').submit(function(ev) {
 		ev.preventDefault();
-		var data = $(this).serialize();
+		var data = new FormData($(this)[0]);
 
 		$.ajax({
 			url     : host+"/api/inventori/setkategori",
+			enctype : "multipart/form-data",
 			method  : "POST",
 			data    : data,
 			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
 			success : function(data) {
-				$('#fromKategori')[0].reset();
 				getKategori();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromKategori')[0].reset();
 
 				Swal.fire({
 					title: 'Berhasil Diproses',
@@ -247,6 +538,11 @@ $(document).ready(function() {
 				});
 			}, 
 			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
 				setError(data);
 			}
 		});
@@ -255,21 +551,45 @@ $(document).ready(function() {
 	// PUT KATEGORI
 	$('#fromEdtKategori').submit(function(ev) {
 		ev.preventDefault();
-		var data = $(this).serialize();
+		var data = new FormData($(this)[0]);
 		var id = $('#edt_id').val();
 
 		$.ajax({
-			url     : host+"/api/inventori/editkategori/"+id,
-			method  : "PUT",
+			url     : host+"/api/inventori/editkategori/"+ id,
+			enctype : "multipart/form-data",
+			method  : "POST",
 			data    : data,
 			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			cache: false,
 			success : function(data) {
-				$('#fromEdtKategori')[0].reset();
 				getKategori();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromEdtKategori')[0].reset();
 
 				Swal.fire({
 					title: 'Berhasil Diproses',
-					text: 'Data berhasil diupdate',
+					text: 'Data kategori berhasil diupdate',
 					type: 'success',
 					onClose: () => {
 						$('.modal-edit').modal('hide');
@@ -277,6 +597,11 @@ $(document).ready(function() {
 				});
 			}, 
 			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
 				setError(data);
 			}
 		});
@@ -309,7 +634,6 @@ $(document).ready(function() {
 	});
 
 	// GET SUPPLIER
-	getSupplier();
 	function getSupplier() {
 		var dataTable = $('#tableSupplier').DataTable();
 		$.ajax({
@@ -422,5 +746,91 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
+
+	// GET PAKET
+	function getPaket() {
+		var dataTable = $('#tableKategori').DataTable();
+		$.ajax({
+			url     : host+"/api/inventori/getkategori",
+			method  : "GET",
+			headers	: headers,
+			success : function(data) {
+				dataTable.clear().draw();
+				var no = 1;
+				$.each(data.result, function(key, val) {
+					dataTable.row.add([
+						no,
+						val.kategori,
+						val.jenis,
+						`<div class="text-center">
+						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
+						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
+						</div>`,
+						]).draw(false);
+					no = no + 1;
+				});
+			}
+		});
+	}
+
+	// ADD PAKET
+	$('#fromPaket').submit(function(e) {
+		e.preventDefault();
+		var data = new FormData($(this)[0]);
+
+		$.ajax({
+			url     : host+"/api/kelolamenu/setpaket",
+			enctype : "multipart/form-data",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			xhr     : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = evt.loaded / evt.total;
+
+						$('#viewProgress').removeAttr('hidden');
+						$('#upload').attr('disabled', '');
+						$('#batal').attr('disabled', '');
+
+						var progress = Math.round(percentComplete * 100);
+						$('#progress').text(progress + '%');
+					}
+				}, false);
+				return xhr;
+			},
+			contentType : false,
+			processData: false,
+			success : function(data) {
+				console.log(data);
+				getPaket();
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+				$('#fromPaket')[0].reset();
+				$('#item').html('');
+				$('#tambah-item').removeClass('disabled');
+				$('#reset').css('display', 'none');
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data paket baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add-paket').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				$('#viewProgress').attr('hidden', '');
+				$('#upload').removeAttr('disabled');
+				$('#batal').removeAttr('disabled');
+				$('#progress').text('0%');
+
+				setError(data);
+			}
+		});
+	});
 });

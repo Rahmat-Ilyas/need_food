@@ -78,7 +78,7 @@
 					<div class="form-group row">
 						<label class="col-sm-3 control-label">Kategori</label>
 						<div class="col-sm-9">
-							<select name="kategori" id="kategori" class="form-control">
+							<select name="kategori_id" id="kategori" class="form-control">
 								
 							</select>
 						</div>
@@ -171,6 +171,59 @@
 	</div>
 </div>
 
+<!-- MODAL EDIT ALAT-->
+<div class="modal modal-edit-alat" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myLargeModalLabel">Edit Inventori Alat</h4>
+			</div>
+			<div class="modal-body" style="padding: 20px 50px 0 50px">
+				<form id="fromEditAlat" action="#" enctype="multipart/form-data">
+					<div class="form-group row">
+						<label class="col-sm-3 col-form-label">Kode Alat</label>
+						<div class="col-sm-9">
+							<input type="text" class="nb-edt form-control" autocomplete="off" placeholder="Kode Alat" id="edt_kd_alat" name="kd_alat" readonly="">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-3 col-form-label">Nama Alat</label>
+						<div class="col-sm-9">
+							<input type="hidden" name="id" id="edt_id">
+							<input type="text" class="nb-edt form-control" required="" autocomplete="off" placeholder="Nama Alat" name="nama" id="edt_nama_alat">
+						</div>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-3 col-form-label">Foto</label>
+						<div class="col-sm-9 bootstrap-filestyle">
+							<input type="file" name="foto" id="edt_foto">
+							<div class="row text-info" id="viewProgress" hidden="">
+								<span class="col-sm-5">Sedang mengapload foto... <b><i id="progress">0%</i></b></span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label class="col-sm-3 control-label">Kategori</label>
+						<div class="col-sm-9">
+							<select name="kategori_id" id="edt_kategori" class="form-control">
+								
+							</select>
+						</div>
+					</div>
+					<div class="form-group row">
+						<div class="col-sm-3"></div>
+						<div class="col-sm-9">
+							<button type="submit" name="simpanAlat" class="btn btn-default" id="upload">Simpan</button>
+							<button type="" class="btn btn-primary" id="batal" data-dismiss="modal" aria-hidden="true">Batal</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!-- MODAL DETAIL -->
 <div class="modal detail-alat" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
@@ -245,6 +298,24 @@
 	</div><!-- /.modal-dialog -->
 </div>
 
+<!-- MODAL HAPUS -->
+<div class="modal modal-delete" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="staticModalLabel">Hapus Data</h5>
+			</div>
+			<div class="modal-body">
+				<p>Yakin ingin menghapus data ini?</p>
+			</div>
+			<div class="modal-footer form-inline">
+				<button type="button" class="btn btn-danger" id="delete-alat">Hapus</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Batal</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!-- MODAL VIEW GAMBAR -->
 <div class="modal fade" tabindex="-1" role="dialog" id="modal-gambar-alat">
 	<div class="modal-dialog modal-lg" role="document">
@@ -269,6 +340,7 @@
 		var headers = {
 			"Accept"		: "application/json",
 			"Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+			'X-CSRF-TOKEN'	: $('meta[name="csrf-token"]').attr('content')
 		}
 
 		//GET KATEGORI
@@ -279,7 +351,8 @@
 			data	: { kategori: 'alat' },
 			success : function(data) {
 				$.each(data.result, function(key, val) {
-					$('#kategori').append('<option>' + val.kategori + '</option>');
+					$('#kategori').append('<option value="'+ val.id +'">' + val.kategori + '</option>');
+					$('#edt_kategori').append('<option value="'+ val.id +'">' + val.kategori + '</option>');
 				});
 			}
 		});
@@ -299,15 +372,64 @@
 		});
 
 		//GET ALAT
-		$.ajax({
-			url     : host+"/api/inventori/getalat",
-			method  : "GET",
-			headers	: headers,
-			success : function(data) {
-				$.each(data.result, function(key, val) {
-					$('#nama_alat').append('<option value="'+ val.id +'">'+ val.kd_alat +'/'+ val.nama +'</option>');
-				});
-			}
+		getDataAlat();
+		function getDataAlat() {
+			$('#nama_alat').html('<option value="">Pilih Alat</option>');
+			$.ajax({
+				url     : host+"/api/inventori/getalat",
+				method  : "GET",
+				headers	: headers,
+				success : function(data) {
+					$.each(data.result, function(key, val) {
+						$('#nama_alat').append('<option value="'+ val.id +'">'+ val.kd_alat +'/'+ val.nama +'</option>');
+					});
+				}
+			});
+		}
+
+		$('.modal-add-stok').on('shown.bs.modal', function() {
+			getDataAlat();
+		});
+
+		$('#dataTableAlat').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: host+'/datatable?req=dtGetAlat',
+            columns: [
+                { data: 'no', name: 'no' },
+                { data: 'foto', name: 'foto', orderable: false, searchable: false },
+                { data: 'kd_alat', name: 'kd_alat' },
+                { data: 'nama', name: 'nama' },
+                { data: 'kategori', name: 'kategori' },
+                { data: 'jumlah_alat', name: 'jumlah_alat' },
+                { data: 'alat_keluar', name: 'alat_keluar' },
+                { data: 'sisa_alat', name: 'sisa_alat' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ]
+        });
+
+		//HAPUS DATA ALAT
+		$(document).on('click', '#edit-alat', function() {
+			var id = $(this).attr('dta-id');
+			$.ajax({
+				url     : host+"/configuration",
+				method  : "POST",
+				headers	: headers,
+				data	: { req: 'geteditalat', id: id },
+				success : function(data) {
+					$('#edt_id').val(data.id);
+					$('#edt_kd_alat').val(data.kd_alat);
+					$('#edt_nama_alat').val(data.nama);
+					$('#edt_foto').filestyle({placeholder: data.foto, buttonText: 'Pilih Foto'});
+					$('#edt_kategori').val(data.kategori_id);
+				}
+			});
+		});
+
+		//HAPUS DATA ALAT
+		$(document).on('click', '#hapus-alat', function() {
+			var id = $(this).attr('dta-id');
+			$('#delete-alat').attr('data-id', id);
 		});
 	});
 </script>

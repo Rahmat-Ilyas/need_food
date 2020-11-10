@@ -7,16 +7,20 @@ use App\Model\AdtPesanan;
 use App\Model\Additional;
 use App\Model\Pemesanan;
 use App\Model\Transaksi;
+use App\Model\ItemPaket;
 use App\Model\Kategori;
 use App\Model\Supplier;
+use App\Model\AddBahan;
 use App\Model\AddAlat;
 use App\Model\Paket;
+use App\Model\Bahan;
 use App\Model\Alat;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use File;
 
 class RestfullApiController extends Controller
 {
@@ -29,6 +33,8 @@ class RestfullApiController extends Controller
 			if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
 			$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar;
 			$riwayat = AddAlat::where('alat_id', $dta->id)->get();
+			$kategori = Kategori::where('id', $dta->kategori_id)->first();
+			$dta['kategori'] = $kategori->kategori;
 
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
@@ -56,6 +62,43 @@ class RestfullApiController extends Controller
 			$data->sisa_alat = $data->jumlah_alat - $data->alat_keluar;
 
 			$riwayat = AddAlat::where('alat_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$data->riwayat_beli = $riwayat_beli;
+
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function invGetalatkategori($id)
+	{
+		$data = Alat::where('kategori_id', $id)->first();
+		if ($data) {
+			if (is_null($data->alat_keluar)) $data->alat_keluar = 0;
+			$data->sisa_alat = $data->jumlah_alat - $data->alat_keluar;
+
+			$riwayat = AddAlat::where('alat_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
@@ -83,8 +126,8 @@ class RestfullApiController extends Controller
 	{
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
-			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-			'kategori' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'kategori_id' => 'required|integer',
 			'jumlah_alat' => 'required|integer',
 			'total_harga' => 'required|integer',
 			'supplier_id' => 'required|integer',
@@ -128,6 +171,58 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function invPutalat(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'kategori_id' => 'required|integer',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Alat::find($id);
+			if ($update) {
+				$update->nama = $request->nama;
+				$update->kategori_id = $request->kategori_id;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_alat_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/alat';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete(public_path('assets/images/alat/'.$update->foto));
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
 	public function setStokalat(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
@@ -149,11 +244,297 @@ class RestfullApiController extends Controller
 			$supplier = Supplier::where('id', $request->supplier_id)->first();
 			$add_alat = $request->all();
 			$add_alat['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
-			AddAlat::create($add_alat);
+			$crt = AddAlat::create($add_alat);
+			$updt = Alat::where('id', $crt->alat_id)->first();
+			$updt->jumlah_alat = $updt->jumlah_alat + $crt->jumlah_beli;
+			$updt->save();
 
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteAlat($id)
+	{
+		try {
+			$delete = Alat::find($id);
+
+			if ($delete) {
+				$delete->delete();
+				File::delete(public_path('assets/images/alat/'.$delete->foto));
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// INVENTORI BAHAN 
+	public function invGetsbahan()
+	{
+		$data = Bahan::orderBy('id', 'desc')->get();
+		$result = [];
+		foreach ($data as $dta) {
+			$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
+			$kategori = Kategori::where('id', $dta->kategori_id)->first();
+			$dta['kategori'] = $kategori->kategori;
+
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$dta->riwayat_beli = $riwayat_beli;
+
+			$result[] = $dta;
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result'  => $result
+		], 200);
+	}
+
+	public function invGetbahan($id)
+	{
+		$data = Bahan::where('id', $id)->first();
+		if ($data) {
+			$riwayat = AddBahan::where('bahan_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+			
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$data->riwayat_beli = $riwayat_beli;
+
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else { 
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function invGetbahankategori($id)
+	{
+		$data = Bahan::where('kategori_id', $id)->first();
+		if ($data) {
+			$riwayat = AddBahan::where('bahan_id', $data->id)->get();
+			$kategori = Kategori::where('id', $data->kategori_id)->first();
+			$data['kategori'] = $kategori->kategori;
+			
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
+			}
+			$data->riwayat_beli = $riwayat_beli;
+
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else { 
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function invSetbahan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'kategori_id' => 'required|integer',
+			'jumlah_bahan' => 'required|integer',
+			'total_harga' => 'required|integer',
+			'supplier_id' => 'required|integer',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data_bahan = $request->except('foto', 'total_harga', 'supplier_id');
+			$data_bahan['kd_bahan'] = $this->generate($request->nama);
+			$foto = $request->file('foto');
+			$nama_foto = 'img_bahan_'.time().'.'.$foto->getClientOriginalExtension();
+			$data_bahan['foto'] = $nama_foto;
+			$bahan = Bahan::create($data_bahan);
+
+			$path = 'assets/images/bahan';
+			$foto->move($path, $bahan->foto);
+
+			$supplier = Supplier::where('id', $request->supplier_id)->first();
+			$add_bahan = $request->only('total_harga', 'supplier_id');
+			$add_bahan['jumlah_beli'] = $request->jumlah_bahan;
+			$add_bahan['bahan_id'] = $bahan->id;
+			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
+			$beli = AddBahan::create($add_bahan);
+			$result = $bahan;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function invPutbahan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'kategori_id' => 'required|integer',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Bahan::find($id);
+			if ($update) {
+				$update->nama = $request->nama;
+				$update->kategori_id = $request->kategori_id;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_bahan_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/bahan';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete(public_path('assets/images/bahan/'.$update->foto));
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function setStokbahan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'bahan_id' => 'required|integer',
+			'jumlah_beli' => 'required|integer',
+			'total_harga' => 'required|integer',
+			'supplier_id' => 'required|integer',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$supplier = Supplier::where('id', $request->supplier_id)->first();
+			$add_bahan = $request->all();
+			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
+			$crt = AddBahan::create($add_bahan);
+			$updt = Bahan::where('id', $crt->bahan_id)->first();
+			$updt->jumlah_bahan = $updt->jumlah_bahan + $crt->jumlah_beli;
+			$updt->save();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteBahan($id)
+	{
+		try {
+			$delete = Bahan::find($id);
+
+			if ($delete) {
+				$delete->delete();
+				File::delete(public_path('assets/images/bahan/'.$delete->foto));
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
 			], 200);
 		} catch(QueryException $ex) {
 			return response()->json([
@@ -206,6 +587,7 @@ class RestfullApiController extends Controller
 		$validator = Validator::make($request->all(), [
 			'kategori' => 'required',
 			'jenis' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240'
 		]);
 
 
@@ -218,7 +600,14 @@ class RestfullApiController extends Controller
 
 		try {
 			$data = $request->all();
-			Kategori::create($data);
+
+			$foto = $request->file('foto');
+			$nama_foto = 'img_kategori_'.time().'.'.$foto->getClientOriginalExtension();
+			$data['foto'] = $nama_foto;
+			$kategori = Kategori::create($data);
+
+			$path = 'assets/images/kategori';
+			$foto->move($path, $kategori->foto);
 
 			return response()->json([
 				'success' => true,
@@ -252,6 +641,18 @@ class RestfullApiController extends Controller
 			if ($update) {
 				$update->kategori = $request->kategori;
 				$update->jenis = $request->jenis;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_kategori_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/kategori';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete(public_path('assets/images/kategori/'.$update->foto));
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
 				$update->save();
 			} else {
 				return response()->json([
@@ -276,7 +677,25 @@ class RestfullApiController extends Controller
 	{
 		try {
 			$delete = Kategori::find($id);
-			if ($delete) $delete->delete();
+			$alat = Alat::where('kategori_id', $id)->get();
+			$bahan = Bahan::where('kategori_id', $id)->get();
+			if ($alat) {
+				foreach ($alat as $dta) {
+					$dta->delete();
+					File::delete(public_path('assets/images/alat/'.$dta->foto));
+				}
+			}
+			if ($bahan) {
+				foreach ($bahan as $dta) {
+					$dta->delete();
+					File::delete(public_path('assets/images/bahan/'.$dta->foto));
+				}
+			}
+
+			if ($delete) {
+				$delete->delete();
+				File::delete(public_path('assets/images/kategori/'.$delete->foto));
+			}
 			else {
 				return response()->json([
 					'success' => false,
@@ -761,5 +1180,57 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
+	}
+
+	// PEMESANAN
+	public function setPaket(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'harga' => 'required',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'item' => 'required',
+			'keterangan' => 'required'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data_paket = $request->except('item');
+			$foto = $request->file('foto');
+			$nama_foto = 'img_paket_'.time().'.'.$foto->getClientOriginalExtension();
+			$data_paket['foto'] = $nama_foto;
+			$paket = Paket::create($data_paket);
+
+			$path = 'assets/images/paket';
+			$foto->move($path, $paket->foto);
+			foreach ($request->item as $item) {
+				$item_paket = [];
+				$item_paket['paket_id'] = $paket->id;
+				$item_paket['nama_bahan'] = $item;
+				ItemPaket::create($item_paket);
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function loginMobile(Request $request)
+	{
+		
 	}
 }

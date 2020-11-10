@@ -17,6 +17,7 @@ class CreateKategorisTable extends Migration
             $table->bigIncrements('id');
             $table->string('kategori');
             $table->string('jenis');
+            $table->string('foto');
             $table->timestamps();
         });
     }

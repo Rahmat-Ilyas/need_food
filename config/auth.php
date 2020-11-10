@@ -57,6 +57,28 @@ return [
             'provider' => 'admins',
             'hash' => false,
         ],
+
+        'kitchen' => [
+            'driver' => 'session',
+            'provider' => 'kitchens',
+        ],
+
+        'api-kitchen' => [
+            'driver' => 'token',
+            'provider' => 'kitchens',
+            'hash' => false,
+        ],
+
+        'driver' => [
+            'driver' => 'session',
+            'provider' => 'drivers',
+        ],
+
+        'api-driver' => [
+            'driver' => 'token',
+            'provider' => 'drivers',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -86,6 +108,16 @@ return [
             'driver' => 'eloquent',
             'model' => App\Model\AuthLogin::class,
         ],
+
+        'kitchens' => [
+            'driver' => 'eloquent',
+            'model' => App\Model\AuthLogin::class,
+        ],
+
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Model\Driver::class,
+        ],
     ],
 
     /*
@@ -113,6 +145,20 @@ return [
 
         'admins' => [
             'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'kitchens' => [
+            'provider' => 'kitchens',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'drivers' => [
+            'provider' => 'driver',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
