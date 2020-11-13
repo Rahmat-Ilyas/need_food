@@ -235,7 +235,7 @@
 			<div class="modal-body" style="padding: 20px 40px 20px 40px">
 				<dl class="row mb-0">
 					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Kode Barang:</dt>
+						<dt class="col-sm-5">Kode Alat:</dt>
 						<dd class="col-sm-7" id="dtl_kd_alat"></dd>	
 					</div>
 					<div class="col-sm-6 row">
@@ -243,7 +243,7 @@
 						<dd class="col-sm-7"><span id="dtl_jumlah_alat"></span> pcs</dd>
 					</div>
 					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Nama Barang:</dt>
+						<dt class="col-sm-5">Nama Alat:</dt>
 						<dd class="col-sm-7" id="dtl_nama"></dd>
 					</div>
 					<div class="col-sm-6 row">
@@ -265,7 +265,7 @@
 						<div class="panel-heading"> 
 							<h4 class="panel-title"> 
 								<a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-2" aria-expanded="false" class="collapsed">
-									Riwayat Pembelian Barang
+									Riwayat Pembelian Alat
 								</a> 
 							</h4> 
 						</div> 
@@ -280,6 +280,7 @@
 											<th>Jumlah Beli</th>
 											<th>Total Harga</th>
 											<th>Supplier</th>
+											<th>Aksi</th>
 										</tr>
 									</thead>
 									<tbody id="riwayat-beli">
@@ -329,6 +330,7 @@
 		</div>
 	</div>
 </div>
+
 @endsection
 
 @section('javascript')
@@ -392,23 +394,23 @@
 		});
 
 		$('#dataTableAlat').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: host+'/datatable?req=dtGetAlat',
-            columns: [
-                { data: 'no', name: 'no' },
-                { data: 'foto', name: 'foto', orderable: false, searchable: false },
-                { data: 'kd_alat', name: 'kd_alat' },
-                { data: 'nama', name: 'nama' },
-                { data: 'kategori', name: 'kategori' },
-                { data: 'jumlah_alat', name: 'jumlah_alat' },
-                { data: 'alat_keluar', name: 'alat_keluar' },
-                { data: 'sisa_alat', name: 'sisa_alat' },
-                { data: 'action', name: 'action', orderable: false, searchable: false },
-            ]
-        });
+			processing: true,
+			serverSide: true,
+			ajax: host+'/datatable?req=dtGetAlat',
+			columns: [
+			{ data: 'no', name: 'no' },
+			{ data: 'foto', name: 'foto', orderable: false, searchable: false },
+			{ data: 'kd_alat', name: 'kd_alat' },
+			{ data: 'nama', name: 'nama' },
+			{ data: 'kategori', name: 'kategori' },
+			{ data: 'jumlah_alat', name: 'jumlah_alat' },
+			{ data: 'alat_keluar', name: 'alat_keluar' },
+			{ data: 'sisa_alat', name: 'sisa_alat' },
+			{ data: 'action', name: 'action', orderable: false, searchable: false },
+			]
+		});
 
-		//HAPUS DATA ALAT
+		//EDIT DATA ALAT
 		$(document).on('click', '#edit-alat', function() {
 			var id = $(this).attr('dta-id');
 			$.ajax({
@@ -430,6 +432,24 @@
 		$(document).on('click', '#hapus-alat', function() {
 			var id = $(this).attr('dta-id');
 			$('#delete-alat').attr('data-id', id);
+		});
+
+		// Detail Supplier
+		$(document).on('click', '#detail-supplier', function(e) {
+			e.preventDefault();
+			var id = $(this).attr('data-id');
+			$.ajax({
+				url     : host+"/configuration",
+				method  : "POST",
+				headers	: headers,
+				data	: { req: 'detailsupplier', id: id },
+				success : function(data) {
+					swal({
+						title: "Detail Supplier",
+						html: data,
+					});
+				}
+			});
 		});
 	});
 </script>

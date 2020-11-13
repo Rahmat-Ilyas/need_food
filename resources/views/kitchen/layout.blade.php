@@ -35,6 +35,9 @@
   <link href="{{ asset('assets/plugins/datatables/fixedColumns.dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('assets/plugins/bootstrap-table/css/bootstrap-table.min.css') }}" rel="stylesheet" type="text/css" />
 
+  {{-- Sweet Allert --}}
+  <link href="{{ asset('assets/plugins/bootstrap-sweetalert/sweet-alert.css') }}" rel="stylesheet" type="text/css">
+
   {{-- Form Advance --}}
   <link href="{{ asset('assets/plugins/bootstrap-tagsinput/css/bootstrap-tagsinput.css') }}" rel="stylesheet" />
   <link href="{{ asset('assets/plugins/switchery/css/switchery.min.css') }}" rel="stylesheet" />
@@ -281,6 +284,10 @@
   <script src="{{ asset('assets/js/jquery.app.js') }}"></script>
   <script src="{{ asset('assets/js/config.js') }}"></script>
   <script src="{{ asset('assets/js/jquery.PrintArea.js') }}"></script>
+
+  <!-- Sweet-Alert  -->
+  <script src="{{ asset('assets/plugins/bootstrap-sweetalert/sweet-alert.min.js') }}"></script>
+  <script src="{{ asset('assets/pages/jquery.sweet-alert.init.js') }}"></script>
 
   @yield('javascript')
 

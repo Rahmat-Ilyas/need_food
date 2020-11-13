@@ -447,6 +447,7 @@ class RestfullApiController extends Controller
 			if ($update) {
 				$update->nama = $request->nama;
 				$update->kategori_id = $request->kategori_id;
+				$update->satuan = $request->satuan;
 				if ($request->file('foto')) {
 					$foto = $request->file('foto');
 					$nama_foto = 'img_bahan_'.time().'.'.$foto->getClientOriginalExtension();
@@ -734,11 +735,11 @@ class RestfullApiController extends Controller
 	public function getsSupplier(Request $request)
 	{
 		if (isset($request->kategori) && $request->kategori == 'alat')
-			$data = Supplier::where('kategori', '!=', 'Supplier Bahan')->get();
+			$data = Supplier::where('kategori', '!=', 'Supplier Bahan')->orderBy('id', 'desc')->get();
 		else if (isset($request->kategori) && $request->kategori == 'bahan')
-			$data = Supplier::where('kategori', '!=', 'Supplier Alat')->get();
+			$data = Supplier::where('kategori', '!=', 'Supplier Alat')->orderBy('id', 'desc')->get();
 		else 
-			$data = Supplier::all();
+			$data = Supplier::orderBy('id', 'desc')->get();
 
 		$result = $data;
 
@@ -823,6 +824,41 @@ class RestfullApiController extends Controller
 		try {
 			$update = Supplier::find($id);
 			if ($update) {
+				// Update Supplier Alat/Bahan
+				if ($request->kategori == "Supplier Alat") {
+					$bahan = AddBahan::where('supplier_id', $id)->get();
+					if ($bahan) {
+						foreach ($bahan as $bhn) {
+							$bhn->supplier_id = 0;
+							$bhn->save();
+						}
+					}
+				} else if ($request->kategori == "Supplier Bahan") {
+					$alat = AddAlat::where('supplier_id', $id)->get();
+					if ($alat) {
+						foreach ($alat as $alt) {
+							$alt->supplier_id = 0;
+							$alt->save();
+						}
+					}
+				} else if ($request->kategori == "Supplier Alat & Bahan") {
+					$bahan = AddBahan::where('supplier_id', $id)->get();
+					if ($bahan) {
+						foreach ($bahan as $bhn) {
+							$bhn->supplier_id = $id;
+							$bhn->save();
+						}
+					}
+
+					$alat = AddAlat::where('supplier_id', $id)->get();
+					if ($alat) {
+						foreach ($alat as $alt) {
+							$alt->supplier_id = $id;
+							$alt->save();
+						}
+					}
+				}
+
 				$update->nama_supplier = $request->nama_supplier;
 				$update->alamat = $request->alamat;
 				$update->telepon = $request->telepon;
@@ -852,8 +888,25 @@ class RestfullApiController extends Controller
 	{
 		try {
 			$delete = Supplier::find($id);
-			if ($delete) $delete->delete();
-			else {
+			if ($delete) {
+				$bahan = AddBahan::where('supplier_id', $id)->get();
+				if ($bahan) {
+					foreach ($bahan as $bhn) {
+						$bhn->supplier_id = 0;
+						$bhn->save();
+					}
+				}
+
+				$alat = AddAlat::where('supplier_id', $id)->get();
+				if ($alat) {
+					foreach ($alat as $alt) {
+						$alt->supplier_id = 0;
+						$alt->save();
+					}
+				}
+
+				$delete->delete();
+			} else {
 				return response()->json([
 					'success' => false,
 					'message' => 'id not found'

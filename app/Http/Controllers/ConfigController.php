@@ -86,6 +86,245 @@ class ConfigController extends Controller
 			} else if ($request->req == 'geteditbahan') {
 				$data = Bahan::where('id', $request->id)->first();
 				return response()->json($data, 200);
+			} else if ($request->req == 'databelialat') {
+				$data = AddAlat::where('id', $request->id)->first();
+				$alat = Alat::where('id', $data->alat_id)->first();
+				$get_supplier = Supplier::where('kategori', '!=', 'Supplier Bahan')->orderBy('id', 'desc')->get();
+				$supplier = '';
+				foreach ($get_supplier as $dta) {
+					if ($dta->id == $data->supplier_id) 
+						$supplier .= '<option value="'.$dta->id.'" selected>'.$dta->nama_supplier.'</option>';
+					else
+						$supplier .= '<option value="'.$dta->id.'">'.$dta->nama_supplier.'</option>';
+				}
+
+				$result = '<form id="alatPembelian">
+				<div class="text-left">
+				<div class="form-group">
+				<label for="jumlah_beli">Nama Alat</label>
+				<input type="text" class="form-control" required="" placeholder="Nama Alat" value="'.$alat->nama.'" disabled="">
+				</div>
+				<div class="form-group">
+				<label for="jumlah_beli">Jumlah Beli</label>
+				<div class="input-group col-sm-12">
+				<input type="number" class="form-control" required="" placeholder="Jumlah Beli" name="jumlah_beli" value="'.$data->jumlah_beli.'">
+				<span class="input-group-addon">pcs</span>
+				</div>
+				</div>
+				<div class="form-group">
+				<label for="total_harga">Total Harga Beli</label>
+				<div class="input-group col-sm-12">
+				<span class="input-group-addon">Rp.</i></span>
+				<input type="number" class="form-control" required="" placeholder="Total Harga" name="total_harga" value="'.$data->total_harga.'">
+				<span class="input-group-addon">.00</span>
+				</div>
+				</div>
+				<div class="form-group">
+				<label for="supplier_id">Nama Supplier</label>
+				<select name="supplier_id" id="edt_supplier" class="form-control">
+				'.$supplier.'
+				</select>
+				</div>
+				</div>
+				</form>';
+				return response()->json($result, 200);
+			} else if ($request->req == 'updatealatbeli') {
+				$validator = Validator::make($request->all(), [
+					'jumlah_beli' => 'required|integer',
+					'total_harga' => 'required|integer',
+					'supplier_id' => 'required|integer',
+				]);
+
+				if ($validator->fails()) {
+					return response()->json([
+						'status' => 'error',
+						'title' => 'Gagal mengupdate data!',
+						'message' => 'Form tidak boleh kosong',
+					]);            
+				}
+
+				try {
+					$update = AddAlat::find($request->id);
+					$update->jumlah_beli = $request->jumlah_beli;
+					$update->total_harga = $request->total_harga;
+					$update->supplier_id = $request->supplier_id;
+					$update->save();
+
+					$get_jumlah = AddAlat::where('alat_id', $update->alat_id)->get();
+					$jumlah_alat = 0;
+					foreach ($get_jumlah as $jum) {
+						$jumlah_alat = $jumlah_alat + $jum->jumlah_beli;
+					}
+
+					$updt_jum = Alat::where('id', $update->alat_id)->first();
+					$updt_jum->jumlah_alat = $jumlah_alat;
+					$updt_jum->save();
+
+					return response()->json([
+						'status' => 'success',
+						'title' => 'Berhasil mengupdate data!',
+						'message' => 'Data pembelian berhasil di update',
+						'id' => $updt_jum->id
+					]); 
+				} catch(QueryException $ex) {
+					return response()->json([
+						'status' => 'error',
+						'title' => 'Gagal mengupdate data!',
+						'message' => 'Terjadi kesalahan',
+					]);
+				}
+			} else if ($request->req == 'deletealatbeli') {
+				try {
+					$delete = AddAlat::find($request->id);
+					$delete->delete();
+
+					$get_jumlah = AddAlat::where('alat_id', $delete->alat_id)->get();
+					$jumlah_alat = 0;
+					foreach ($get_jumlah as $jum) {
+						$jumlah_alat = $jumlah_alat + $jum->jumlah_beli;
+					}
+
+					$updt_jum = Alat::where('id', $delete->alat_id)->first();
+					$updt_jum->jumlah_alat = $jumlah_alat;
+					$updt_jum->save();
+
+					return response()->json([
+						'status' => 'success',
+						'title' => 'Berhasil menghapus data!',
+						'message' => 'Data pembelian berhasil di hapus',
+						'id' => $updt_jum->id
+					]);
+				} catch(QueryException $ex) {
+					return response()->json([
+						'status' => 'error',
+						'title' => 'Gagal menghapus data!',
+						'message' => 'Terjadi kesalahan',
+					]);	
+				}
+			} else if ($request->req == 'detailsupplier') {
+				$data = Supplier::where('id', $request->id)->first();
+				$result = '<div class="p-20 text-left">
+								<div class="m-b-20"><b>Nama Supplier: </b><span>'.$data->nama_supplier.'</span></div>
+								<div class="m-b-20"><b>Alamat: </b><span>'.$data->alamat.'</span></div>
+								<div class="m-b-20"><b>Telepon: </b><span>'.$data->telepon.'</span></div>
+								<div class="m-b-20"><b>Email: </b><span>'.$data->email.'</span></div>
+							</div>';
+				return response()->json($result, 200);
+			} else if ($request->req == 'databelibahan') {
+				$data = AddBahan::where('id', $request->id)->first();
+				$bahan = Bahan::where('id', $data->bahan_id)->first();
+				$get_supplier = Supplier::where('kategori', '!=', 'Supplier Alat')->orderBy('id', 'desc')->get();
+				$supplier = '';
+				foreach ($get_supplier as $dta) {
+					if ($dta->id == $data->supplier_id) 
+						$supplier .= '<option value="'.$dta->id.'" selected>'.$dta->nama_supplier.'</option>';
+					else
+						$supplier .= '<option value="'.$dta->id.'">'.$dta->nama_supplier.'</option>';
+				}
+
+				$result = '<form id="bahanPembelian">
+				<div class="text-left">
+				<div class="form-group">
+				<label for="jumlah_beli">Nama Bahan</label>
+				<input type="text" class="form-control" required="" placeholder="Nama Bahan" value="'.$bahan->nama.'" disabled="">
+				</div>
+				<div class="form-group">
+				<label for="jumlah_beli">Jumlah Beli</label>
+				<div class="input-group col-sm-12">
+				<input type="number" class="form-control" required="" placeholder="Jumlah Beli" name="jumlah_beli" value="'.$data->jumlah_beli.'">
+				<span class="input-group-addon">'.$bahan->satuan.'</span>
+				</div>
+				</div>
+				<div class="form-group">
+				<label for="total_harga">Total Harga Beli</label>
+				<div class="input-group col-sm-12">
+				<span class="input-group-addon">Rp.</i></span>
+				<input type="number" class="form-control" required="" placeholder="Total Harga" name="total_harga" value="'.$data->total_harga.'">
+				<span class="input-group-addon">.00</span>
+				</div>
+				</div>
+				<div class="form-group">
+				<label for="supplier_id">Nama Supplier</label>
+				<select name="supplier_id" id="edt_supplier" class="form-control">
+				'.$supplier.'
+				</select>
+				</div>
+				</div>
+				</form>';
+				return response()->json($result, 200);
+			} else if ($request->req == 'updatebahanbeli') {
+				$validator = Validator::make($request->all(), [
+					'jumlah_beli' => 'required|integer',
+					'total_harga' => 'required|integer',
+					'supplier_id' => 'required|integer',
+				]);
+
+				if ($validator->fails()) {
+					return response()->json([
+						'status' => 'error',
+						'title' => 'Gagal mengupdate data!',
+						'message' => 'Form tidak boleh kosong',
+					]);            
+				}
+
+				try {
+					$update = AddBahan::find($request->id);
+					$update->jumlah_beli = $request->jumlah_beli;
+					$update->total_harga = $request->total_harga;
+					$update->supplier_id = $request->supplier_id;
+					$update->save();
+
+					$get_jumlah = AddBahan::where('bahan_id', $update->bahan_id)->get();
+					$jumlah_bahan = 0;
+					foreach ($get_jumlah as $jum) {
+						$jumlah_bahan = $jumlah_bahan + $jum->jumlah_beli;
+					}
+
+					$updt_jum = Bahan::where('id', $update->bahan_id)->first();
+					$updt_jum->jumlah_bahan = $jumlah_bahan;
+					$updt_jum->save();
+
+					return response()->json([
+						'status' => 'success',
+						'title' => 'Berhasil mengupdate data!',
+						'message' => 'Data pembelian berhasil di update',
+						'id' => $updt_jum->id
+					]); 
+				} catch(QueryException $ex) {
+					return response()->json([
+						'status' => 'error',
+						'title' => 'Gagal mengupdate data!',
+						'message' => 'Terjadi kesalahan',
+					]);
+				}
+			} else if ($request->req == 'deletebahanbeli') {
+				try {
+					$delete = AddBahan::find($request->id);
+					$delete->delete();
+
+					$get_jumlah = AddBahan::where('bahan_id', $delete->bahan_id)->get();
+					$jumlah_bahan = 0;
+					foreach ($get_jumlah as $jum) {
+						$jumlah_bahan = $jumlah_bahan + $jum->jumlah_beli;
+					}
+
+					$updt_jum = Bahan::where('id', $delete->bahan_id)->first();
+					$updt_jum->jumlah_bahan = $jumlah_bahan;
+					$updt_jum->save();
+
+					return response()->json([
+						'status' => 'success',
+						'title' => 'Berhasil menghapus data!',
+						'message' => 'Data pembelian berhasil di hapus',
+						'id' => $updt_jum->id
+					]);
+				} catch(QueryException $ex) {
+					return response()->json([
+						'status' => 'error',
+						'title' => 'Gagal menghapus data!',
+						'message' => 'Terjadi kesalahan',
+					]);	
+				}
 			}
 		}
 	}
@@ -108,9 +347,9 @@ class ConfigController extends Controller
 				return '<a href="#" id="view-gambar-kategori" data-toggle="modal" data-target="#modal-gambar-kategori" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/kategori/'.$dta->foto.'" class="img-responsive thumb-md"> </a>';
 			})->addColumn('action', function($dta) {
 				return '<div class="text-center">
-						<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="'.$dta->id.'"><i class="fa fa-edit"></i></button>
-						<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="'.$dta->id.'"><i class="fa fa-trash"></i></button>
-						</div>';
+				<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-kategori" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="'.$dta->id.'"><i class="fa fa-edit"></i></button>
+				<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kategori" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="'.$dta->id.'"><i class="fa fa-trash"></i></button>
+				</div>';
 			})->rawColumns(['foto', 'action'])->toJson();
 		} else if ($request->req == 'dtGetBahan') {
 			$result = Bahan::all();
@@ -131,10 +370,10 @@ class ConfigController extends Controller
 				return '<a href="#" id="view-gambar-bahan" data-toggle="modal" data-target="#modal-gambar-bahan" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/bahan/'.$dta->foto.'" class="img-responsive thumb-md"> </a>';
 			})->addColumn('action', function($dta) {
 				return '<div class="text-center">
-                        <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
-                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-bahan"><i class="fa fa-edit"></i></a>
-                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
-                        </div>';
+				<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-eye"></i></a>
+				<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-bahan"><i class="fa fa-edit"></i></a>
+				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-bahan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+				</div>';
 			})->rawColumns(['foto', 'action'])->toJson();
 		}  else if ($request->req == 'dtGetAlat') {
 			$result = Alat::all();
@@ -158,10 +397,10 @@ class ConfigController extends Controller
 				return '<a href="#" id="view-gambar-alat" data-toggle="modal" data-target="#modal-gambar-alat" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/alat/'.$dta->foto.'" class="img-responsive thumb-md"> </a>';
 			})->addColumn('action', function($dta) {
 				return '<div class="text-center">
-                        <a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
-                        <a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-alat"><i class="fa fa-edit"></i></a>
-                        <a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
-                        </div>';
+				<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
+				<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit-alat"><i class="fa fa-edit"></i></a>
+				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+				</div>';
 			})->rawColumns(['foto', 'action'])->toJson();
 		}
 	}
