@@ -11,6 +11,7 @@ use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddBahan;
 use App\Model\AddAlat;
+use App\Model\Driver;
 use App\Model\Paket;
 use App\Model\Bahan;
 use App\Model\Alat;
@@ -204,11 +205,11 @@ class ConfigController extends Controller
 			} else if ($request->req == 'detailsupplier') {
 				$data = Supplier::where('id', $request->id)->first();
 				$result = '<div class="p-20 text-left">
-								<div class="m-b-20"><b>Nama Supplier: </b><span>'.$data->nama_supplier.'</span></div>
-								<div class="m-b-20"><b>Alamat: </b><span>'.$data->alamat.'</span></div>
-								<div class="m-b-20"><b>Telepon: </b><span>'.$data->telepon.'</span></div>
-								<div class="m-b-20"><b>Email: </b><span>'.$data->email.'</span></div>
-							</div>';
+				<div class="m-b-20"><b>Nama Supplier: </b><span>'.$data->nama_supplier.'</span></div>
+				<div class="m-b-20"><b>Alamat: </b><span>'.$data->alamat.'</span></div>
+				<div class="m-b-20"><b>Telepon: </b><span>'.$data->telepon.'</span></div>
+				<div class="m-b-20"><b>Email: </b><span>'.$data->email.'</span></div>
+				</div>';
 				return response()->json($result, 200);
 			} else if ($request->req == 'databelibahan') {
 				$data = AddBahan::where('id', $request->id)->first();
@@ -402,6 +403,33 @@ class ConfigController extends Controller
 				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-alat" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 				</div>';
 			})->rawColumns(['foto', 'action'])->toJson();
+		} else if ($request->req == 'dtDriver') {
+			$result = Driver::all();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$dta->no = $no;
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('foto', function($dta) {
+				$url = url('/');
+				return '<a href="#" id="view-gambar-driver" data-toggle="modal" data-target="#modal-gambar" data-id="'.$dta->id.'"> <img src="'.$url.'/assets/images/driver/'.$dta->foto.'" class="img-responsive thumb-md rounded-circle" style="border-radius: 50%;"> </a>';
+			})->addColumn('status', function($dta) {
+				if ($dta->status == 'active') {
+					$label = '<span class="label label-table label-success">Active</span>';
+				} else {
+					$label = '<span class="label label-table label-danger">Suspended</span>';
+				}
+				return $label;
+			})->addColumn('action', function($dta) {
+				return '<div class="text-center">
+				<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="edit-driver" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit"><i class="fa fa-edit"></i></a>
+				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-driver" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+				</div>';
+			})->rawColumns(['foto', 'status', 'action'])->toJson();
 		}
 	}
 }

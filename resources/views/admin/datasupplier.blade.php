@@ -63,19 +63,19 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Alamat</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" required="" placeholder="Alamat" name="alamat"></textarea>
+                            <textarea class="form-control" placeholder="Alamat" name="alamat"></textarea>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Telepon</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" required="" autocomplete="off" placeholder="Telepon" name="telepon">
+                            <input type="number" class="form-control" autocomplete="off" placeholder="Telepon" name="telepon">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Email</label>
                         <div class="col-sm-8">
-                            <input type="email" class="form-control" required="" autocomplete="off" placeholder="Email" name="email">
+                            <input type="email" class="form-control" autocomplete="off" placeholder="Email" name="email">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -121,19 +121,19 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Alamat</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" required="" placeholder="Alamat" name="alamat" id="alamat"></textarea>
+                            <textarea class="form-control" placeholder="Alamat" name="alamat" id="alamat"></textarea>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Telepon</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" required="" autocomplete="off" placeholder="Telepon" name="telepon" id="telepon">
+                            <input type="number" class="form-control" autocomplete="off" placeholder="Telepon" name="telepon" id="telepon">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Email</label>
                         <div class="col-sm-8">
-                            <input type="email" class="form-control" required="" autocomplete="off" placeholder="Email" name="email" id="email">
+                            <input type="email" class="form-control" autocomplete="off" placeholder="Email" name="email" id="email">
                         </div>
                     </div>
                     <div class="form-group row">

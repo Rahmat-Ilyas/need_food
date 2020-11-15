@@ -17,9 +17,13 @@ $(document).ready(function() {
 	function setError(data) {
 		var error = '';
 		result = data.responseJSON.message;
-		$.each(result, function(key, val) {
-			error = error + ' ' + val[0];
-		});
+		if (jQuery.type(result) == 'object') {
+			$.each(result, function(key, val) {
+				error = error + ' ' + val[0];
+			});
+		} else {
+			error = data.responseJSON.message;
+		}
 
 		Swal.fire({
 			title: 'Gagal Diproses',
@@ -709,7 +713,7 @@ $(document).ready(function() {
 
 				Swal.fire({
 					title: 'Berhasil Diproses',
-					text: 'Data alat baru berhasil ditambah',
+					text: 'Data alat kategori berhasil ditambah',
 					type: 'success',
 					onClose: () => {
 						$('.modal-add').modal('hide');
@@ -843,7 +847,7 @@ $(document).ready(function() {
 		});
 	}
 
-	// SET KATEGORI
+	// SET SUPPLIER
 	$('#fromSupplier').submit(function(ev) {
 		ev.preventDefault();
 		var data = $(this).serialize();
@@ -1010,6 +1014,112 @@ $(document).ready(function() {
 				$('#batal').removeAttr('disabled');
 				$('#progress').text('0%');
 
+				setError(data);
+			}
+		});
+	});
+
+	// GET DRIVER
+	function getDriver() {
+		$("#tableDriver").dataTable().fnDestroy();
+		$('#tableDriver').DataTable({
+			processing: true,
+			serverSide: true,
+			ajax: host+'/datatable?req=dtDriver',
+			columns: [
+			{ data: 'no', name: 'no' },
+			{ data: 'foto', name: 'foto', orderable: false, searchable: false },
+			{ data: 'nama', name: 'nama' },
+			{ data: 'alamat', name: 'alamat' },
+			{ data: 'email', name: 'email' },
+			{ data: 'telepon', name: 'telepon' },
+			{ data: 'username', name: 'username' },
+			{ data: 'status', name: 'status', orderable: false, searchable: false },
+			{ data: 'action', name: 'action', orderable: false, searchable: false },
+			],
+		});
+	}
+
+	// SET DRIVER
+	$('#fromDriver').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+
+		$.ajax({
+			url     : host+"/api/setdriver",
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				getDriver();
+				$('#fromDriver')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data driver baru berhasil ditambah',
+					type: 'success',
+					onClose: () => {
+						$('.modal-add').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// PUT DRIVER
+	$('#fromEdtDriver').submit(function(ev) {
+		ev.preventDefault();
+		var data = $(this).serialize();
+		var id = $('#edt_id').val();
+
+		$.ajax({
+			url     : host+"/api/editdriver/"+ id,
+			method  : "POST",
+			data    : data,
+			headers	: headers,
+			success : function(data) {
+				getDriver();
+				$('#fromEdtDriver')[0].reset();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data driver berhasil diupdate',
+					type: 'success',
+					onClose: () => {
+						$('.modal-edit').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
+				setError(data);
+			}
+		});
+	});
+
+	// DELETE DRIVER
+	$('#delete-driver').click(function() {
+		var id = $(this).attr('dta-id');
+
+		$.ajax({
+			url     : host+"/api/deletedriver/"+id,
+			method  : "DELETE",
+			headers	: headers,
+			success : function(data) {
+				getDriver();
+
+				Swal.fire({
+					title: 'Berhasil Diproses',
+					text: 'Data berhasil dihapus',
+					type: 'success',
+					onClose: () => {
+						$('.modal-delete').modal('hide');
+					}
+				});
+			}, 
+			error: function(data) {
 				setError(data);
 			}
 		});

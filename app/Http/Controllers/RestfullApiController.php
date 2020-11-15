@@ -8,10 +8,12 @@ use App\Model\Additional;
 use App\Model\Pemesanan;
 use App\Model\Transaksi;
 use App\Model\ItemPaket;
+use App\Model\AuthLogin;
 use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddBahan;
 use App\Model\AddAlat;
+use App\Model\Driver;
 use App\Model\Paket;
 use App\Model\Bahan;
 use App\Model\Alat;
@@ -90,24 +92,26 @@ class RestfullApiController extends Controller
 
 	public function invGetalatkategori($id)
 	{
-		$data = Alat::where('kategori_id', $id)->first();
+		$data = Alat::where('kategori_id', $id)->get();
 		if ($data) {
-			if (is_null($data->alat_keluar)) $data->alat_keluar = 0;
-			$data->sisa_alat = $data->jumlah_alat - $data->alat_keluar;
+			$result = [];
+			foreach ($data as $dta) {
+				if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
+				$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar;
 
-			$riwayat = AddAlat::where('alat_id', $data->id)->get();
-			$kategori = Kategori::where('id', $data->kategori_id)->first();
-			$data['kategori'] = $kategori->kategori;
+				$riwayat = AddAlat::where('alat_id', $dta->id)->get();
+				$kategori = Kategori::where('id', $dta->kategori_id)->first();
+				$dta['kategori'] = $kategori->kategori;
 
-			$riwayat_beli = [];
-			foreach ($riwayat as $rw) {
-				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
-				$riwayat_beli[] = $rw;
+				$riwayat_beli = [];
+				foreach ($riwayat as $rw) {
+					$supplier = Supplier::where('id', $rw->supplier_id)->first();
+					$rw['supplier'] = $supplier->nama_supplier;
+					$riwayat_beli[] = $rw;
+				}
+				$dta->riwayat_beli = $riwayat_beli;
+				$result[] = $dta;
 			}
-			$data->riwayat_beli = $riwayat_beli;
-
-			$result = $data;
 
 			return response()->json([
 				'success' => true,
@@ -349,21 +353,23 @@ class RestfullApiController extends Controller
 
 	public function invGetbahankategori($id)
 	{
-		$data = Bahan::where('kategori_id', $id)->first();
+		$data = Bahan::where('kategori_id', $id)->get();
 		if ($data) {
-			$riwayat = AddBahan::where('bahan_id', $data->id)->get();
-			$kategori = Kategori::where('id', $data->kategori_id)->first();
-			$data['kategori'] = $kategori->kategori;
-			
-			$riwayat_beli = [];
-			foreach ($riwayat as $rw) {
-				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
-				$riwayat_beli[] = $rw;
-			}
-			$data->riwayat_beli = $riwayat_beli;
+			$result = [];
+			foreach ($data as $dta) {
+				$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
+				$kategori = Kategori::where('id', $dta->kategori_id)->first();
+				$dta['kategori'] = $kategori->kategori;
 
-			$result = $data;
+				$riwayat_beli = [];
+				foreach ($riwayat as $rw) {
+					$supplier = Supplier::where('id', $rw->supplier_id)->first();
+					$rw['supplier'] = $supplier->nama_supplier;
+					$riwayat_beli[] = $rw;
+				}
+				$dta->riwayat_beli = $riwayat_beli;
+				$result[] = $dta;
+			}
 
 			return response()->json([
 				'success' => true,
@@ -731,7 +737,7 @@ class RestfullApiController extends Controller
 		return $uniqueCode;
 	}
 
-    //SUPPLIER
+   //SUPPLIER
 	public function getsSupplier(Request $request)
 	{
 		if (isset($request->kategori) && $request->kategori == 'alat')
@@ -905,6 +911,158 @@ class RestfullApiController extends Controller
 					}
 				}
 
+				$delete->delete();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// DRIVER
+	public function setDriver(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'alamat' => 'required',
+			'telepon' => 'required',
+			'email' => 'required',
+			'username' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data = $request->all();
+			$data['foto'] = 'img_driver_default.png';
+			$data['password'] = bcrypt('driver_needfood');
+			$data['status'] = 'active';
+
+			$driver = Driver::where('username', $request->username)->first();
+			$admin = AuthLogin::where('username', $request->username)->first();
+
+			if ($driver || $admin) {
+				return response()->json([
+					'success' => false,
+					'message' => 'Username telah terdaftar'
+				], 401);   
+			}
+
+			Driver::create($data);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function putDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'alamat' => 'required',
+			'telepon' => 'required',
+			'email' => 'required',
+			'status' => 'required',
+			'username' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Driver::find($id);
+
+			if ($update) {
+				$driver = Driver::where('username', $request->username)->first();
+				$driver_now = Driver::where('username', $update->username)->first();
+				$admin = AuthLogin::where('username', $request->username)->first();
+
+				if (($driver && $driver != $driver_now) || $admin) {
+					return response()->json([
+						'success' => false,
+						'message' => 'Username telah terdaftar'
+					], 401);   
+				}
+
+				$update->nama = $request->nama;
+				$update->alamat = $request->alamat;
+				$update->telepon = $request->telepon;
+				$update->email = $request->email;
+				$update->status = $request->status;
+				$update->username = $request->username;
+				if ($request->password) $update->password = bcrypt($request->password);
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_driver_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/driver';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					if ($update->foto != 'img_driver_default.png') {
+						File::delete(public_path('assets/images/driver/'.$update->foto));
+					}
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteDriver($id)
+	{
+		try {
+			$delete = Driver::find($id);
+			if ($delete) {
+				if ($delete->foto != 'img_driver_default.png') {
+					File::delete(public_path('assets/images/driver/'.$delete->foto));
+				}
 				$delete->delete();
 			} else {
 				return response()->json([

@@ -27,9 +27,16 @@ class AuthMobileController extends Controller
 			$data = Auth::guard('admin')->user();
 			$role = $data->role;
 		} else if(Auth::guard('driver')->attempt($credential)) {
-			$login = true;
 			$data = Auth::guard('driver')->user();
-			$role = 'driver';	
+			if ($data->status == 'active') {
+				$login = true;
+				$role = 'driver';	
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'Account is suspended',
+				], 401);
+			}
 		}
 
 		if ($login) {
