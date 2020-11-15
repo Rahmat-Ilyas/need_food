@@ -93,26 +93,26 @@ class RestfullApiController extends Controller
 	public function invGetalatkategori($id)
 	{
 		$data = Alat::where('kategori_id', $id)->get();
-		if ($data) {
-			$result = [];
-			foreach ($data as $dta) {
-				if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
-				$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar;
+		$result = [];
+		foreach ($data as $dta) {
+			if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
+			$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar;
 
-				$riwayat = AddAlat::where('alat_id', $dta->id)->get();
-				$kategori = Kategori::where('id', $dta->kategori_id)->first();
-				$dta['kategori'] = $kategori->kategori;
+			$riwayat = AddAlat::where('alat_id', $dta->id)->get();
+			$kategori = Kategori::where('id', $dta->kategori_id)->first();
+			$dta['kategori'] = $kategori->kategori;
 
-				$riwayat_beli = [];
-				foreach ($riwayat as $rw) {
-					$supplier = Supplier::where('id', $rw->supplier_id)->first();
-					$rw['supplier'] = $supplier->nama_supplier;
-					$riwayat_beli[] = $rw;
-				}
-				$dta->riwayat_beli = $riwayat_beli;
-				$result[] = $dta;
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
 			}
+			$dta->riwayat_beli = $riwayat_beli;
+			$result[] = $dta;
+		}
 
+		if ($result) {
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
@@ -354,23 +354,23 @@ class RestfullApiController extends Controller
 	public function invGetbahankategori($id)
 	{
 		$data = Bahan::where('kategori_id', $id)->get();
-		if ($data) {
-			$result = [];
-			foreach ($data as $dta) {
-				$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
-				$kategori = Kategori::where('id', $dta->kategori_id)->first();
-				$dta['kategori'] = $kategori->kategori;
+		$result = [];
+		foreach ($data as $dta) {
+			$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
+			$kategori = Kategori::where('id', $dta->kategori_id)->first();
+			$dta['kategori'] = $kategori->kategori;
 
-				$riwayat_beli = [];
-				foreach ($riwayat as $rw) {
-					$supplier = Supplier::where('id', $rw->supplier_id)->first();
-					$rw['supplier'] = $supplier->nama_supplier;
-					$riwayat_beli[] = $rw;
-				}
-				$dta->riwayat_beli = $riwayat_beli;
-				$result[] = $dta;
+			$riwayat_beli = [];
+			foreach ($riwayat as $rw) {
+				$supplier = Supplier::where('id', $rw->supplier_id)->first();
+				$rw['supplier'] = $supplier->nama_supplier;
+				$riwayat_beli[] = $rw;
 			}
+			$dta->riwayat_beli = $riwayat_beli;
+			$result[] = $dta;
+		}
 
+		if ($result) {
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
