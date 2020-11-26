@@ -34,17 +34,8 @@ class RestfullApiController extends Controller
 		foreach ($data as $dta) {
 			if (is_null($dta->alat_keluar)) $dta->alat_keluar = 0;
 			$dta->sisa_alat = $dta->jumlah_alat - $dta->alat_keluar;
-			$riwayat = AddAlat::where('alat_id', $dta->id)->get();
 			$kategori = Kategori::where('id', $dta->kategori_id)->first();
 			$dta['kategori'] = $kategori->kategori;
-
-			$riwayat_beli = [];
-			foreach ($riwayat as $rw) {
-				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
-				$riwayat_beli[] = $rw;
-			}
-			$dta->riwayat_beli = $riwayat_beli;
 
 			$result[] = $dta;
 		}
@@ -298,17 +289,8 @@ class RestfullApiController extends Controller
 		$data = Bahan::orderBy('id', 'desc')->get();
 		$result = [];
 		foreach ($data as $dta) {
-			$riwayat = AddBahan::where('bahan_id', $dta->id)->get();
 			$kategori = Kategori::where('id', $dta->kategori_id)->first();
 			$dta['kategori'] = $kategori->kategori;
-
-			$riwayat_beli = [];
-			foreach ($riwayat as $rw) {
-				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
-				$riwayat_beli[] = $rw;
-			}
-			$dta->riwayat_beli = $riwayat_beli;
 
 			$result[] = $dta;
 		}
@@ -1440,8 +1422,31 @@ class RestfullApiController extends Controller
 		}
 	}
 
-	public function loginMobile(Request $request)
+	public function getsPaket()
 	{
-		
+		$data = Paket::all();
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result' => $data
+		], 200);
+	}
+
+	public function getPaket($id)
+	{
+		$data = Paket::where('id', $id)->first();
+
+		if ($data) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result' => $data
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
 	}
 }

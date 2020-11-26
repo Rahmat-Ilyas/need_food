@@ -9,9 +9,6 @@
                     <li>
                         <a href="#">NeedFood</a>
                     </li>
-                    <li>
-                        <a href="#">Inventori</a>
-                    </li>
                     <li class="active">
                         Data Driver
                     </li>
