@@ -59,6 +59,11 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('editsupplier/{id}', 'RestfullApiController@putSupplier');
     Route::delete('deletesupplier/{id}', 'RestfullApiController@deleteSupplier');
 
+    // DRIVER
+    Route::post('setdriver', 'RestfullApiController@setDriver');
+    Route::post('editdriver/{id}', 'RestfullApiController@putDriver');
+    Route::delete('deletedriver/{id}', 'RestfullApiController@deleteDriver');
+
     // PEMESANAN
     Route::get('datapesanan', 'RestfullApiController@getsPesanan');
     Route::get('datapesanan/{id}', 'RestfullApiController@getPesanan');
@@ -76,5 +81,8 @@ Route::group(['middleware' => 'auth:api'], function(){
 });
 
 Route::fallback(function() {
-	return response()->json(['message' => 'Page Not Found'], 404);
+	return response()->json([
+        'success' => false,
+        'message' => 'Page Not Found'
+    ], 404);
 });

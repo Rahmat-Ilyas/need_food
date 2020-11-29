@@ -63,19 +63,19 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Alamat</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" required="" placeholder="Alamat" name="alamat"></textarea>
+                            <textarea class="form-control" placeholder="Alamat" name="alamat"></textarea>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Telepon</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" required="" autocomplete="off" placeholder="Telepon" name="telepon">
+                            <input type="number" class="form-control" autocomplete="off" placeholder="Telepon" name="telepon">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Email</label>
                         <div class="col-sm-8">
-                            <input type="email" class="form-control" required="" autocomplete="off" placeholder="Email" name="email">
+                            <input type="email" class="form-control" autocomplete="off" placeholder="Email" name="email">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -121,19 +121,19 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Alamat</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" required="" placeholder="Alamat" name="alamat" id="alamat"></textarea>
+                            <textarea class="form-control" placeholder="Alamat" name="alamat" id="alamat"></textarea>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Telepon</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" required="" autocomplete="off" placeholder="Telepon" name="telepon" id="telepon">
+                            <input type="number" class="form-control" autocomplete="off" placeholder="Telepon" name="telepon" id="telepon">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Email</label>
                         <div class="col-sm-8">
-                            <input type="email" class="form-control" required="" autocomplete="off" placeholder="Email" name="email" id="email">
+                            <input type="email" class="form-control" autocomplete="off" placeholder="Email" name="email" id="email">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -222,19 +222,21 @@
                 dataTable.clear().draw();
                 var no = 1;
                 $.each(data.result, function(key, val) {
-                    dataTable.row.add([
-                        no,
-                        val.nama_supplier,
-                        val.alamat,
-                        val.telepon,
-                        val.email,
-                        val.kategori,
-                        `<div class="text-center">
-                        <button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-supplier" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-supplier" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
-                        </div>`,
-                        ]).draw(false);
-                    no = no + 1;
+                    if (val.id != 0) {
+                        dataTable.row.add([
+                            no,
+                            val.nama_supplier,
+                            val.alamat,
+                            val.telepon,
+                            val.email,
+                            val.kategori,
+                            `<div class="text-center">
+                            <button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-supplier" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="`+ val.id +`"><i class="fa fa-edit"></i></button>
+                            <button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-supplier" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="`+ val.id +`"><i class="fa fa-trash"></i></button>
+                            </div>`,
+                            ]).draw(false);
+                        no = no + 1;
+                    }
                 });
             }
         });

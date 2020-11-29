@@ -195,7 +195,7 @@
               <a href="{{ url('admin/datasupplier') }}" class="waves-effect"><i class="ti-truck"></i> <span> Data Supplier </span></a>
             </li>
             <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="ti-id-badge"></i> <span> Data Driver </span></a>
+              <a href="{{ url('admin/datadriver') }}" class="waves-effect"><i class="ti-id-badge"></i> <span> Data Driver </span></a>
             </li>
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="ti-image"></i> <span> Kelola Gallery </span></a>

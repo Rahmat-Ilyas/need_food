@@ -220,6 +220,16 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-sm-3 control-label">Satuan (Ukuran)</label>
+                        <div class="col-sm-9">
+                            <select name="satuan" id="edt_satuan" class="form-control">
+                                <option value="pcs">Pieces (pcs)</option>
+                                <option value="kg">Kilogram (kg)</option>
+                                <option value="g">Gram (g)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <div class="col-sm-3"></div>
                         <div class="col-sm-9">
                             <button type="submit" name="simpanBahan" class="btn btn-default" id="upload">Simpan</button>
@@ -238,33 +248,25 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="myModalLabel">Detail Alat</h4>
+                <h4 class="modal-title" id="myModalLabel">Detail Bahan</h4>
             </div>
             <div class="modal-body" style="padding: 20px 40px 20px 40px">
                 <dl class="row mb-0">
                     <div class="col-sm-6 row">
-                        <dt class="col-sm-5">Kode Barang:</dt>
-                        <dd class="col-sm-7" id="dtl_kd_alat"></dd> 
+                        <dt class="col-sm-5">Kode Bahan:</dt>
+                        <dd class="col-sm-7" id="dtl_kd_bahan"></dd> 
                     </div>
                     <div class="col-sm-6 row">
-                        <dt class="col-sm-5">Jumlah Alat:</dt>
-                        <dd class="col-sm-7"><span id="dtl_jumlah_alat"></span> pcs</dd>
+                        <dt class="col-sm-5">Jumlah Bahan:</dt>
+                        <dd class="col-sm-7"><span id="dtl_jumlah_bahan"></span> <span id="dtl_satuan"></span></dd>
                     </div>
                     <div class="col-sm-6 row">
-                        <dt class="col-sm-5">Nama Barang:</dt>
+                        <dt class="col-sm-5">Nama Bahan:</dt>
                         <dd class="col-sm-7" id="dtl_nama"></dd>
-                    </div>
-                    <div class="col-sm-6 row">
-                        <dt class="col-sm-5">Alat Keluar:</dt>
-                        <dd class="col-sm-7"><span id="dtl_alat_keluar"></span> pcs</dd>
                     </div>
                     <div class="col-sm-6 row">
                         <dt class="col-sm-5">Kategori:</dt>
                         <dd class="col-sm-7" id="dtl_kategori"></dd>
-                    </div>
-                    <div class="col-sm-6 row">
-                        <dt class="col-sm-5">Sisa Alat:</dt>
-                        <dd class="col-sm-7"><span id="dtl_sisa_alat"></span> pcs</dd>
                     </div>
                 </dl>
                 <hr>
@@ -273,7 +275,7 @@
                         <div class="panel-heading"> 
                             <h4 class="panel-title"> 
                                 <a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-2" aria-expanded="false" class="collapsed">
-                                    Riwayat Pembelian Barang
+                                    Riwayat Pembelian Bahan
                                 </a> 
                             </h4> 
                         </div> 
@@ -288,6 +290,7 @@
                                             <th>Jumlah Beli</th>
                                             <th>Total Harga</th>
                                             <th>Supplier</th>
+                                            <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="riwayat-beli">
@@ -418,17 +421,17 @@
             serverSide: true,
             ajax: host+'/datatable?req=dtGetBahan',
             columns: [
-                { data: 'no', name: 'no' },
-                { data: 'foto', name: 'foto', orderable: false, searchable: false },
-                { data: 'kd_bahan', name: 'kd_bahan' },
-                { data: 'nama', name: 'nama' },
-                { data: 'kategori', name: 'kategori' },
-                { data: 'jumlah_bahan', name: 'jumlah_bahan' },
-                { data: 'action', name: 'action', orderable: false, searchable: false },
+            { data: 'no', name: 'no' },
+            { data: 'foto', name: 'foto', orderable: false, searchable: false },
+            { data: 'kd_bahan', name: 'kd_bahan' },
+            { data: 'nama', name: 'nama' },
+            { data: 'kategori', name: 'kategori' },
+            { data: 'jumlah_bahan', name: 'jumlah_bahan' },
+            { data: 'action', name: 'action', orderable: false, searchable: false },
             ]
         });
 
-        //HAPUS DATA ALAT
+        //EDIT DATA ALAT
         $(document).on('click', '#edit-bahan', function() {
             var id = $(this).attr('dta-id');
             $.ajax({
@@ -442,6 +445,7 @@
                     $('#edt_nama_bahan').val(data.nama);
                     $('#edt_foto').filestyle({placeholder: data.foto, buttonText: 'Pilih Foto'});
                     $('#edt_kategori').val(data.kategori_id);
+                    $('#edt_satuan').val(data.satuan);
                 }
             });
         });
@@ -450,6 +454,24 @@
         $(document).on('click', '#hapus-bahan', function() {
             var id = $(this).attr('dta-id');
             $('#delete-bahan').attr('data-id', id);
+        });
+
+        // Detail Supplier
+        $(document).on('click', '#detail-supplier', function(e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url     : host+"/configuration",
+                method  : "POST",
+                headers : headers,
+                data    : { req: 'detailsupplier', id: id },
+                success : function(data) {
+                    swal({
+                        title: "Detail Supplier",
+                        html: data,
+                    });
+                }
+            });
         });
     });
 </script>
