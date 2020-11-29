@@ -10,7 +10,11 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/','landingpagecontroller@index')->name('page.index');
+Route::get('/order','landingpagecontroller@orderindex')->name('page.order.index');
+Route::get('/keranjang','landingpageController@keranjang_index')->name('page.keranjang');
+Route::get('/keranjang/detail_alat','landingpageController@detail_alat')->name('page.detail_alat');
+Route::get('/pengantaran','landingpageController@pengantaran')->name('page.pengantaran');
 // Admin
 Route::group(['prefix' => 'admin'], function () {
 	Route::get('/login', 'Auth\AuthAdminController@showLoginForm')->name('admin.login');
@@ -22,16 +26,7 @@ Route::group(['prefix' => 'admin'], function () {
 	Route::get('/{dir}/{page}', 'AdminController@setpagedir');
 });
 
-// Dapur
-Route::group(['prefix' => 'kitchen'], function () {
-	Route::get('/login', 'Auth\AuthKitchenController@showLoginForm')->name('kitchen.login');
-	Route::post('/login', 'Auth\AuthKitchenController@login')->name('kitchen.login.submit');
-	Route::get('/logout', 'Auth\AuthKitchenController@logout')->name('kitchen.logout');
-	Route::get('/', 'KitchenController@home')->name('kitchen.home');
-
-	Route::get('/{page}', 'KitchenController@setpageonly');
-	Route::get('/{dir}/{page}', 'KitchenController@setpagedir');
-});
-
 Route::post('/configuration', 'ConfigController@config');
-Route::get('/datatable', 'ConfigController@datatable');
+Route::get('/tess', function() {
+	echo phpinfo();
+});
