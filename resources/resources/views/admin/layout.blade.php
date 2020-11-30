@@ -23,7 +23,9 @@
   <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet" type="text/css" />
   <link href="{{ asset('assets/css/pages.css') }}" rel="stylesheet" type="text/css" />
   <link href="{{ asset('assets/css/responsive.css') }}" rel="stylesheet" type="text/css" />
-
+  
+  <link href="{{ asset('assets/plugins/switchery/css/switchery.min.css') }}" rel="stylesheet" />
+  
   <!-- DataTables -->
   <link href="{{ asset('assets/plugins/datatables/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css"/>
   <link href="{{ asset('assets/plugins/datatables/buttons.bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
@@ -286,6 +288,7 @@
 
   
   <script src="{{ asset('assets/js/sweetalert2/sweetalert2.all.js') }}"></script>
+  <script src="{{ asset('assets/plugins/switchery/js/switchery.min.js') }}"></script>
 
   <script src="{{ asset('assets/js/jquery.core.js') }}"></script>
   <script src="{{ asset('assets/js/jquery.app.js') }}"></script>

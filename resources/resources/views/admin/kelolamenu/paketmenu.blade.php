@@ -204,14 +204,17 @@
                 </div>
                 <div class="modal-body" style="padding: 20px 50px 0 50px;">
                     <div class="form-group row">
-                        <form id="fromPaket" action="#">
+                        <form id="addSetBahan" action="#">
                             <div class="col-sm-6">
-                                <select class="form-control select2" name="item[]" id="val-set-item" required="">
+                                <select class="form-control select2" name="bahan_id" id="val-set-item" required="">
                                     <option value="">Pilih Bahan</option>
                                 </select>
                             </div>
+                            <div id="set-exits">
+                            </div>
                             <div class="col-sm-6">
-                                <a href="#" class="btn btn-default"><i class="fa fa-plus-circle"></i> Tambah</a>
+                                <button type="submit" class="btn btn-default"><i class="fa fa-plus-circle"></i>
+                                    Tambah</button>
                             </div>
                         </form>
                     </div>
@@ -221,29 +224,16 @@
                         <table class="table table-bordered m-0">
                             <thead>
                                 <tr>
-                                    <th style="width: 20px;">#</th>
                                     <th>Nama Bahan</th>
                                     <th style="width: 230px;">Atur Jumlah</th>
-                                    <th style="width: 140px;">Jumlah Maksimal</th>
-                                    <th style="width: 140px;">Bahan Utama</th>
+                                    <th style="width: 140px;">Jumlah Maksimal <i>(Isi jika ada)</i></th>
+                                    <th style="width: 20px;">Bahan Utama</th>
+                                    <th style="width: 20px;">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td class="form-inline text-center">
-                                        <input type="number" class="form-control" style="height: 30px; width: 60px;"
-                                            name="">
-                                        <span><b>pcs</b> /</span>
-                                        <input type="number" class="form-control" style="height: 30px; width: 60px;" name=""
-                                            value="1">
-                                        <span><b>pax</b></span>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control" style="height: 30px; width: 60px;" name=""
-                                            value="1">
-                                    </td>
+                            <tbody id="added">
+                                <tr class="text-center" id="empty">
+                                    <td colspan="5"><i>Beluam ada data yang ditambah</i></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -293,7 +283,7 @@
                     $.each(data.result, function(key, val) {
                         $('#val-item').append('<option value="' + val.nama + '">' + val.nama +
                             '</option>');
-                        $('#val-set-item').append('<option value="' + val.nama + '">' + val
+                        $('#val-set-item').append('<option value="' + val.id + '">' + val
                             .nama + '</option>');
                     });
                 }
@@ -334,6 +324,22 @@
 
             $(document).on('change', '#val-item', function() {
                 $('#tambah-item').removeClass('disabled');
+            });
+
+            $('#addSetBahan').submit(function(e) {
+                e.preventDefault();
+                var data = $(this).serialize();
+
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: data + '&req=addSetBahan',
+                    success: function(data) {
+                        $('#added').append(data.added);
+                        $('#empty').attr('hidden', '');
+                    }
+                });
             });
         });
 

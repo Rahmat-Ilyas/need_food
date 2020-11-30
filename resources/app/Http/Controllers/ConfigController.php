@@ -326,7 +326,34 @@ class ConfigController extends Controller
 						'message' => 'Terjadi kesalahan',
 					]);	
 				}
-			}
+			} else if ($request->req == 'addSetBahan') {
+            $bahan = Bahan::where('id', $request->bahan_id)->first();
+            $exits = '<input type="hidden" name="exits[]" value="'. $bahan->id .'">';
+            $added = '<tr>
+                           <td>'. $bahan->nama .'</td>
+                           <td class="form-inline text-center">
+                              <input type="number" class="form-control" style="height: 30px; width: 60px;"
+                                 name="jumlah">
+                              <span><b>pcs</b> /</span>
+                              <input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket"
+                                 value="1">
+                              <span><b>pax</b></span>
+                           </td>
+                           <td class="form-inline">
+                              <input type="number" class="form-control" style="height: 30px; width: 90px;"
+                                 name="maksimal">
+                              <span><b>pcs</b></span>
+                           </td>
+                           <td class="text-center">
+                              <input type="checkbox" data-plugin="switchery" data-size="small" name="jenis">
+                           </td>
+                           <td class="text-center">
+                              <a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-bahan"><i class="fa fa-trash"></i></a>
+                           </td>
+                     </tr>';
+            $result = ['exits' => $exits, 'added' => $added];
+            return response()->json($result);
+         }
 		}
 	}
 
