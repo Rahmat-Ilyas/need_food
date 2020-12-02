@@ -25,94 +25,8 @@
                     <button type="button" class="btn btn-default btn-rounded waves-effect waves-light m-t-10"
                         data-toggle="modal" data-target=".modal-add-paket"><i class="fa fa-plus-circle"></i> &nbsp;Tambah
                         Paket</button>
-                    <div class="row m-t-20">
-                        <div class="col-md-4">
-                            <div class="price_card text-center">
-                                <div class="pricing-header bg-primary">
-                                    <span class="price">100K/pax</span>
-                                    <span class="name">Paket Yakiniku</span>
-                                </div>
-                                <ul class="price-features">
-                                    <li>Tasty Beef</li>
-                                    <li>Low Fat Beef</li>
-                                    <li>Sosis (250 gr)</li>
-                                </ul>
-                                <hr class="m-b-0">
-                                <div class="row" style="padding: 0 10px 0 10px;">
-                                    <div class="col-md-4 m-l-20" style="padding: 5px;">
-                                        <button class="btn btn-block btn-inverse btn-sm waves-effect waves-light"
-                                            data-toggle="modal" data-target=".modal-set-bahan"><i
-                                                class="md-shopping-basket"></i> Set Bahan</button>
-                                    </div>
-                                    <div class="col-md-4" style="padding: 5px;">
-                                        <button class="btn btn-block btn-purple btn-sm waves-effect waves-light"><i
-                                                class="md-restaurant-menu"></i> Set Alat</button>
-                                    </div>
-                                    <div class="col-md-4" style="padding: 5px;">
-                                        <button class="btn btn-block btn-info btn-sm waves-effect waves-light"><i
-                                                class="fa fa-edit"></i> Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="price_card text-center">
-                                <div class="pricing-header bg-primary">
-                                    <span class="price">100K/pax</span>
-                                    <span class="name">Paket Shabu</span>
-                                </div>
-                                <ul class="price-features">
-                                    <li>Suki</li>
-                                    <li>Daging</li>
-                                    <li>&nbsp;</li>
-                                </ul>
-                                <hr class="m-b-0">
-                                <div class="row" style="padding: 0 10px 0 10px;">
-                                    <div class="col-md-4 m-l-20" style="padding: 5px;">
-                                        <button class="btn btn-block btn-inverse btn-sm waves-effect waves-light"><i
-                                                class="md-shopping-basket"></i> Set Bahan</button>
-                                    </div>
-                                    <div class="col-md-4" style="padding: 5px;">
-                                        <button class="btn btn-block btn-purple btn-sm waves-effect waves-light"><i
-                                                class="md-restaurant-menu"></i> Set Alat</button>
-                                    </div>
-                                    <div class="col-md-4" style="padding: 5px;">
-                                        <button class="btn btn-block btn-info btn-sm waves-effect waves-light"><i
-                                                class="fa fa-edit"></i> Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="price_card text-center">
-                                <div class="pricing-header bg-primary">
-                                    <span class="price">60K/pax</span>
-                                    <span class="name">Paket Shabu 2</span>
-                                </div>
-                                <ul class="price-features">
-                                    <li>Suki</li>
-                                    <li>&nbsp;</li>
-                                    <li>&nbsp;</li>
-                                </ul>
-                                <hr class="m-b-0">
-                                <div class="row" style="padding: 0 10px 0 10px;">
-                                    <div class="col-md-4 m-l-20" style="padding: 5px;">
-                                        <button class="btn btn-block btn-inverse btn-sm waves-effect waves-light"><i
-                                                class="md-shopping-basket"></i> Set Bahan</button>
-                                    </div>
-                                    <div class="col-md-4" style="padding: 5px;">
-                                        <button class="btn btn-block btn-purple btn-sm waves-effect waves-light"><i
-                                                class="md-restaurant-menu"></i> Set Alat</button>
-                                    </div>
-                                    <div class="col-md-4" style="padding: 5px;">
-                                        <button class="btn btn-block btn-info btn-sm waves-effect waves-light"><i
-                                                class="fa fa-edit"></i> Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="row m-t-20" id="setPaket">
+                        
                     </div>
                 </div>
             </div>
@@ -139,9 +53,11 @@
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Harga Paket</label>
-                            <div class="col-sm-8">
-                                <input type="number" class="form-control" required="" autocomplete="off"
-                                    placeholder="Harga Paket" name="harga">
+                            <div class="input-group col-sm-8">
+                                <span class="input-group-addon">Rp.</i></span>
+                                <input type="number" class="form-control" required="" placeholder="Harga Paket"
+                                    name="harga">
+                                <span class="input-group-addon">.00</span>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -150,24 +66,8 @@
                                 <input type="file" class="filestyle" data-placeholder="Belum ada foto" name="foto" id="foto"
                                     required="">
                                 <div class="row text-info" id="viewProgress" hidden="">
-                                    <span class="col-sm-5">Sedang mengapload foto... <b><i id="progress">0%</i></b></span>
+                                    <span class="col-sm-12">Mengapload... <b><i id="progress">0%</i></b></span>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">Item Paket</label>
-                            <div class="col-sm-8">
-                                <select class="form-control select2 m-b-20" name="item[]" id="val-item" required="">
-                                    <option value="">Pilih Bahan</option>
-                                </select>
-                                <div class="m-t-5" id="item">
-                                </div>
-                            </div>
-                            <div class="col-sm-12 text-right">
-                                <a href="#" class="btn btn-danger btn-sm" id="reset" style="display: none;"><i
-                                        class="fa fa-refresh"></i> Reset Pilihan</a>
-                                <a href="#" class="btn btn-default btn-sm" id="tambah-item"><i
-                                        class="fa fa-plus-circle"></i> Tambah Item</a>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -274,57 +174,37 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
 
-            //GET BAHAN
-            $.ajax({
-                url: host + "/api/inventori/getbahan",
-                method: "GET",
-                headers: headers,
-                success: function(data) {
-                    $.each(data.result, function(key, val) {
-                        $('#val-item').append('<option value="' + val.nama + '">' + val.nama +
-                            '</option>');
-                        $('#val-set-item').append('<option value="' + val.id + '">' + val
-                            .nama + '</option>');
-                    });
-                }
-            });
+            getPaket();
+            function getPaket() {
+               $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: { req: 'getPaket'},
+                    success: function(data) {
+                        $('#setPaket').html(data);
+                    }
+                });
+            }
 
-            $('#tambah-item').click(function(e) {
-                e.preventDefault();
-                $('#reset').css('display', 'inline');
-                if ($(this).hasClass('disabled')) return false;
-                $(this).addClass('disabled');
-
-                var content = $('#content-item').html();
-                $('#item').append(content);
-                $('#item .select2-add').select2();
-
-                var data = $('#fromPaket').serialize();
+            getBahanExcept();
+            function getBahanExcept(exceptId = null) {
                 $.ajax({
                     url: host + "/configuration",
                     method: "POST",
                     headers: headers,
-                    data: data + '&req=seleksibahanpaket',
+                    data: exceptId + '&req=getBahanExcept',
                     success: function(data) {
-                        $.each(data, function(key, val) {
-                            $('#item').find('#val-item').last().append(
-                                '<option value="' + val.nama + '">' + val.nama +
+                        $.each(data.result, function(key, val) {
+                            $('#val-set-item').append('<option value="' + val.id + '">' + val
+                                .nama +
                                 '</option>');
                         });
+
+                        console.log(data.request);
                     }
                 });
-
-            });
-
-            $(document).on('click', '#reset', function() {
-                $('#item').html('');
-                $('#tambah-item').removeClass('disabled');
-                $('#reset').css('display', 'none');
-            });
-
-            $(document).on('change', '#val-item', function() {
-                $('#tambah-item').removeClass('disabled');
-            });
+            }
 
             $('#addSetBahan').submit(function(e) {
                 e.preventDefault();
@@ -335,9 +215,26 @@
                     method: "POST",
                     headers: headers,
                     data: data + '&req=addSetBahan',
-                    success: function(data) {
-                        $('#added').append(data.added);
+                    success: function(result) {
+                        $('#added').append(result.added);
                         $('#empty').attr('hidden', '');
+                        getBahanExcept(data);
+                    }
+                });
+            });
+
+            $(document).on('click', '#set-bahan', function() {
+               var id = $(this).attr('data-id');
+               
+               $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: { paket_id: id, req: 'setAlatClick' },
+                    success: function(result) {
+                        $('#added').append(result.added);
+                        $('#empty').attr('hidden', '');
+                        getBahanExcept(data);
                     }
                 });
             });

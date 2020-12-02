@@ -1201,7 +1201,7 @@ class RestfullApiController extends Controller
 	public function getStatusPesanan($status)
 	{
 		$pemesanan = Pemesanan::where('status', $status)->get();
-		$result = $this->getDataPesanan($pemesanan);
+      $result = $this->getDataPesanan($pemesanan);
 
 		if ($result) {
 			return response()->json([
@@ -1226,8 +1226,8 @@ class RestfullApiController extends Controller
 					$getPkt = Paket::where('id', $pkt->paket_id)->first();
 					$paket[$i]['pemesanan_id'] = $pkt->pemesanan_id;
 					$paket[$i]['paket_id'] = $pkt->paket_id;
-					$paket[$i]['nama_paket'] = $getPkt->nama;
-					$paket[$i]['harga'] = $getPkt->harga;
+					$paket[$i]['nama_paket'] = $getPkt ? $getPkt->nama : null;
+					$paket[$i]['harga'] = $getPkt ? $getPkt->harga : null;
 					$paket[$i]['jumlah'] = $pkt->jumlah;
 					$paket[$i]['total_harga'] = $pkt->total_harga;
 				}
@@ -1261,8 +1261,8 @@ class RestfullApiController extends Controller
 						$getPkt = Paket::where('id', $pkt->paket_id)->first();
 						$paket[$i]['pemesanan_id'] = $pkt->pemesanan_id;
 						$paket[$i]['paket_id'] = $pkt->paket_id;
-						$paket[$i]['nama_paket'] = $getPkt->nama;
-						$paket[$i]['harga'] = $getPkt->harga;
+						$paket[$i]['nama_paket'] = $getPkt ? $getPkt->nama : null;
+						$paket[$i]['harga'] = $getPkt ? $getPkt->harga : null;
 						$paket[$i]['jumlah'] = $pkt->jumlah;
 						$paket[$i]['total_harga'] = $pkt->total_harga;
 					}
@@ -1382,7 +1382,6 @@ class RestfullApiController extends Controller
 			'nama' => 'required',
 			'harga' => 'required',
 			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
-			'item' => 'required',
 			'keterangan' => 'required'
 		]);
 
@@ -1395,20 +1394,14 @@ class RestfullApiController extends Controller
 		}
 
 		try {
-			$data_paket = $request->except('item');
+			$data_paket = $request->all();
 			$foto = $request->file('foto');
 			$nama_foto = 'img_paket_'.time().'.'.$foto->getClientOriginalExtension();
 			$data_paket['foto'] = $nama_foto;
 			$paket = Paket::create($data_paket);
 
 			$path = 'assets/images/paket';
-			$foto->move($path, $paket->foto);
-			foreach ($request->item as $item) {
-				$item_paket = [];
-				$item_paket['paket_id'] = $paket->id;
-				$item_paket['nama_bahan'] = $item;
-				ItemPaket::create($item_paket);
-			}
+         $foto->move($path, $paket->foto);
 
 			return response()->json([
 				'success' => true,

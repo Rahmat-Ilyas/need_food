@@ -10,7 +10,9 @@ use App\Model\Transaksi;
 use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddBahan;
+use App\Model\SetBahan;
 use App\Model\AddAlat;
+use App\Model\SetAlat;
 use App\Model\Driver;
 use App\Model\Paket;
 use App\Model\Bahan;
@@ -326,26 +328,85 @@ class ConfigController extends Controller
 						'message' => 'Terjadi kesalahan',
 					]);	
 				}
-			} else if ($request->req == 'addSetBahan') {
+         } else if ($request->req == 'getPaket') {
+            $paket = Paket::all();
+            $result = '';
+
+            $jumbahan = [];
+            $getid = [];
+            foreach ($paket as $i => $set) {
+               $setutama = SetBahan::where('paket_id', $set->id)->where('jenis', 'utama')->get();
+               $jumbahan[] = count($setutama);
+               foreach ($setutama as $item) {
+                  $getid[$set->id][] = $item->bahan_id;
+               }
+            }
+
+            foreach ($paket as $dta) {
+               $get_bahan_utama = [];
+               $get_bahan_utama = SetBahan::where('paket_id', $dta->id)->where('jenis', 'utama')->get();
+               $bahan_utama = '';
+               for ($i=0; $i < max($jumbahan); $i++) {
+                  isset($getid[$dta->id][$i]) ? $bahan_id = $getid[$dta->id][$i] : $bahan_id = null;
+                  $bahan = Bahan::where('id', $bahan_id)->first();
+                  if ($bahan) $bahan_utama .= '<li>'.$bahan->nama.'</li>';
+                  else $bahan_utama .= '<li>-</li>';
+               }
+               
+               $result .= '
+               <div class="col-md-4">
+                  <div class="price_card text-center">
+                     <div class="pricing-header text-dark" style="background-image: url('. asset('assets/images/paket/'.$dta->foto) .'); background-repeat: no-repeat; background-position: center; background-size: cover;">
+                        <span class="price">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
+                        <span class="name" style="font-size: 20px;">'.$dta->nama.'</span>
+                     </div>
+                     <p class="m-t-20"><i><b>'.$dta->keterangan.'</b></i></p>
+                     <ul class="price-features" id="bahan-utama">'.$bahan_utama.'</ul>
+                     <hr class="m-b-0">
+                     <div class="container">
+                        <div class="row">
+                              <div class="col-md-6">
+                                 <button class="btn btn-block btn-inverse btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-set-bahan" id="set-bahan" data-id="'.$dta->id.'"><i class="md-shopping-basket"></i> Set Bahan</button>
+                              </div>
+                              <div class="col-md-6">
+                                 <button class="btn btn-block btn-purple btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-set-alat" id="set-alat" data-id="'.$dta->id.'"><i class="md-restaurant-menu"></i> Set Alat</button>
+                              </div>
+                              <div class="col-md-6">
+                                 <button class="btn btn-block btn-info btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-edit" id="edit-paket" data-id="'.$dta->id.'"><i class="fa fa-edit"></i> Edit</button>
+                              </div>
+                              <div class="col-md-6">
+                                 <button class="btn btn-block btn-danger btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-hapus" id="hapus-paket" data-id="'.$dta->id.'"><i class="fa fa-trash"></i> Hapus</button>
+                              </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>';
+            }
+            return response()->json($result);
+         } else if ($request->req == 'setAlatClick') {
+            $bahan_exits = SetBahan::where('paket_id', $request->paket_id);
+            return response()->json([
+               'result' => $bahan,
+               'request' => $request->all()
+            ]);
+         } else if ($request->req == 'addSetBahan') {
             $bahan = Bahan::where('id', $request->bahan_id)->first();
             $exits = '<input type="hidden" name="exits[]" value="'. $bahan->id .'">';
             $added = '<tr>
                            <td>'. $bahan->nama .'</td>
                            <td class="form-inline text-center">
-                              <input type="number" class="form-control" style="height: 30px; width: 60px;"
-                                 name="jumlah">
+                              <input type="hidden" name="getid_bahan[]" value="'. $bahan->id .'">
+                              <input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]">
                               <span><b>pcs</b> /</span>
-                              <input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket"
-                                 value="1">
+                              <input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="1">
                               <span><b>pax</b></span>
                            </td>
                            <td class="form-inline">
-                              <input type="number" class="form-control" style="height: 30px; width: 90px;"
-                                 name="maksimal">
+                              <input type="number" class="form-control" style="height: 30px; width: 90px;" name="maksimal[]">
                               <span><b>pcs</b></span>
                            </td>
                            <td class="text-center">
-                              <input type="checkbox" data-plugin="switchery" data-size="small" name="jenis">
+                              <input type="checkbox" data-plugin="switchery" data-size="small" name="jenis[]">
                            </td>
                            <td class="text-center">
                               <a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-bahan"><i class="fa fa-trash"></i></a>

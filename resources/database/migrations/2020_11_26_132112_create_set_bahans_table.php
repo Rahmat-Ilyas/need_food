@@ -19,6 +19,7 @@ class CreateSetBahansTable extends Migration
             $table->integer('bahan_id');
             $table->integer('jumlah');
             $table->integer('per_paket');
+            $table->integer('maksimal');
             $table->string('jenis');
             $table->timestamps();
         });
