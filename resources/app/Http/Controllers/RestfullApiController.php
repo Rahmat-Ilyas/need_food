@@ -1331,6 +1331,44 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
+   }
+   
+   public function updateDriverPesanan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'driver_id' => 'required|integer',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+		
+		try {
+			$update = Pemesanan::find($id);
+			if ($update) {
+				$update->driver_id = $request->driver_id;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
 	}
 
 	public function updateTransaksiPesanan(Request $request, $id)
