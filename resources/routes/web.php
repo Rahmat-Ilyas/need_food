@@ -13,9 +13,9 @@
 
 Route::get('/','landingpagecontroller@index')->name('page.index');
 Route::get('/order','landingpagecontroller@orderindex')->name('page.order.index');
-Route::get('/keranjang','landingpageController@keranjang_index')->name('page.keranjang');
+Route::get('/keranjang','landingpagecontroller@keranjang_index')->name('page.keranjang');
 Route::get('/keranjang/detail_alat','landingpageController@detail_alat')->name('page.detail_alat');
-Route::get('/pengantaran','landingpageController@pengantaran')->name('page.pengantaran');
+Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.pengantaran');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {
