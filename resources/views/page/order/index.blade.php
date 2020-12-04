@@ -5,15 +5,16 @@
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="box">
-                    
+
                     <div class="row">
                         <div class="col-md-2">
                             <div class="box_menu_paket grid_box_paket">
                                 <div class="box_title_paket">Menu</div>
-                            <div class="list_menu_paket"> <img src="{{ asset('page/assets/images/rounded.png') }}" alt="" class="rounded"> YAKINIKU</div>
-                            <div class="list_menu_paket"> <img src="{{ asset('page/assets/images/rounded.png') }}" alt="" class="rounded"> SHABU</div>
-                            <div class="list_menu_paket"> <img src="{{ asset('page/assets/images/rounded.png') }}" alt="" class="rounded"> SHABU</div>
+                                <div class="list_menu_paket">YAKINIKU</div>
+                                <div class="list_menu_paket">SHABU</div>
+                                <div class="list_menu_paket">SHABU</div>
                             </div>
+
                         </div>
                         <div class="col-lg-10">
                             @include('page.order.yakiniku')

@@ -38,28 +38,31 @@
 
             </div>
         </div>
+
         <div class="col-lg-4">
-            <div class="paket_general">
-                <p> <span class="currency-general">Rp 100.000</span><span
-                        class="sub-currency">/ Paket</span></p>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="input-groups">
-                        <span class="input-group-btn">
-                            <button type="button" class="tombols btn-number"
-                                disabled="disabled" data-type="minus" data-field="quant[1]">
-                                <i class="icofont-minus icon-number"></i>
-                            </button>
-                        </span>
-                        <input type="text" name="quant[1]" class="form-nedd input-number"
-                            value="1" min="1" max="1000">
-                        <span class="input-group-btn">
-                            <button type="button" class="tombols btn-number" data-type="plus"
-                                data-field="quant[1]">
-                                <i class="icofont-plus icon-number"></i>
-                            </button>
-                        </span>
+            <div class="grid_group_button_order">
+                <div class="paket_general">
+                    <p> <span class="currency-general">Rp 100.000</span><span
+                            class="sub-currency">/ Paket</span></p>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="input-groups grid_calculate_order">
+                            <span class="input-group-btn">
+                                <button type="button" class="tombols btn-number"
+                                    disabled="disabled" data-type="minus" data-field="quant[1]">
+                                    <i class="icofont-minus icon-number"></i>
+                                </button>
+                            </span>
+                            <input type="text" name="quant[1]" class="form-nedd input-number"
+                                value="1" min="1" max="1000">
+                            <span class="input-group-btn">
+                                <button type="button" class="tombols btn-number" data-type="plus"
+                                    data-field="quant[1]">
+                                    <i class="icofont-plus icon-number"></i>
+                                </button>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

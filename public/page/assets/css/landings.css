@@ -727,6 +727,53 @@ footer {
     display: none;
 }
 
+.flat_button{
+    width: 68px;
+    height: 48px;
+    border: 1px solid #FF9742;
+    box-sizing: border-box;
+    border-radius: 9px 0px 0px 9px;
+}
+
+.grid_button_flag{
+    position: fixed;
+    bottom: -4px;
+    right: 12px;
+    top: 320px;
+}
+
+.grid_button_faq{
+    position: fixed;
+    bottom: -4px;
+    right: 12px;
+    top: 380px;
+}
+
+.faq_text{
+    font-family: 'Playfair Display', serif;  
+    color: #FF9742;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+    left: 16px;
+    top: 7px;
+}
+
+.icofont-shopping-cart{
+    font-size: 30px;
+    color: #FF9742;
+    position: relative;
+    left: 20px;
+    top: 7px;
+}
+
+.pill_number{
+    position: absolute;
+    right: 8px;
+    top: 2px;
+}
+
+
 @media only screen and (max-width:576px) {
 
     body{
@@ -830,7 +877,13 @@ footer {
         text-align: center;
     }
 
-    
+    .grid_button_faq{
+        left: 300px;
+    }
+
+    .grid_button_flag{
+        left: 300px;
+    }
 
     .content-first{
         margin-top: 80px;

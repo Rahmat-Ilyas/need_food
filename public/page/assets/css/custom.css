@@ -102,8 +102,8 @@ nav a:hover {
     font-size: 20px;
     line-height: 30px;
     color: #EF8C17;
-    /* text-align: center; */
-    width: 224px;
+    text-align: center;
+    width: 221px;
     margin-top: 10px;
     padding: 10px;
     background: #FDFDFD;
@@ -711,6 +711,10 @@ button:focus {
     bottom: 25px;
 }
 
+.star{
+    font-size: 25px;
+}
+
 .star-rating {
     display: flex;
     flex-direction: row-reverse;
@@ -721,7 +725,7 @@ button:focus {
     width: 7em;
     position: relative;
     left: 100px;
-    bottom: 70px;
+    bottom: 55px;
 }
 
 .star-rating input {
@@ -1110,6 +1114,8 @@ footer {
     margin-top: 13px;
 }
 
+
+
 @media only screen and (max-width:576px) {
 
     #logos {
@@ -1241,7 +1247,7 @@ footer {
     }
 
     .imageproduct {
-        width: 400px;
+        width: 350px;
         position: relative;
         right: 60px;
         padding: 40px;
@@ -1274,9 +1280,8 @@ footer {
     }
 
     .paket_general {
-        margin-top: 0px;
-        position: relative;
-        right: 10px;
+        position: absolute;
+        bottom: 75px;
     }
 
     .currency-general {
@@ -1383,6 +1388,30 @@ footer {
 
     .box-harga{
         padding: 15px 0 0 0;
+    }
+
+    .box_menu_paket{
+        display: none;
+    }
+
+    .banner_order_additional{
+        margin-top: 50px;
+    }
+
+    .text-card-order{
+        text-align: left;
+        position: relative;
+        right: 25px;
+    }
+
+    .grid_calculate_order{
+        position: absolute;
+        bottom: 30px;
+        left: 200px;
+    }
+
+    .menu_grid{
+        margin-bottom: 20px;
     }
 
 }
