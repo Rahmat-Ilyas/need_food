@@ -59,6 +59,63 @@ nav a:hover {
     text-decoration: none;
 }
 
+.box_menu_paket{
+    width: 224px;
+    height: 279px;
+    border: 1px solid #EF8C17;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+}
+
+.grid_box_paket{
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.menu_grid{
+    position: relative;
+    left: 30px;
+}
+
+.box_title_paket{
+    width: 224px;
+    height: 50px;
+    background: #FF9742;
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 5px 5px 0px 0px;
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 30px;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+}
+
+
+.list_menu_paket{
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 30px;
+    color: #EF8C17;
+    /* text-align: center; */
+    width: 224px;
+    margin-top: 10px;
+    padding: 10px;
+    background: #FDFDFD;
+    /* box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25); */
+    border-radius: 0px;
+    cursor: pointer;
+}
+
+.rounded{
+    margin-right: 15px;
+}
+
 .banner_order {
     background: #F5F0EC;
     padding: 60px 0 60px 0;
@@ -1289,17 +1346,43 @@ footer {
         margin-top: 40px;
     }
 
-    /* .list-footer {
-        list-style: none;
-        color: #ffffff;
-        font-family: 'Poppins', sans-serif;
-        font-size: 20px;
-        line-height: 30px;
-        font-weight: normal;
-        font-style: normal;
+    .box-keranjang{
+        border: none;
+    }
+
+    .img-keranjang{
+        width: 112px;
+        height: 88px;
+    }
+
+    .group-text-keranjang{
+        position: absolute;
+        left: 90px;
+        bottom: 30px;
+    }
+
+    .text-image-keranjang{
+        font-size: 14px;
+    }
+
+    .text-currency-keranjang{
+        font-size: 14px;
         position: relative;
-        right: 40px;
-        width: 100%;
-    } */
+        bottom: 10px;
+    }
+
+    .form-keranjang{
+        position: absolute;
+        left: 160px;
+        bottom: 5px;
+    }
+
+    .box_total_keranjang{
+        font-size: 20px;
+    }
+
+    .box-harga{
+        padding: 15px 0 0 0;
+    }
 
 }

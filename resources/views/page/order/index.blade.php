@@ -5,29 +5,23 @@
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="box">
-                    <nav class="nav-order">
-                        <div class="nav" id="nav-tab" role="tablist">
-                            <a class="tabs-order" data-toggle="tab" href="#yakiniku" role="tab" aria-controls="yakiniku"
-                                aria-selected="false">Yakiniku</a>
-                            <a class="tabs-order" data-toggle="tab" href="#shabu1" role="tab" aria-controls="shabu1"
-                                aria-selected="false">Shabu 1</a>
-                            <a class="tabs-order" data-toggle="tab" href="#shabu2" role="tab" aria-controls="shabu2"
-                                aria-selected="false"> Shabu 2</a>
-                            <div class="animation start-home"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="box_menu_paket grid_box_paket">
+                                <div class="box_title_paket">Menu</div>
+                            <div class="list_menu_paket"> <img src="{{ asset('page/assets/images/rounded.png') }}" alt="" class="rounded"> YAKINIKU</div>
+                            <div class="list_menu_paket"> <img src="{{ asset('page/assets/images/rounded.png') }}" alt="" class="rounded"> SHABU</div>
+                            <div class="list_menu_paket"> <img src="{{ asset('page/assets/images/rounded.png') }}" alt="" class="rounded"> SHABU</div>
+                            </div>
                         </div>
-                    </nav>
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="yakiniku" role="tabpanel"
-                            aria-labelledby="yakiniku-tab">
+                        <div class="col-lg-10">
                             @include('page.order.yakiniku')
                         </div>
-                        <div class="tab-pane fade" id="shabu1" role="tabpanel" aria-labelledby="shabu1-tab">
-                            @include('page.order.shabu')
                         </div>
-                        <div class="tab-pane fade" id="shabu2" role="tabpanel" aria-labelledby="shabu2-tab">
-                            @include('page.order.shabuhh')
-                        </div>
+                        
                     </div>
+                    
                 </div>
             </div>
         </div>

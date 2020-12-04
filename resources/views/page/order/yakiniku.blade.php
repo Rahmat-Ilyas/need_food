@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-8 menu_grid">
             <div class="row">
                 <div class="col-lg-12">
                     <img src="{{ asset('page/assets/images/product/yakiniku.jpg') }}"

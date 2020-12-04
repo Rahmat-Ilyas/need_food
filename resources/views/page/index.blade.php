@@ -1,39 +1,21 @@
 @extends('headfood.pagelanding')
 @section('homes')
 <header>
-    <div class="banner-area">
-        <div class="single-banner">
-            <div class="banner-img">
-                <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
-            </div>
-            <div class="sub_banner_text">NGUMPUL BARENG TEMAN BINGUNG MAU MAKAN APA ?</div>
-            <div class="banner-text">Need Food Container <br> Solusinya</div>
-            <div class="tombol_jumbroton">
-                <button class="tombol-lg tombol-order_header">Masukkan Keranjang</button>
-            </div>
-            <div class="text_time_header"> Setiap hari 08:30 am - 23:00 pm </div>
+    <div class="single-banner">
+        <div class="banner-img">
+            <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
         </div>
-        <div class="single-banner">
-            <div class="banner-img">
-                <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
-            </div>
-            <div class="sub_banner_text">NGUMPUL BARENG TEMAN BINGUNG MAU MAKAN APA ?</div>
-            <div class="banner-text">Need Food Container <br> Solusinya</div>
-            <div class="tombol_jumbroton">
-                <button class="tombol-lg tombol-order_header">Masukkan Keranjang</button>
-            </div>
-            <div class="text_time_header"> Setiap hari 08:30 am - 23:00 pm </div>
-        </div>
-        <div class="single-banner">
-            <div class="banner-img">
-                <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
-            </div>
-            <div class="sub_banner_text">NGUMPUL BARENG TEMAN BINGUNG MAU MAKAN APA ?</div>
-            <div class="banner-text">Need Food Container <br> Solusinya</div>
-            <div class="tombol_jumbroton">
-                <button class="tombol-lg tombol-order_header">Masukkan Keranjang</button>
-            </div>
-            <div class="text_time_header"> Setiap hari 08:30 am - 23:00 pm </div>
+        <div class="container">
+            {{-- <div class="row"> --}}
+             
+                <div class="sub_banner_text">NGUMPUL BARENG TEMAN BINGUNG MAU MAKAN APA ?</div>
+                 <div class="banner-text">Need Food Container <br> Solusinya</div>
+                 <div class="tombol_jumbroton">
+                     <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
+                   </div>
+                  <div class="text_time_header"> Setiap hari 08:30 am - 23:00 pm </div>
+             
+            {{-- </div> --}}
         </div>
     </div>
 </header>
@@ -41,16 +23,15 @@
 <section class="tentang">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 content-first">
+            <div class="col-md-6 content-first">
                 <div class="title_tentang"> Tentang Kami </div>
-                <img src="{{ asset('page/assets/images/ball_orange.png') }}" class="ball_orange" alt="" srcset="">
                 <p class="text_tentang">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Commodo mattis viverra
                     arcu ac cras donec quam ut mauris. Faucibus cursus accumsan quis lorem quis adipiscing non odio
                     elementum.</p>
                 <button class="tombol-custom tombol_tentang grid_button_tentang">LIHAT SEMUA</button>
             </div>
-            <div class="col-lg-6">
-                <iframe width="606px" height="496px" src="https://www.youtube.com/embed/TUhw_l4jCUU" frameborder="0"
+            <div class="col-md-6">
+                <iframe src="https://www.youtube.com/embed/TUhw_l4jCUU" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen class="video_youtube"></iframe>
                 <img src="{{ asset('page/assets/images/background_titik.png') }}" alt="" srcset=""
@@ -62,15 +43,19 @@
 </section>
 
 <section class="service">
-    <div class="title_tentang text-center"> Service </div>
-    <div class="row box_card">
-        <div class="col-lg-6">
-            <img src="{{ asset('page/assets/images/home_service.png') }}" alt="">   
-            <p class="text_tentang mt-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus consectetur nulla turpis at justo, </p>             
-        </div>
-        <div class="col-lg-6">
-            <img src="{{ asset('page/assets/images/food_stall.png') }}" alt="">
-            <p class="text_tentang mt-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus consectetur nulla turpis at justo, </p>
+    <div class="title_service text-center"> Service </div>
+    <div class="container">
+        <div class="row box_card">
+            <div class="col-md-6">
+                <img src="{{ asset('page/assets/images/home_service.png') }}" class="img_service" alt="">   
+                <img src="{{ asset('page/assets/images/home_service_mini.png') }}" class="img_service_mini" alt="" srcset="">
+               <p class="text_service mt-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus consectetur nulla turpis at justo, </p>  
+            </div>
+            <div class="col-md-6">
+                <img src="{{ asset('page/assets/images/food_stall.png') }}" class="img_service" alt="">
+                <img src="{{ asset('page/assets/images/food_stall_mini.png') }}" class="img_service_mini" alt="">
+               <p class="text_service mt-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus consectetur nulla turpis at justo, </p>  
+            </div>
         </div>
     </div>
 </section>
@@ -142,8 +127,14 @@
 </section>
 
 <section class="keunggulan">
+    <div class="container">
     <div class="title_keunggulan"> keunggulan Bahan Kami </div>
-    <p class="text_keunggulan">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Id commodo commodo, massa sit ipsum proin sed sollicitudin. Urna nibh adipiscing parturient sem et porttitor aliquet eget. Convallis sit phasellus mattis integer eget felis. In tortor pharetra maecenas </p>
+        <div class="row">
+            <div class="col-md-12">
+                <p class="text_keunggulan">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Id commodo commodo, massa sit ipsum proin sed sollicitudin. Urna nibh adipiscing parturient sem et porttitor aliquet eget. Convallis sit phasellus mattis integer eget felis. In tortor pharetra maecenas </p>
+            </div>
+        </div>
+    </div>
 </section>
 
 <section class="layouts_area">
@@ -193,12 +184,12 @@
 <section class="saran_masukan">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-md-6">
                 <div class="title_tentang"> Saran dan <br> <span class="note_text">Masukkan</span> </div>
                 <p class="text_saran">Masukkan saran tentang produk <br> dan pelayanan kami</p>
             <img src="{{ asset('page/assets/images/background_titik.png') }}" class="img-saran" alt="">
             </div>
-            <div class="col-lg-6 section_title_group">
+            <div class="col-md-6 section_title_group">
                 <div class="box_kontak">
                         <form class="form_kontak">
                             <div class="form-group">

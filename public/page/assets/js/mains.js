@@ -85,3 +85,11 @@ $(".input-number").keydown(function (e) {
         })
         $('#exampleModalCenter').modal('show');
     }
+
+    $('.list_menu_paket').mouseenter(function () { 
+        $(this).css('box-shadow', '0px 2px 11px rgba(0, 0, 0, 0.25)');
+    });
+
+    $('.list_menu_paket').mouseleave(function () { 
+        $(this).css('box-shadow', 'none');
+    });
