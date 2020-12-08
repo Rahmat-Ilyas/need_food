@@ -87,7 +87,7 @@
                                         <div class="box_total_keranjang">Rp 120.000</div>
                                     </div> 
                                 </div>
-                                    <button class="tombol-custom tombol-keranjang grid_button_cart">BUAT PESANAN</button>
+                                    <button class="tombol-custom tombol-keranjang text-button grid_button_cart">BUAT PESANAN</button>
                                     <div class="text_danger_info_cart">* Pesanan Minimum 2 pcs</div>
                            </div>
                        </div>

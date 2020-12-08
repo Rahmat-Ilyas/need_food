@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="tombol-custom tombol-keranjang">Checkout</button>
+                        <button class="tombol-custom tombol-keranjang text-button">Checkout</button>
                         <hr class="line_cart_pemesanan">
                         <div class="ongkos_kirim">
                             <div class="title_ongkos">Tarif Ongkos Kirim</div>

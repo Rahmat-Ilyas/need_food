@@ -68,7 +68,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="tombol-lg tombol-keranjang">Masukkan Keranjang</button>
+                    <button class="tombol-lg tombol-keranjang text-button">Masukkan Keranjang</button>
                 </div>
             </div>
         </div>

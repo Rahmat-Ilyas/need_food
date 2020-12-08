@@ -110,6 +110,7 @@
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/mains.js') }}"></script>
+<script src="{{ asset('page/assets/js/landing.js') }}"></script>
 
 @stack('skript')
 

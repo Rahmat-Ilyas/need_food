@@ -103,7 +103,8 @@
 <script src="{{ asset('page/assets/js/jquery-3.5.1.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('page/assets/js/main.js') }}"></script>
+<script src="{{ asset('page/assets/js/mains.js') }}"></script>
+<script src="{{ asset('page/assets/js/landing.js') }}"></script>
 <script src="{{ asset('page/assets/js/slick.min.js') }}"></script>
 <script>
     

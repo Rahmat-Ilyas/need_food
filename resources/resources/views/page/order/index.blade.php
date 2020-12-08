@@ -268,7 +268,7 @@
                                         <li>- &nbsp; 5 Sirlon US 200g</li>
                                     </ul>
                                     <div class="col-sm-12">
-                                        <button class="tombol-custom tombol-keranjang">Masukkan Keranjang</button>
+                                        <button class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
                                     </div>
                                 </div>
                             </div>

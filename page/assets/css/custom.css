@@ -377,7 +377,6 @@ label{
 }
 
 .tombols {
-    padding: 2px 10px;
     margin-bottom: 0;
     display: inline-block;
     text-decoration: none;
@@ -507,7 +506,6 @@ button:focus {
     margin-bottom: 0;
     display: inline-block;
     text-decoration: none;
-    text-align: center;
     white-space: nowrap;
     vertical-align: middle;
     -ms-touch-action: manipulation;
@@ -519,6 +517,16 @@ button:focus {
     user-select: none;
     background-image: none;
     border: 1px solid transparent;
+}
+
+.text-button{
+    text-align: center;
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+    color: #ffffff;
 }
 
 .tombol-custom {
@@ -545,7 +553,6 @@ button:focus {
 }
 
 .tombol-keranjang {
-    color: #ffffff;
     background-color: #EF8C17;
     border-color: #EF8C17;
 }
@@ -683,9 +690,9 @@ button:focus {
 .currency-general {
     font-family: 'Poppins', serif;
     font-style: normal;
-    font-size: 37px;
+    font-size: 24px;
     font-weight: bold;
-    line-height: 55px;
+    line-height: 36px;
     color: #EF8C17;
 }
 
@@ -1255,14 +1262,14 @@ footer {
 
     .star-rating {
         position: relative;
-        left: 60px;
-        bottom: 70px;
+        left: 40px;
+        bottom: 55px;
     }
 
     .label_rating {
         font-size: 22px;
         position: relative;
-        left: 10px;
+        left: -10px;
         bottom: 25px;
     }
 
@@ -1281,11 +1288,13 @@ footer {
 
     .paket_general {
         position: absolute;
-        bottom: 75px;
+        bottom: 85px; 
     }
 
     .currency-general {
-        font-size: 22px;
+        font-size: 18px;
+        line-height: 179%;
+        letter-spacing: 0.07em;
     }
 
     .sub-currency {
