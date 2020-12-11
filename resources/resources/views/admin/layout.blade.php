@@ -290,6 +290,9 @@
   <script src="{{ asset('assets/js/sweetalert2/sweetalert2.all.js') }}"></script>
   <script src="{{ asset('assets/plugins/switchery/js/switchery.min.js') }}"></script>
 
+  <script src="{{ asset('assets/plugins/notifyjs/js/notify.js') }}"></script>
+  <script src="{{ asset('assets/plugins/notifications/notify-metro.js') }}"></script>
+
   <script src="{{ asset('assets/js/jquery.core.js') }}"></script>
   <script src="{{ asset('assets/js/jquery.app.js') }}"></script>
   <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -313,34 +316,8 @@
 
       // DataTables
       $('#datatable').dataTable();
-      $('#datatable-keytable').DataTable({keys: true});
-      $('#datatable-responsive').DataTable();
-      $('#datatable-colvid').DataTable({
-        "dom": 'C<"clear">lfrtip',
-        "colVis": {
-          "buttonText": "Change columns"
-        }
-      });
-      $('#datatable-scroller').DataTable({
-        ajax: "assets/plugins/datatables/json/scroller-demo.json",
-        deferRender: true,
-        scrollY: 380,
-        scrollCollapse: true,
-        scroller: true
-      });
-      var table = $('#datatable-fixed-header').DataTable({fixedHeader: true});
-      var table = $('#datatable-fixed-col').DataTable({
-        scrollY: "300px",
-        scrollX: true,
-        scrollCollapse: true,
-        paging: false,
-        fixedColumns: {
-          leftColumns: 1,
-          rightColumns: 1
-        }
-      });
 
-      TableManageButtons.init();
+      // TableManageButtons.init();
     });
   </script>
 </body>

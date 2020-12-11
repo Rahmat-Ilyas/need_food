@@ -92,6 +92,53 @@
     </div>
 
     <!-- Modal Set Alat -->
+    <div class="modal modal-set-alat" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+        style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myLargeModalLabel">Set Alat Paket</h4>
+                </div>
+                <div class="modal-body" style="padding: 20px 50px 0 50px;">
+                    <div class="form-group row">
+                        <form id="addSetAlat" action="#">
+                            <div class="col-sm-7">
+                                <select class="form-control select2" name="alat_id" id="val-set-item1" required="">
+                                    
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <hr class="m-t-0">
+                    <h4>List Alat</h4>
+                    <form id="fromSetPaket1" action="#">
+                        <table class="table table-bordered m-0">
+                            <thead>
+                                <tr>
+                                    <th width="250">Nama Alat</th>
+                                    <th style="width: 200px;">Atur Jumlah</th>
+                                    <th style="width: 180px;">Jumlah Maksimal<i>(Isi jika ada)</i></th>
+                                    <th style="width: 20px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="added1">
+                                
+                            </tbody>
+                        </table>
+                        <div class="form-group row m-t-20">
+                            <div class="col-sm-12">
+                                <input type="hidden" name="paket_id" id="paket_id1">
+                                <button type="submit" name="simpan" class="btn btn-default">Atur</button>
+                                <button type="" class="btn btn-primary" id="batal" data-dismiss="modal"
+                                    aria-hidden="true">Batal</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Set Bahan -->
     <div class="modal modal-set-bahan" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
@@ -105,22 +152,16 @@
                 <div class="modal-body" style="padding: 20px 50px 0 50px;">
                     <div class="form-group row">
                         <form id="addSetBahan" action="#">
-                            <div class="col-sm-6">
+                            <div class="col-sm-7">
                                 <select class="form-control select2" name="bahan_id" id="val-set-item" required="">
-                                    <option value="">Pilih Bahan</option>
+                                    
                                 </select>
-                            </div>
-                            <div id="set-exits">
-                            </div>
-                            <div class="col-sm-6">
-                                <button type="submit" class="btn btn-default"><i class="fa fa-plus-circle"></i>
-                                    Tambah</button>
                             </div>
                         </form>
                     </div>
                     <hr class="m-t-0">
                     <h4>List Bahan</h4>
-                    <form id="fromPaket" action="#">
+                    <form id="fromSetPaket" action="#">
                         <table class="table table-bordered m-0">
                             <thead>
                                 <tr>
@@ -132,14 +173,13 @@
                                 </tr>
                             </thead>
                             <tbody id="added">
-                                <tr class="text-center" id="empty">
-                                    <td colspan="5"><i>Beluam ada data yang ditambah</i></td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                         <div class="form-group row m-t-20">
                             <div class="col-sm-12">
-                                <button type="submit" name="simpan" class="btn btn-default" id="upload">Atur</button>
+                                <input type="hidden" name="paket_id" id="paket_id">
+                                <button type="submit" name="simpan" class="btn btn-default">Atur</button>
                                 <button type="" class="btn btn-primary" id="batal" data-dismiss="modal"
                                     aria-hidden="true">Batal</button>
                             </div>
@@ -151,14 +191,6 @@
     </div>
 
     <!-- Modal Edit -->
-
-    <div hidden="" id="content-item">
-        <div class="m-b-5">
-            <select class="form-control select2-add" name="item[]" id="val-item" required="">
-                <option value="">Pilih Bahan</option>
-            </select>
-        </div>
-    </div>
 
 @endsection
 
@@ -188,27 +220,36 @@
             }
 
             getBahanExcept();
-            function getBahanExcept(exceptId = null) {
+            function getBahanExcept() {
+                var fromSetPaket = $('#fromSetPaket').serialize();
                 $.ajax({
                     url: host + "/configuration",
                     method: "POST",
                     headers: headers,
-                    data: exceptId + '&req=getBahanExcept',
+                    data: fromSetPaket + '&req=getBahanExcept',
                     success: function(data) {
-                        $.each(data.result, function(key, val) {
-                            $('#val-set-item').append('<option value="' + val.id + '">' + val
-                                .nama +
-                                '</option>');
-                        });
-
-                        console.log(data.request);
+                        $('#val-set-item').html(data.result);
                     }
                 });
             }
 
-            $('#addSetBahan').submit(function(e) {
+            getAlatExcept();
+            function getAlatExcept() {
+                var fromSetPaket = $('#fromSetPaket1').serialize();
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: fromSetPaket + '&req=getAlatExcept',
+                    success: function(data) {
+                        $('#val-set-item1').html(data.result);
+                    }
+                });
+            }
+
+            $('#val-set-item').change(function(e) {
                 e.preventDefault();
-                var data = $(this).serialize();
+                var data = $('#addSetBahan').serialize();
 
                 $.ajax({
                     url: host + "/configuration",
@@ -216,15 +257,49 @@
                     headers: headers,
                     data: data + '&req=addSetBahan',
                     success: function(result) {
+                        $('#empty').remove();
                         $('#added').append(result.added);
-                        $('#empty').attr('hidden', '');
-                        getBahanExcept(data);
+                        getBahanExcept();
+                    }
+                });
+            });
+
+            $('#val-set-item1').change(function(e) {
+                e.preventDefault();
+                var data = $('#addSetAlat').serialize();
+
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: data + '&req=addSetAlat',
+                    success: function(result) {
+                        $('#empty1').remove();
+                        $('#added1').append(result.added);
+                        getAlatExcept();
                     }
                 });
             });
 
             $(document).on('click', '#set-bahan', function() {
                var id = $(this).attr('data-id');
+               $('#paket_id').val(id);
+               
+               $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: { paket_id: id, req: 'setBahanClick' },
+                    success: function(result) {
+                        $('#added').html(result.added);
+                        getBahanExcept();
+                    }
+                });
+            });
+
+            $(document).on('click', '#set-alat', function() {
+               var id = $(this).attr('data-id');
+               $('#paket_id1').val(id);
                
                $.ajax({
                     url: host + "/configuration",
@@ -232,9 +307,76 @@
                     headers: headers,
                     data: { paket_id: id, req: 'setAlatClick' },
                     success: function(result) {
-                        $('#added').append(result.added);
-                        $('#empty').attr('hidden', '');
-                        getBahanExcept(data);
+                        $('#added1').html(result.added);
+                        getAlatExcept();
+                    }
+                });
+            });
+
+            $(document).on('click', '#remove-bahan', function(e) {
+                e.preventDefault();
+                $(this).parents('#this-form-added').remove();
+                var fromSetPaket = $('#fromSetPaket').serialize();
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: fromSetPaket + '&req=ifEmptyBahan',
+                    success: function(data) {
+                        if (data == 'empty') {
+                            $('#added').html('<tr class="text-center" id="empty"><td colspan="5"><i>Beluam ada data yang ditambah</i></td></tr>');
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '#remove-alat', function(e) {
+                e.preventDefault();
+                $(this).parents('#this-form-added1').remove();
+                var fromSetPaket = $('#fromSetPaket1').serialize();
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: fromSetPaket + '&req=ifEmptyAlat',
+                    success: function(data) {
+                        if (data == 'empty') {
+                            $('#added1').html('<tr class="text-center" id="empty1"><td colspan="4"><i>Beluam ada data yang ditambah</i></td></tr>');
+                        }
+                    }
+                });
+            });
+
+            $('#fromSetPaket').submit(function(e) {
+                e.preventDefault();
+
+                var fromSetPaket = $('#fromSetPaket').serialize();
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: fromSetPaket + '&req=setBahanPaket',
+                    success: function(data) {
+                        getPaket();
+                        $('.modal').modal('hide');
+                        $.Notification.notify(data.status,'top right', data.title, data.message);
+                    }
+                });
+            });
+
+            $('#fromSetPaket1').submit(function(e) {
+                e.preventDefault();
+
+                var fromSetPaket = $('#fromSetPaket1').serialize();
+                $.ajax({
+                    url: host + "/configuration",
+                    method: "POST",
+                    headers: headers,
+                    data: fromSetPaket + '&req=setAlatPaket',
+                    success: function(data) {
+                        getPaket();
+                        $('.modal').modal('hide');
+                        $.Notification.notify(data.status,'top right', data.title, data.message);
                     }
                 });
             });

@@ -328,93 +328,258 @@ class ConfigController extends Controller
 						'message' => 'Terjadi kesalahan',
 					]);	
 				}
-         } else if ($request->req == 'getPaket') {
-            $paket = Paket::all();
-            $result = '';
+			} else if ($request->req == 'getPaket') {
+				$paket = Paket::all();
+				$result = '';
 
-            $jumbahan = [];
-            $getid = [];
-            foreach ($paket as $i => $set) {
-               $setutama = SetBahan::where('paket_id', $set->id)->where('jenis', 'utama')->get();
-               $jumbahan[] = count($setutama);
-               foreach ($setutama as $item) {
-                  $getid[$set->id][] = $item->bahan_id;
-               }
-            }
+				$jumbahan = [];
+				$getid = [];
+				foreach ($paket as $i => $set) {
+					$setutama = SetBahan::where('paket_id', $set->id)->where('jenis', 'utama')->get();
+					$jumbahan[] = count($setutama);
+					foreach ($setutama as $item) {
+						$getid[$set->id][] = $item->bahan_id;
+					}
+				}
 
-            foreach ($paket as $dta) {
-               $get_bahan_utama = [];
-               $get_bahan_utama = SetBahan::where('paket_id', $dta->id)->where('jenis', 'utama')->get();
-               $bahan_utama = '';
-               for ($i=0; $i < max($jumbahan); $i++) {
-                  isset($getid[$dta->id][$i]) ? $bahan_id = $getid[$dta->id][$i] : $bahan_id = null;
-                  $bahan = Bahan::where('id', $bahan_id)->first();
-                  if ($bahan) $bahan_utama .= '<li>'.$bahan->nama.'</li>';
-                  else $bahan_utama .= '<li>-</li>';
-               }
-               
-               $result .= '
-               <div class="col-md-4">
-                  <div class="price_card text-center">
-                     <div class="pricing-header text-dark" style="background-image: url('. asset('assets/images/paket/'.$dta->foto) .'); background-repeat: no-repeat; background-position: center; background-size: cover;">
-                        <span class="price">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
-                        <span class="name" style="font-size: 20px;">'.$dta->nama.'</span>
-                     </div>
-                     <p class="m-t-20"><i><b>'.$dta->keterangan.'</b></i></p>
-                     <ul class="price-features" id="bahan-utama">'.$bahan_utama.'</ul>
-                     <hr class="m-b-0">
-                     <div class="container">
-                        <div class="row">
-                              <div class="col-md-6">
-                                 <button class="btn btn-block btn-inverse btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-set-bahan" id="set-bahan" data-id="'.$dta->id.'"><i class="md-shopping-basket"></i> Set Bahan</button>
-                              </div>
-                              <div class="col-md-6">
-                                 <button class="btn btn-block btn-purple btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-set-alat" id="set-alat" data-id="'.$dta->id.'"><i class="md-restaurant-menu"></i> Set Alat</button>
-                              </div>
-                              <div class="col-md-6">
-                                 <button class="btn btn-block btn-info btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-edit" id="edit-paket" data-id="'.$dta->id.'"><i class="fa fa-edit"></i> Edit</button>
-                              </div>
-                              <div class="col-md-6">
-                                 <button class="btn btn-block btn-danger btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-hapus" id="hapus-paket" data-id="'.$dta->id.'"><i class="fa fa-trash"></i> Hapus</button>
-                              </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>';
-            }
-            return response()->json($result);
-         } else if ($request->req == 'setAlatClick') {
-            $bahan_exits = SetBahan::where('paket_id', $request->paket_id);
-            return response()->json([
-               'result' => $bahan,
-               'request' => $request->all()
-            ]);
-         } else if ($request->req == 'addSetBahan') {
-            $bahan = Bahan::where('id', $request->bahan_id)->first();
-            $exits = '<input type="hidden" name="exits[]" value="'. $bahan->id .'">';
-            $added = '<tr>
-                           <td>'. $bahan->nama .'</td>
-                           <td class="form-inline text-center">
-                              <input type="hidden" name="getid_bahan[]" value="'. $bahan->id .'">
-                              <input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]">
-                              <span><b>pcs</b> /</span>
-                              <input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="1">
-                              <span><b>pax</b></span>
-                           </td>
-                           <td class="form-inline">
-                              <input type="number" class="form-control" style="height: 30px; width: 90px;" name="maksimal[]">
-                              <span><b>pcs</b></span>
-                           </td>
-                           <td class="text-center">
-                              <input type="checkbox" data-plugin="switchery" data-size="small" name="jenis[]">
-                           </td>
-                           <td class="text-center">
-                              <a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-bahan"><i class="fa fa-trash"></i></a>
-                           </td>
-                     </tr>';
-            $result = ['exits' => $exits, 'added' => $added];
-            return response()->json($result);
-         }
+				foreach ($paket as $dta) {
+					$get_bahan_utama = [];
+					$get_bahan_utama = SetBahan::where('paket_id', $dta->id)->where('jenis', 'utama')->get();
+					$bahan_utama = '';
+					for ($i=0; $i < max($jumbahan); $i++) {
+						isset($getid[$dta->id][$i]) ? $bahan_id = $getid[$dta->id][$i] : $bahan_id = null;
+						$bahan = Bahan::where('id', $bahan_id)->first();
+						if ($bahan) $bahan_utama .= '<li>'.$bahan->nama.'</li>';
+						else $bahan_utama .= '<li>-</li>';
+					}
+
+					$result .= '
+					<div class="col-md-4">
+					<div class="price_card text-center">
+					<div class="pricing-header text-dark" style="background-image: url('. asset('assets/images/paket/'.$dta->foto) .'); background-repeat: no-repeat; background-position: center; background-size: cover;">
+					<span class="price">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
+					<span class="name" style="font-size: 20px;">'.$dta->nama.'</span>
+					</div>
+					<p class="m-t-20"><i><b>'.$dta->keterangan.'</b></i></p>
+					<ul class="price-features" id="bahan-utama">'.$bahan_utama.'</ul>
+					<hr class="m-b-0">
+					<div class="container">
+					<div class="row">
+					<div class="col-md-6">
+					<button class="btn btn-block btn-inverse btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-set-bahan" id="set-bahan" data-id="'.$dta->id.'"><i class="md-shopping-basket"></i> Set Bahan</button>
+					</div>
+					<div class="col-md-6">
+					<button class="btn btn-block btn-purple btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-set-alat" id="set-alat" data-id="'.$dta->id.'"><i class="md-restaurant-menu"></i> Set Alat</button>
+					</div>
+					<div class="col-md-6">
+					<button class="btn btn-block btn-info btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-edit" id="edit-paket" data-id="'.$dta->id.'"><i class="fa fa-edit"></i> Edit</button>
+					</div>
+					<div class="col-md-6">
+					<button class="btn btn-block btn-danger btn-sm waves-effect waves-light" data-toggle="modal" data-target=".modal-hapus" id="hapus-paket" data-id="'.$dta->id.'"><i class="fa fa-trash"></i> Hapus</button>
+					</div>
+					</div>
+					</div>
+					</div>
+					</div>';
+				}
+				return response()->json($result);
+			}
+
+			// SET BAHAN PAKET 
+			if ($request->req == 'setBahanClick') {
+				$bahan_exits = SetBahan::where('paket_id', $request->paket_id)->get();
+				$added = '';
+				foreach ($bahan_exits as $dta) {
+					$bahan = Bahan::where('id', $dta->bahan_id)->first();
+					if ($dta->jenis == 'utama') $check = 'checked'; else $check = '';
+					$added .= '<tr id="this-form-added">
+					<td>'. $bahan->nama .'</td>
+					<td class="form-inline text-center">
+					<input type="hidden" name="getid_bahan[]" value="'. $bahan->id .'">
+					<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" value="'.$dta->jumlah.'" required>
+					<span><b>'.$bahan->satuan.'</b> /</span>
+					<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="'.$dta->per_paket.'" required>
+					<span><b>pax</b></span>
+					</td>
+					<td class="form-inline">
+					<input type="number" class="form-control" style="height: 30px; width: 90px;" name="maksimal[]" value="'.$dta->maksimal.'" placeholder="Isi jika ada..">
+					<span><b>'.$bahan->satuan.'</b></span>
+					</td>
+					<td class="text-center">
+					<input type="checkbox" '.$check.' data-plugin="switchery" data-size="small" name="jenis[]" value="utama">
+					</td>
+					<td class="text-center">
+					<a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-bahan"><i class="fa fa-trash"></i></a>
+					</td>
+					</tr>';
+				}
+
+				if (count($bahan_exits) == 0) {
+					$added .= '<tr class="text-center" id="empty"><td colspan="5"><i>Beluam ada data yang ditambah</i></td></tr>';
+				}
+
+				$result = ['added' => $added, 'res' => $bahan_exits];
+				return response()->json($result);
+			} else if ($request->req == 'addSetBahan') {
+				$bahan = Bahan::where('id', $request->bahan_id)->first();
+				$added = '<tr id="this-form-added">
+				<td>'. $bahan->nama .'</td>
+				<td class="form-inline text-center">
+				<input type="hidden" name="getid_bahan[]" value="'. $bahan->id .'">
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" required>
+				<span><b>'.$bahan->satuan.'</b> /</span>
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="1" required>
+				<span><b>pax</b></span>
+				</td>
+				<td class="form-inline">
+				<input type="number" class="form-control" style="height: 30px; width: 90px;" name="maksimal[]" placeholder="Isi jika ada">
+				<span><b>'.$bahan->satuan.'</b></span>
+				</td>
+				<td class="text-center">
+				<input type="checkbox" data-plugin="switchery" data-size="small" name="jenis[]" value="utama">
+				</td>
+				<td class="text-center">
+				<a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-bahan"><i class="fa fa-trash"></i></a>
+				</td>
+				</tr>';
+				$result = ['added' => $added];
+				return response()->json($result);
+			} else if ($request->req == 'getBahanExcept') {
+				$bahan = Bahan::all();
+				$option = '<option value="">Pilih Bahan</option>';
+				foreach ($bahan as $dta) {
+					$request->getid_bahan ? $request->getid_bahan : $request->getid_bahan = ['0'];
+					if (in_array($dta->id, $request->getid_bahan)) $option .= '';
+					else $option .= '<option value="'.$dta->id.'">'.$dta->nama.'</option>';
+				}
+				$result = ['result' => $option];
+				return response()->json($result);
+			} else if ($request->req == 'ifEmptyBahan') {
+				if ($request->getid_bahan) $data = 'notempty';
+				else $data = 'empty';
+				return response()->json($data);
+			} else if ($request->req == 'setBahanPaket') {
+				if ($request->getid_bahan) {
+					$setbahan = SetBahan::where('paket_id', $request->paket_id)->get();
+					foreach ($setbahan as $delete) {
+						$delete->delete();
+					}
+
+					$data = [];
+					foreach ($request->getid_bahan as $i => $dta) {
+						$data['paket_id'] = $request->paket_id;
+						$data['bahan_id'] = $dta;
+						$data['jumlah'] = $request->jumlah[$i];
+						$data['per_paket'] = $request->per_paket[$i];
+						$data['maksimal'] = $request->maksimal[$i];
+						if (isset($request->jenis[$i])) $data['jenis'] = 'utama';
+						else $data['jenis'] = 'lainnya';
+						SetBahan::create($data);
+					}
+					$result = ['status' => 'success', 'title' => 'Berhasil Diatur', 'message' => 'Bahan paket berhasil diatur'];
+				} else {
+					$setbahan = SetBahan::where('paket_id', $request->paket_id)->get();
+					foreach ($setbahan as $delete) {
+						$delete->delete();
+					}
+					$result = ['status' => 'warning', 'title' => 'Data Kosong', 'message' => 'Tidak ada data diatur'];
+				}
+				return response()->json($result);
+			}
+
+			// SET ALAT PAKET 
+			if ($request->req == 'setAlatClick') {
+				$alat_exits = SetAlat::where('paket_id', $request->paket_id)->get();
+				$added = '';
+				foreach ($alat_exits as $dta) {
+					$alat = Alat::where('id', $dta->alat_id)->first();
+					if ($dta->jenis == 'utama') $check = 'checked'; else $check = '';
+					$added .= '<tr id="this-form-added1">
+					<td>'. $alat->nama .'</td>
+					<td class="form-inline text-center">
+					<input type="hidden" name="getid_alat[]" value="'. $alat->id .'">
+					<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" value="'.$dta->jumlah.'" required>
+					<span><b>pcs</b> /</span>
+					<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="'.$dta->per_paket.'" required>
+					<span><b>pax</b></span>
+					</td>
+					<td class="form-inline">
+					<input type="number" class="form-control" style="height: 30px; width: 90px;" name="maksimal[]" value="'.$dta->maksimal.'" placeholder="Isi jika ada..">
+					<span><b>pcs</b></span>
+					</td>
+					<td class="text-center">
+					<a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-alat"><i class="fa fa-trash"></i></a>
+					</td>
+					</tr>';
+				}
+
+				if (count($alat_exits) == 0) {
+					$added .= '<tr class="text-center" id="empty1"><td colspan="4"><i>Beluam ada data yang ditambah</i></td></tr>';
+				}
+
+				$result = ['added' => $added, 'res' => $alat_exits];
+				return response()->json($result);
+			} else if ($request->req == 'addSetAlat') {
+				$alat = Kategori::where('jenis', 'Kategori Alat')->where('id', $request->alat_id)->first();
+				$added = '<tr id="this-form-added1">
+				<td>'. $alat->kategori .'</td>
+				<td class="form-inline text-center">
+				<input type="hidden" name="getid_alat[]" value="'. $alat->id .'">
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" required>
+				<span><b>pcs</b> /</span>
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="1" required>
+				<span><b>pax</b></span>
+				</td>
+				<td class="form-inline">
+				<input type="number" class="form-control" style="height: 30px; width: 90px;" name="maksimal[]" placeholder="Isi jika ada">
+				<span><b>pcs</b></span>
+				</td>
+				<td class="text-center">
+				<a href="#" class="text-danger" data-toggle1="tooltip" title="Remove" id="remove-alat"><i class="fa fa-trash"></i></a>
+				</td>
+				</tr>';
+				$result = ['added' => $added];
+				return response()->json($result);
+			} else if ($request->req == 'getAlatExcept') {
+				$alat = Kategori::where('jenis', 'Kategori Alat')->get();;
+				$option = '<option value="">Pilih Alat</option>';
+				foreach ($alat as $dta) {
+					$request->getid_alat ? $request->getid_alat : $request->getid_alat = ['0'];
+					if (in_array($dta->id, $request->getid_alat)) $option .= '';
+					else $option .= '<option value="'.$dta->id.'">'.$dta->kategori.'</option>';
+				}
+				$result = ['result' => $option];
+				return response()->json($result);
+			} else if ($request->req == 'ifEmptyAlat') {
+				if ($request->getid_alat) $data = 'notempty';
+				else $data = 'empty';
+				return response()->json($data);
+			} else if ($request->req == 'setAlatPaket') {
+				if ($request->getid_alat) {
+					$setalat = SetAlat::where('paket_id', $request->paket_id)->get();
+					foreach ($setalat as $delete) {
+						$delete->delete();
+					}
+
+					$data = [];
+					foreach ($request->getid_alat as $i => $dta) {
+						$data['paket_id'] = $request->paket_id;
+						$data['kategori_alat_id'] = $dta;
+						$data['jumlah'] = $request->jumlah[$i];
+						$data['per_paket'] = $request->per_paket[$i];
+						$data['maksimal'] = $request->maksimal[$i];
+						SetAlat::create($data);
+					}
+					$result = ['status' => 'success', 'title' => 'Berhasil Diatur', 'message' => 'Alat paket berhasil diatur'];
+				} else {
+					$setalat = SetAlat::where('paket_id', $request->paket_id)->get();
+					foreach ($setalat as $delete) {
+						$delete->delete();
+					}
+					$result = ['status' => 'warning', 'title' => 'Data Kosong', 'message' => 'Tidak ada data diatur'];
+				}
+				return response()->json($result);
+			}
 		}
 	}
 
