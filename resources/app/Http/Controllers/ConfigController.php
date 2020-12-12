@@ -492,10 +492,10 @@ class ConfigController extends Controller
 				$alat_exits = SetAlat::where('paket_id', $request->paket_id)->get();
 				$added = '';
 				foreach ($alat_exits as $dta) {
-					$alat = Alat::where('id', $dta->alat_id)->first();
+					$alat = Kategori::where('jenis', 'Kategori Alat')->where('id', $dta->kategori_alat_id)->first();
 					if ($dta->jenis == 'utama') $check = 'checked'; else $check = '';
 					$added .= '<tr id="this-form-added1">
-					<td>'. $alat->nama .'</td>
+					<td>'. $alat->kategori .'</td>
 					<td class="form-inline text-center">
 					<input type="hidden" name="getid_alat[]" value="'. $alat->id .'">
 					<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" value="'.$dta->jumlah.'" required>
@@ -579,6 +579,159 @@ class ConfigController extends Controller
 					$result = ['status' => 'warning', 'title' => 'Data Kosong', 'message' => 'Tidak ada data diatur'];
 				}
 				return response()->json($result);
+			}
+
+			// GET EDIT PAKET 
+			if ($request->req == 'geteditpaket') {
+				$data = Paket::where('id', $request->id)->first();
+				return response()->json($data, 200);
+			}
+
+			// GET DAGING
+			if ($request->req == 'getDaging') {
+				$option = '<option value="">Pilih Daging Additional</option>';
+				$kat_daging = Kategori::where('jenis', 'Kategori Bahan')->where('kategori', 'like', '%Daging%')->get();
+				foreach ($kat_daging as $kat) {
+					$daging = Bahan::where('kategori_id', $kat->id)->get();
+					foreach ($daging as $dta) {
+						$additional = Additional::where('bahan_id', $dta->id)->first();
+						if ($request->this_adt == $dta->id) $option .= '<option value="'.$dta->id.'" selected>'.$dta->nama.'</option>';
+						else if ($additional) $option .= '';
+						else $option .= '<option value="'.$dta->id.'">'.$dta->nama.'</option>';
+					}
+				}
+				$result = ['result' => $option];
+				return response()->json($result);
+			}
+
+			// GET SATUAN
+			if ($request->req == 'setSatuan') {
+				$bahan = Bahan::where('id', $request->bahan_id)->first();
+				$result = ['result' => $bahan->satuan];
+				return response()->json($result);
+			}
+
+			// SET ADDITIONAL 
+			if ($request->req == 'setAdditional') {
+				$validator = Validator::make($request->all(), [
+					'bahan_id' => 'required',
+					'berat' => 'required|integer',
+					'harga' => 'required|integer',
+					'keterangan' => 'required',
+				]);
+
+
+				if ($validator->fails()) {
+					return response()->json([
+						'success' => false,
+						'message' => $validator->errors()
+					], 401);            
+				}
+
+				try {
+					$data = $request->all();
+					$bahan = Bahan::where('id', $request->bahan_id)->first();
+					$data['nama_daging'] = $bahan->nama;
+					$data['berat'] = $request->berat.' ('.$bahan->satuan.')';
+					unset($data['req']);
+
+					Additional::create($data);
+
+					return response()->json([
+						'success' => true,
+						'message' => 'Success add data',
+						'result' => $data
+					], 200);
+				} catch(QueryException $ex) {
+					return response()->json([
+						'success' => false,
+						'message' => $ex->getMessage(),
+					], 500);	
+				}
+			}
+
+			// GET EDIT ADDITIONAL 
+			if ($request->req == 'geteditadditional') {
+				$data = Additional::where('id', $request->id)->first();
+				$data['berat'] = intval($data->berat);
+				$bahan = Bahan::where('id', $data->bahan_id)->first();
+				$data['satuan_edt'] = $bahan->satuan;
+				return response()->json($data, 200);
+			}
+
+			// EDIT ADDITIONAL
+			if ($request->req == 'putAdditional') {
+				$validator = Validator::make($request->all(), [
+					'bahan_id' => 'required',
+					'berat' => 'required|integer',
+					'harga' => 'required|integer',
+					'keterangan' => 'required',
+				]);
+
+
+				if ($validator->fails()) {
+					return response()->json([
+						'success' => false,
+						'message' => $validator->errors()
+					], 401);            
+				}
+
+				try {
+					$update = Additional::find($request->id);
+
+					if ($update) {
+						$update->bahan_id = $request->bahan_id;
+						$bahan = Bahan::where('id', $request->bahan_id)->first();
+						$nama_daging = $bahan->nama;
+						$berat = $request->berat.' ('.$bahan->satuan.')';
+						$update->nama_daging = $nama_daging;
+						$update->berat = $berat;
+						$update->harga = $request->harga;
+						$update->keterangan = $request->keterangan;
+						$update->save();
+					} else {
+						return response()->json([
+							'success' => false,
+							'message' => 'id not found'
+						], 401); 
+					}
+
+					return response()->json([
+						'success' => true,
+						'message' => 'Success update data'
+					], 200);
+				} catch(QueryException $ex) {
+					return response()->json([
+						'success' => false,
+						'message' => $ex->getMessage(),
+					], 500);	
+				}
+			}
+
+			// DELETE ADDITIONAL
+			if ($request->req == 'deleteAdditional') {
+				try {
+					$delete = Additional::find($request->id);
+
+					if ($delete) {
+						$delete->delete();
+					} else {
+						return response()->json([
+							'success' => false,
+							'message' => 'id not found'
+						], 401); 
+					}
+
+					return response()->json([
+						'success' => true,
+						'message' => 'Success delete data'
+					], 200);
+				} catch(QueryException $ex) {
+					return response()->json([
+						'success' => false,
+						'message' => $ex->getMessage(),
+					], 500);	
+				}
 			}
 		}
 	}
@@ -683,6 +836,23 @@ class ConfigController extends Controller
 				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-driver" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 				</div>';
 			})->rawColumns(['foto', 'status', 'action'])->toJson();
+		} else if ($request->req == 'dtGetAdditional') {
+			$result = Additional::all();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$dta->no = $no;
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('action', function($dta) {
+				return '<div class="text-center">
+				<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="edit-additional" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit"><i class="fa fa-edit"></i></a>
+				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-additional" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+				</div>';
+			})->rawColumns(['action'])->toJson();
 		}
 	}
 }

@@ -1095,6 +1095,91 @@ $(document).ready(function () {
       });
    });
 
+   // EDIT PAKET
+   $('#fromEditPaket').submit(function (e) {
+      e.preventDefault();
+      var data = new FormData(this);
+      var id = $('form').find('#id').val();
+
+      $.ajax({
+         url: host + "/api/kelolamenu/editpaket/" + id,
+         enctype: "multipart/form-data",
+         method: "POST",
+         data: data,
+         headers: headers,
+         xhr: function () {
+            var xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener('progress', function (evt) {
+               if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+
+                  $('#viewProgress').removeAttr('hidden');
+                  $('#upload').attr('disabled', '');
+                  $('#batal').attr('disabled', '');
+
+                  var progress = Math.round(percentComplete * 100);
+                  $('#progress').text(progress + '%');
+               }
+            }, false);
+            return xhr;
+         },
+         contentType: false,
+         processData: false,
+         cache: false,
+         success: function (data) {
+            getPaket();
+            $('#viewProgress').attr('hidden', '');
+            $('#upload').removeAttr('disabled');
+            $('#batal').removeAttr('disabled');
+            $('#progress').text('0%');
+            $('#fromEditPaket')[0].reset();
+
+            Swal.fire({
+               title: 'Berhasil Diproses',
+               text: 'Data paket berhasil diupdate',
+               type: 'success',
+               onClose: () => {
+                  $('.modal').modal('hide');
+               }
+            });
+         },
+         error: function (data) {
+            $('#viewProgress').attr('hidden', '');
+            $('#upload').removeAttr('disabled');
+            $('#batal').removeAttr('disabled');
+            $('#progress').text('0%');
+
+            setError(data);
+         }
+      });
+   });
+
+   // DELETE PAKET
+   $('#delete-paket').click(function () {
+      var id = $(this).attr('data-id');
+
+      $.ajax({
+         url: host + "/api/kelolamenu/deletepaket/" + id,
+         method: "DELETE",
+         headers: headers,
+         success: function (data) {
+            getPaket();
+
+            Swal.fire({
+               title: 'Berhasil Diproses',
+               text: 'Data berhasil dihapus',
+               type: 'success',
+               onClose: () => {
+                  $('.modal').modal('hide');
+               }
+            });
+         },
+         error: function (data) {
+            setError(data);
+         }
+      });
+   });
+
    // GET DRIVER
    function getDriver() {
       $("#tableDriver").dataTable().fnDestroy();
@@ -1232,4 +1317,108 @@ $(document).ready(function () {
          }
       });
    });
+
+   // GET ADDITIONAL
+   function getAdditional() {
+      $("#dataTableAdditional").dataTable().fnDestroy();
+      $('#dataTableAdditional').DataTable({
+         processing: true,
+         serverSide: true,
+         ajax: host+'/datatable?req=dtGetAdditional',
+         columns: [
+         { data: 'no', name: 'no' },
+         { data: 'nama_daging', name: 'nama_daging' },
+         { data: 'berat', name: 'berat' },
+         { data: 'harga', name: 'harga' },
+         { data: 'keterangan', name: 'keterangan' },
+         { data: 'action', name: 'action', orderable: false, searchable: false },
+         ]
+     });
+   }
+
+   // SET ADDITIONAL 
+   $('#fromAdditional').submit(function (ev) {
+      ev.preventDefault();
+      var data = $(this).serialize();
+
+      $.ajax({
+         url: host + "/configuration",
+         method: "POST",
+         data: data + '&req=setAdditional',
+         headers: headers,
+         success: function (data) {
+            $('#fromAdditional')[0].reset();
+            getAdditional();
+
+            Swal.fire({
+               title: 'Berhasil Diproses',
+               text: 'Data additional baru berhasil ditambah',
+               type: 'success',
+               onClose: () => {
+                  $('.modal').modal('hide');
+               }
+            });
+         },
+         error: function (data) {
+            setError(data);
+         }
+      });
+   });
+
+   // PUT ADDITIONAL
+   $('#fromEditAdditional').submit(function (ev) {
+      ev.preventDefault();
+      var data = $(this).serialize();
+
+      $.ajax({
+         url: host + "/configuration",
+         method: "POST",
+         data: data + '&req=putAdditional',
+         headers: headers,
+         success: function (data) {
+            getAdditional();
+            $('#fromEditAdditional')[0].reset();
+
+            Swal.fire({
+               title: 'Berhasil Diproses',
+               text: 'Data additional berhasil diupdate',
+               type: 'success',
+               onClose: () => {
+                  $('.modal').modal('hide');
+               }
+            });
+         },
+         error: function (data) {
+            setError(data);
+         }
+      });
+   });
+
+   // DELETE ADDITIONAL
+   $('#delete-additional').click(function () {
+      var id = $(this).attr('data-id');
+
+      $.ajax({
+         url: host + "/configuration",
+         method: "POST",
+         data: { id: id, req: 'deleteAdditional' },
+         headers: headers,
+         success: function (data) {
+            getAdditional();
+
+            Swal.fire({
+               title: 'Berhasil Diproses',
+               text: 'Data berhasil dihapus',
+               type: 'success',
+               onClose: () => {
+                  $('.modal').modal('hide');
+               }
+            });
+         },
+         error: function (data) {
+            setError(data);
+         }
+      });
+   });
+
 });

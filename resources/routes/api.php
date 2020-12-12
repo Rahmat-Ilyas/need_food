@@ -77,6 +77,8 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('kelolamenu/getpaket', 'RestfullApiController@getsPaket');
     Route::get('kelolamenu/getpaket/{id}', 'RestfullApiController@getPaket');
     Route::post('kelolamenu/setpaket', 'RestfullApiController@setPaket');
+    Route::post('kelolamenu/editpaket/{id}', 'RestfullApiController@putPaket');
+    Route::delete('kelolamenu/deletepaket/{id}', 'RestfullApiController@deletePaket');
 });
 
 Route::fallback(function() {
