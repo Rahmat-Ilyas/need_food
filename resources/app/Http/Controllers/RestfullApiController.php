@@ -1187,7 +1187,7 @@ class RestfullApiController extends Controller
 	public function getStatusPesanan($status)
 	{
 		$pemesanan = Pemesanan::where('status', $status)->get();
-      $result = $this->getDataPesanan($pemesanan);
+		$result = $this->getDataPesanan($pemesanan);
 
 		if ($result) {
 			return response()->json([
@@ -1258,13 +1258,15 @@ class RestfullApiController extends Controller
 					if ($getAdditional) {
 						foreach ($getAdditional as $i => $adt) {
 							$getAdt = Additional::where('id', $adt->additional_id)->first();
-							$additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
-							$additional[$i]['additional_id'] = $adt->additional_id;
-							$additional[$i]['nama_daging'] = $getAdt->nama_daging;
-							$additional[$i]['harga'] = $getAdt->harga;
-							$additional[$i]['berat'] = $getAdt->berat;
-							$additional[$i]['jumlah'] = $adt->jumlah;
-							$additional[$i]['total_harga'] = $adt->total_harga;
+							if ($getAdt) {
+								$additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
+								$additional[$i]['additional_id'] = $adt->additional_id;
+								$additional[$i]['nama_daging'] = $getAdt->nama_daging;
+								$additional[$i]['harga'] = $getAdt->harga;
+								$additional[$i]['berat'] = $getAdt->berat;
+								$additional[$i]['jumlah'] = $adt->jumlah;
+								$additional[$i]['total_harga'] = $adt->total_harga;
+							}
 						}
 					}
 
@@ -1317,12 +1319,13 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
-   }
-   
-   public function updateDriverPesanan(Request $request, $id)
+	}
+
+	public function updateDriverPesanan(Request $request, $id)
 	{
 		$validator = Validator::make($request->all(), [
 			'driver_id' => 'required|integer',
+			'status' => 'required',
 		]);
 
 
@@ -1336,7 +1339,16 @@ class RestfullApiController extends Controller
 		try {
 			$update = Pemesanan::find($id);
 			if ($update) {
-				$update->driver_id = $request->driver_id;
+				if ($request->status == 'pengantaran') {
+					$update->pengantaran = $request->driver_id;
+				} else if ($request->status == 'penjemputan') {
+					$update->penjemputan = $request->driver_id;
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'status not found'
+					], 404); 
+				}
 				$update->save();
 			} else {
 				return response()->json([
@@ -1425,7 +1437,7 @@ class RestfullApiController extends Controller
 			$paket = Paket::create($data_paket);
 
 			$path = 'assets/images/paket';
-         $foto->move($path, $paket->foto);
+			$foto->move($path, $paket->foto);
 
 			return response()->json([
 				'success' => true,
