@@ -842,6 +842,7 @@ class ConfigController extends Controller
 			$no = 1;
 			foreach ($result as $dta) {
 				$dta->no = $no;
+				$dta->harga = 'Rp. '.$dta->harga;
 				$data[] = $dta;
 				$no = $no + 1;
 			}
