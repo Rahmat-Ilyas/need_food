@@ -61,7 +61,6 @@ nav a:hover {
 
 .box_menu_paket{
     width: 224px;
-    height: 279px;
     border: 1px solid #EF8C17;
     box-sizing: border-box;
     box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
@@ -105,11 +104,16 @@ nav a:hover {
     text-align: center;
     width: 221px;
     margin-top: 10px;
+    margin-bottom: 10px;
     padding: 10px;
     background: #FDFDFD;
     /* box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25); */
     border-radius: 0px;
     cursor: pointer;
+}
+
+.list_menu_paket:hover{
+    box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
 }
 
 .rounded{
@@ -234,6 +238,7 @@ nav a:hover {
 
 .imageproduct {
     width: 100%;
+    height: 220px;
     padding: 40px;
 }
 
@@ -1121,9 +1126,21 @@ footer {
     margin-top: 13px;
 }
 
+.box_toogle_menu{
+    display: none;
+}
+
+.item-toogle{
+    display: none;
+}
+
 
 
 @media only screen and (max-width:576px) {
+
+    .main{
+        overflow-x: hidden;
+    }
 
     #logos {
         display: none;
@@ -1143,7 +1160,6 @@ footer {
     }
 
     .navbar .navbar-nav li a:hover {
-        background: #BE2A42;
         color: #ffffff;
     }
 
@@ -1168,7 +1184,6 @@ footer {
     }
 
     .navbar .navbar-nav li a:hover {
-        background: #BE2A42;
         padding: 10px;
         color: #E7E7E7;
         border-radius: 5px;
@@ -1403,6 +1418,8 @@ footer {
         display: none;
     }
 
+
+
     .banner_order_additional{
         margin-top: 50px;
     }
@@ -1421,6 +1438,74 @@ footer {
 
     .menu_grid{
         margin-bottom: 20px;
+    }
+
+    .box_toogle_menu{
+        width: 100%;
+        height: 48px;
+        background: #FF9742;
+        box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+        border-radius: 0px;
+        display: block;
+        cursor: pointer;
+    }
+
+    .item-toogle{
+        display: block;
+    }
+
+    .text_toogle{
+        font-family: 'Poppins',serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 30px;
+        color: #FFFFFF;
+        margin-left: 30px;
+        position: relative;
+        top: 8px;
+    }
+
+    .icofont-caret-down{
+        color: #ffffff;
+        font-size: 20px;
+        position: relative;
+        left: 180px;
+        top: 8px;
+    }
+
+    .item-toogle{
+        list-style: none;
+        width: 100%;
+        background: #FFFFFF;
+        border: 1px solid #EF8C17;
+        box-sizing: border-box;
+        box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
+        border-radius: 0px 0px 5px 5px;
+        padding: 10px 20px 10px 20px;
+        transform: perspective(1000px) rotateX(-90deg);
+        transition: 0.5s;
+    }
+
+    .active-toogle{
+        transform: perspective(1000px) rotateX(0deg);
+    }
+
+    .value_toogle{
+        background: #FDFDFD;
+        border-radius: 0px;
+        padding: 10px;
+        font-family: Poppins;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 20px;
+        line-height: 30px;
+        color: #EF8C17;
+        margin-top: 5px;
+    }
+
+    .value_toogle:hover{
+        box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
     }
 
 }

@@ -1,3 +1,47 @@
+$(document).ready(function () {
+
+    var url = $('meta[name="host_url"]').attr('content');
+    var headers = {
+        "Accept"		: "application/json",
+        "Access-Control-Allow-Origin" : "*",
+        "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+        'X-CSRF-TOKEN'	: $('meta[name="csrf-token"]').attr('content')
+    }
+
+    $.ajax({
+        url     : url+'/api/kelolamenu/getpaket',
+        method  : "GET",
+        headers	: headers,
+        success : function(data) {
+            var datapaket = '';
+            if (data['success'] == true) {
+                $.each(data['result'], function (indexInArray, valueOfElement) { 
+                     datapaket += '<div class="list_menu_paket" data-id="'+valueOfElement.id+'">'+valueOfElement.nama+'</div>';
+                });
+                $('#item_paket').append(datapaket);
+            }
+        }
+    });
+
+    $(document).on('click','.list_menu_paket', function () {
+        var id = $(this).data('id');
+
+        $.ajax({
+            url     : url+'/api/kelolamenu/getpaket/'+id,
+            method  : "GET",
+            headers	: headers,
+            success : function(data) {
+                var path_asset = url+'/assets/images/paket';
+                var value = data['result'];
+                if (data['success'] == true) {
+                    $('.img-paket').html('<img src="'+path_asset+'/'+value.foto+'" class="imageproduct">');
+                    $('.group_text_order').html('<p class="text-card-order">'+value.keterangan+'</p>');
+                    $('#nominals').html('<span class="currency-general">'+value.harga+'</span><span class="sub-currency">/ Paket</span>')
+                }
+            }
+        });
+    });
+
 $('.btn-number').click(function(e){
     e.preventDefault();
     
@@ -86,10 +130,16 @@ $(".input-number").keydown(function (e) {
         $('#exampleModalCenter').modal('show');
     }
 
-    $('.list_menu_paket').mouseenter(function () { 
-        $(this).css('box-shadow', '0px 2px 11px rgba(0, 0, 0, 0.25)');
-    });
+    // $('.list_menu_paket').mouseenter(function () { 
+    //     $(this).css('box-shadow', '0px 2px 11px rgba(0, 0, 0, 0.25)');
+    // });
 
-    $('.list_menu_paket').mouseleave(function () { 
-        $(this).css('box-shadow', 'none');
-    });
+    // $('.list_menu_paket').mouseleave(function () { 
+    //     $(this).css('box-shadow', 'none');
+    // });
+
+    $('.box_toogle_menu').click(function () {
+        $('.item-toogle').toggleClass('active-toogle');
+    })
+  
+});

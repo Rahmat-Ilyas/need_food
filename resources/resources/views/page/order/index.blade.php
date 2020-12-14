@@ -10,16 +10,24 @@
                         <div class="col-md-2">
                             <div class="box_menu_paket grid_box_paket">
                                 <div class="box_title_paket">Menu</div>
-                                <div class="list_menu_paket">YAKINIKU</div>
+                                <div id="item_paket"></div>
+                                {{-- <div class="list_menu_paket">YAKINIKU</div>
                                 <div class="list_menu_paket">SHABU</div>
-                                <div class="list_menu_paket">SHABU</div>
+                                <div class="list_menu_paket">SHABU</div> --}}
                             </div>
+
+                            <div class="box_toogle_menu"> <span class="text_toogle">Menu</span> <i class="icofont-caret-down"></i></div>
+                            <ul class="item-toogle">
+                                <li class="value_toogle">YAKINIKU</li>
+                                <li class="value_toogle">YAKINIKU</li>
+                                <li class="value_toogle">YAKINIKU</li>
+                            </ul>
 
                         </div>
                         <div class="col-lg-10">
                             @include('page.order.yakiniku')
                         </div>
-                        </div>
+                     </div>
                         
                     </div>
                     
@@ -51,7 +59,7 @@
                                             </div>
                                             <input type="checkbox" class="checbox_image" />
                                             <div class="card_additional_body">
-                                                {{-- form_card_additonal_product --}}
+                                               
                                                 <div class="row form_card_additonal_product">
                                                    <div class="col-sm-12">
                                                         <div class="card_additional_text">Rp. 100.000</div>
@@ -86,7 +94,7 @@
                                             </div>
                                             <input type="checkbox" class="checbox_image" />
                                             <div class="card_additional_body">
-                                                {{-- form_card_additonal_product --}}
+                                               
                                                 <div class="row form_card_additonal_product">
                                                    <div class="col-sm-12">
                                                         <div class="card_additional_text">Rp. 100.000</div>
@@ -121,7 +129,7 @@
                                             </div>
                                             <input type="checkbox" class="checbox_image" />
                                             <div class="card_additional_body">
-                                                {{-- form_card_additonal_product --}}
+                                            
                                                 <div class="row form_card_additonal_product">
                                                    <div class="col-sm-12">
                                                         <div class="card_additional_text">Rp. 100.000</div>
@@ -160,7 +168,7 @@
                                             </div>
                                             <input type="checkbox" class="checbox_image" />
                                             <div class="card_additional_body">
-                                                {{-- form_card_additonal_product --}}
+                                               
                                                 <div class="row form_card_additonal_product">
                                                    <div class="col-sm-12">
                                                         <div class="card_additional_text">Rp. 100.000</div>
@@ -195,7 +203,7 @@
                                             </div>
                                             <input type="checkbox" class="checbox_image" />
                                             <div class="card_additional_body">
-                                                {{-- form_card_additonal_product --}}
+                                              
                                                 <div class="row form_card_additonal_product">
                                                    <div class="col-sm-12">
                                                         <div class="card_additional_text">Rp. 100.000</div>
@@ -230,7 +238,7 @@
                                             </div>
                                             <input type="checkbox" class="checbox_image" />
                                             <div class="card_additional_body">
-                                                {{-- form_card_additonal_product --}}
+                                           
                                                 <div class="row form_card_additonal_product">
                                                    <div class="col-sm-12">
                                                         <div class="card_additional_text">Rp. 100.000</div>
@@ -268,7 +276,7 @@
                                         <li>- &nbsp; 5 Sirlon US 200g</li>
                                     </ul>
                                     <div class="col-sm-12">
-                                        <button class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
+                                        <button id="cekapi" class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
                                     </div>
                                 </div>
                             </div>
