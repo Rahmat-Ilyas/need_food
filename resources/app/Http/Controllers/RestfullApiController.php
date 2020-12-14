@@ -12,7 +12,9 @@ use App\Model\AuthLogin;
 use App\Model\Kategori;
 use App\Model\Supplier;
 use App\Model\AddBahan;
+use App\Model\SetBahan;
 use App\Model\AddAlat;
+use App\Model\SetAlat;
 use App\Model\Driver;
 use App\Model\Paket;
 use App\Model\Bahan;
@@ -186,7 +188,7 @@ class RestfullApiController extends Controller
 					$path = 'assets/images/alat';
 					$foto->move($path, $nama_foto);
 					// Delete Old Foto
-					File::delete(public_path('assets/images/alat/'.$update->foto));
+					File::delete('assets/images/alat/'.$update->foto);
 					// Save to Database
 					$update->foto = $nama_foto;
 				}
@@ -255,7 +257,7 @@ class RestfullApiController extends Controller
 
 			if ($delete) {
 				$delete->delete();
-				File::delete(public_path('assets/images/alat/'.$delete->foto));
+				File::delete('assets/images/alat/'.$delete->foto);
 			} else {
 				return response()->json([
 					'success' => false,
@@ -428,7 +430,7 @@ class RestfullApiController extends Controller
 					$path = 'assets/images/bahan';
 					$foto->move($path, $nama_foto);
 					// Delete Old Foto
-					File::delete(public_path('assets/images/bahan/'.$update->foto));
+					File::delete('assets/images/bahan/'.$update->foto);
 					// Save to Database
 					$update->foto = $nama_foto;
 				}
@@ -497,7 +499,7 @@ class RestfullApiController extends Controller
 
 			if ($delete) {
 				$delete->delete();
-				File::delete(public_path('assets/images/bahan/'.$delete->foto));
+				File::delete('assets/images/bahan/'.$delete->foto);
 			} else {
 				return response()->json([
 					'success' => false,
@@ -622,7 +624,7 @@ class RestfullApiController extends Controller
 					$path = 'assets/images/kategori';
 					$foto->move($path, $nama_foto);
 					// Delete Old Foto
-					File::delete(public_path('assets/images/kategori/'.$update->foto));
+					File::delete('assets/images/kategori/'.$update->foto);
 					// Save to Database
 					$update->foto = $nama_foto;
 				}
@@ -655,19 +657,19 @@ class RestfullApiController extends Controller
 			if ($alat) {
 				foreach ($alat as $dta) {
 					$dta->delete();
-					File::delete(public_path('assets/images/alat/'.$dta->foto));
+					File::delete('assets/images/alat/'.$dta->foto);
 				}
 			}
 			if ($bahan) {
 				foreach ($bahan as $dta) {
 					$dta->delete();
-					File::delete(public_path('assets/images/bahan/'.$dta->foto));
+					File::delete('assets/images/bahan/'.$dta->foto);
 				}
 			}
 
 			if ($delete) {
 				$delete->delete();
-				File::delete(public_path('assets/images/kategori/'.$delete->foto));
+				File::delete('assets/images/kategori/'.$delete->foto);
 			}
 			else {
 				return response()->json([
@@ -996,7 +998,7 @@ class RestfullApiController extends Controller
 					$foto->move($path, $nama_foto);
 					// Delete Old Foto
 					if ($update->foto != 'img_driver_default.png') {
-						File::delete(public_path('assets/images/driver/'.$update->foto));
+						File::delete('assets/images/driver/'.$update->foto);
 					}
 					// Save to Database
 					$update->foto = $nama_foto;
@@ -1027,7 +1029,7 @@ class RestfullApiController extends Controller
 			$delete = Driver::find($id);
 			if ($delete) {
 				if ($delete->foto != 'img_driver_default.png') {
-					File::delete(public_path('assets/images/driver/'.$delete->foto));
+					File::delete('assets/images/driver/'.$delete->foto);
 				}
 				$delete->delete();
 			} else {
@@ -1185,7 +1187,7 @@ class RestfullApiController extends Controller
 	public function getStatusPesanan($status)
 	{
 		$pemesanan = Pemesanan::where('status', $status)->get();
-      $result = $this->getDataPesanan($pemesanan);
+		$result = $this->getDataPesanan($pemesanan);
 
 		if ($result) {
 			return response()->json([
@@ -1205,6 +1207,8 @@ class RestfullApiController extends Controller
 	{
 		if ($pemesanan) {
 			if ($id) {
+				$set_paket = [];
+				// Data Paket Pesanan
 				$getPaket = PaketPesanan::where('pemesanan_id', $id)->get();
 				foreach ($getPaket as $i => $pkt) {
 					$getPkt = Paket::where('id', $pkt->paket_id)->first();
@@ -1214,8 +1218,11 @@ class RestfullApiController extends Controller
 					$paket[$i]['harga'] = $getPkt ? $getPkt->harga : null;
 					$paket[$i]['jumlah'] = $pkt->jumlah;
 					$paket[$i]['total_harga'] = $pkt->total_harga;
+
+					$set_paket[] = ['paket_id' => $pkt->paket_id, 'jumlah' => $pkt->jumlah];
 				}
 
+				// Data Additional Pesanan
 				$getAdditional = AdtPesanan::where('pemesanan_id', $id)->get();
 				$additional = [];
 				if ($getAdditional) {
@@ -1231,15 +1238,43 @@ class RestfullApiController extends Controller
 					}
 				}
 
+				// Data Transaksi Pesanan
 				$transaksi = Transaksi::where('pemesanan_id', $id)->first();
 				unset($transaksi['created_at']);
 				unset($transaksi['updated_at']);
 
+				// Data Set Alat/Bahan Pesanan
+				$bahan = [];
+				$alat = [];
+				foreach ($set_paket as $set) {
+					$paket_id = $set['paket_id'];
+					$jumlah_paket = $set['jumlah'];
+					// Set Bahan
+					$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
+					foreach ($get_set_bahan as $bhn) {
+						$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
+						if ($set_jum_bhn > 0) {
+							$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
+							if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
+							else $jumlah = $set_jum_bhn;
+							$bahan[] = [
+								'paket_id' => $paket_id,
+								'bahan_id' => $bhn->bahan_id,
+								'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
+								'jumlah_bahan' => $jumlah.' '.$get_bahan->satuan
+							];
+						}
+					}
+				}
+
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
+				$pemesanan['bahan'] = $bahan;
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
+					$set_paket = [];
+					// Data Paket Pesanan
 					$getPaket = PaketPesanan::where('pemesanan_id', $pesanan->id)->get();
 					foreach ($getPaket as $i => $pkt) {
 						$getPkt = Paket::where('id', $pkt->paket_id)->first();
@@ -1249,30 +1284,61 @@ class RestfullApiController extends Controller
 						$paket[$i]['harga'] = $getPkt ? $getPkt->harga : null;
 						$paket[$i]['jumlah'] = $pkt->jumlah;
 						$paket[$i]['total_harga'] = $pkt->total_harga;
+
+						$set_paket[] = ['paket_id' => $pkt->paket_id, 'jumlah' => $pkt->jumlah];
 					}
 
+					// Data Additional Pesanan
 					$getAdditional = AdtPesanan::where('pemesanan_id', $pesanan->id)->get();
 					$additional = [];
 					if ($getAdditional) {
 						foreach ($getAdditional as $i => $adt) {
 							$getAdt = Additional::where('id', $adt->additional_id)->first();
-							$additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
-							$additional[$i]['additional_id'] = $adt->additional_id;
-							$additional[$i]['nama_daging'] = $getAdt->nama_daging;
-							$additional[$i]['harga'] = $getAdt->harga;
-							$additional[$i]['berat'] = $getAdt->berat;
-							$additional[$i]['jumlah'] = $adt->jumlah;
-							$additional[$i]['total_harga'] = $adt->total_harga;
+							if ($getAdt) {
+								$additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
+								$additional[$i]['additional_id'] = $adt->additional_id;
+								$additional[$i]['nama_daging'] = $getAdt->nama_daging;
+								$additional[$i]['harga'] = $getAdt->harga;
+								$additional[$i]['berat'] = $getAdt->berat;
+								$additional[$i]['jumlah'] = $adt->jumlah;
+								$additional[$i]['total_harga'] = $adt->total_harga;
+							}
 						}
 					}
 
+					// Data Transaksi Pesanan
 					$transaksi = Transaksi::where('pemesanan_id', $pesanan->id)->first();
 					unset($transaksi['created_at']);
 					unset($transaksi['updated_at']);
 
+					// Data Set Alat/Bahan Pesanan
+					$bahan = [];
+					$alat = [];
+					foreach ($set_paket as $set) {
+						$paket_id = $set['paket_id'];
+						$jumlah_paket = $set['jumlah'];
+						// Set Bahan
+						$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
+						foreach ($get_set_bahan as $bhn) {
+							$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
+							if ($set_jum_bhn > 0) {
+								$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
+								if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
+								else $jumlah = $set_jum_bhn;
+								$bahan[] = [
+									'paket_id' => $paket_id,
+									'bahan_id' => $bhn->bahan_id,
+									'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
+									'jumlah_bahan' => $jumlah.' '.$get_bahan->satuan
+								];
+							}
+						}
+					}
+
 					$pesanan['paket'] = $paket;
 					$pesanan['additional'] = $additional;
 					$pesanan['transaksi'] = $transaksi;
+					$pesanan['bahan'] = $bahan;
 				}
 			}
 		}
@@ -1315,12 +1381,13 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
-   }
-   
-   public function updateDriverPesanan(Request $request, $id)
+	}
+
+	public function updateDriverPesanan(Request $request, $id)
 	{
 		$validator = Validator::make($request->all(), [
 			'driver_id' => 'required|integer',
+			'status' => 'required',
 		]);
 
 
@@ -1334,7 +1401,16 @@ class RestfullApiController extends Controller
 		try {
 			$update = Pemesanan::find($id);
 			if ($update) {
-				$update->driver_id = $request->driver_id;
+				if ($request->status == 'pengantaran') {
+					$update->pengantaran = $request->driver_id;
+				} else if ($request->status == 'penjemputan') {
+					$update->penjemputan = $request->driver_id;
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'status not found'
+					], 404); 
+				}
 				$update->save();
 			} else {
 				return response()->json([
@@ -1423,7 +1499,7 @@ class RestfullApiController extends Controller
 			$paket = Paket::create($data_paket);
 
 			$path = 'assets/images/paket';
-         $foto->move($path, $paket->foto);
+			$foto->move($path, $paket->foto);
 
 			return response()->json([
 				'success' => true,
@@ -1450,6 +1526,125 @@ class RestfullApiController extends Controller
 	public function getPaket($id)
 	{
 		$data = Paket::where('id', $id)->first();
+
+		if ($data) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result' => $data
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function putPaket(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'harga' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'keterangan' => 'required'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Paket::find($id);
+
+			if ($update) {
+				$update->nama = $request->nama;
+				$update->harga = $request->harga;
+				$update->keterangan = $request->keterangan;
+				if ($request->file('foto')) {
+					$foto = $request->file('foto');
+					$nama_foto = 'img_paket_'.time().'.'.$foto->getClientOriginalExtension();
+
+					// Update Foto
+					$path = 'assets/images/paket';
+					$foto->move($path, $nama_foto);
+					// Delete Old Foto
+					File::delete('assets/images/paket/'.$update->foto);
+					// Save to Database
+					$update->foto = $nama_foto;
+				}
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deletePaket($id)
+	{
+		try {
+			$delete = Paket::find($id);
+
+			if ($delete) {
+				$delete->delete();
+				$setalat = SetAlat::where('paket_id', $id)->get();
+				foreach ($setalat as $del_alat) {
+					$del_alat->delete();
+				}
+				$setbahan = SetBahan::where('paket_id', $id)->get();
+				foreach ($setbahan as $del_bahan) {
+					$del_bahan->delete();
+				}
+				File::delete('assets/images/paket/'.$delete->foto);
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success delete data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function getsAdditional()
+	{
+		$data = Additional::all();
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result' => $data
+		], 200);
+	}
+
+	public function getAdditional($id)
+	{
+		$data = Additional::where('id', $id)->first();
 
 		if ($data) {
 			return response()->json([
