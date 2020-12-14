@@ -426,9 +426,9 @@ class ConfigController extends Controller
 				<td>'. $bahan->nama .'</td>
 				<td class="form-inline text-center">
 				<input type="hidden" name="getid_bahan[]" value="'. $bahan->id .'">
-				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" required>
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" value="" required>
 				<span><b>'.$bahan->satuan.'</b> /</span>
-				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="1" required>
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="" required>
 				<span><b>pax</b></span>
 				</td>
 				<td class="form-inline">
@@ -525,9 +525,9 @@ class ConfigController extends Controller
 				<td>'. $alat->kategori .'</td>
 				<td class="form-inline text-center">
 				<input type="hidden" name="getid_alat[]" value="'. $alat->id .'">
-				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" required>
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="jumlah[]" value="" required>
 				<span><b>pcs</b> /</span>
-				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="1" required>
+				<input type="number" class="form-control" style="height: 30px; width: 60px;" name="per_paket[]" value="" required>
 				<span><b>pax</b></span>
 				</td>
 				<td class="form-inline">

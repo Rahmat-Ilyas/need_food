@@ -80,6 +80,10 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('kelolamenu/setpaket', 'RestfullApiController@setPaket');
     Route::post('kelolamenu/editpaket/{id}', 'RestfullApiController@putPaket');
     Route::delete('kelolamenu/deletepaket/{id}', 'RestfullApiController@deletePaket');
+
+    // ADDITIONAL DAGING
+    Route::get('kelolamenu/getadditional', 'RestfullApiController@getsAdditional');
+    Route::get('kelolamenu/getadditional/{id}', 'RestfullApiController@getAdditional');
 });
 
 Route::fallback(function() {

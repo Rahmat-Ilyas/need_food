@@ -1207,6 +1207,8 @@ class RestfullApiController extends Controller
 	{
 		if ($pemesanan) {
 			if ($id) {
+				$set_paket = [];
+				// Data Paket Pesanan
 				$getPaket = PaketPesanan::where('pemesanan_id', $id)->get();
 				foreach ($getPaket as $i => $pkt) {
 					$getPkt = Paket::where('id', $pkt->paket_id)->first();
@@ -1216,8 +1218,11 @@ class RestfullApiController extends Controller
 					$paket[$i]['harga'] = $getPkt ? $getPkt->harga : null;
 					$paket[$i]['jumlah'] = $pkt->jumlah;
 					$paket[$i]['total_harga'] = $pkt->total_harga;
+
+					$set_paket[] = ['paket_id' => $pkt->paket_id, 'jumlah' => $pkt->jumlah];
 				}
 
+				// Data Additional Pesanan
 				$getAdditional = AdtPesanan::where('pemesanan_id', $id)->get();
 				$additional = [];
 				if ($getAdditional) {
@@ -1233,13 +1238,39 @@ class RestfullApiController extends Controller
 					}
 				}
 
+				// Data Transaksi Pesanan
 				$transaksi = Transaksi::where('pemesanan_id', $id)->first();
 				unset($transaksi['created_at']);
 				unset($transaksi['updated_at']);
 
+				// Data Set Alat/Bahan Pesanan
+				$bahan = [];
+				$alat = [];
+				foreach ($set_paket as $set) {
+					$paket_id = $set['paket_id'];
+					$jumlah_paket = $set['jumlah'];
+					// Set Bahan
+					$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
+					foreach ($get_set_bahan as $bhn) {
+						$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
+						if ($set_jum_bhn > 0) {
+							$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
+							if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
+							else $jumlah = $set_jum_bhn;
+							$bahan[] = [
+								'paket_id' => $paket_id,
+								'bahan_id' => $bhn->bahan_id,
+								'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
+								'jumlah_bahan' => $jumlah.' '.$get_bahan->satuan
+							];
+						}
+					}
+				}
+
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
+				$pemesanan['bahan'] = $bahan;
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
 					$getPaket = PaketPesanan::where('pemesanan_id', $pesanan->id)->get();
@@ -1567,6 +1598,34 @@ class RestfullApiController extends Controller
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 500);	
+		}
+	}
+
+	public function getsAdditional()
+	{
+		$data = Additional::all();
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result' => $data
+		], 200);
+	}
+
+	public function getAdditional($id)
+	{
+		$data = Additional::where('id', $id)->first();
+
+		if ($data) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result' => $data
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
 		}
 	}
 }
