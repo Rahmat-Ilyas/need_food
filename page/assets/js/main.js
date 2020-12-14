@@ -41,7 +41,37 @@ $(document).ready(function () {
             }
         });
     });
-    
+
+    $.ajax({
+        url     : url+'/api/kelolamenu/getadditional',
+        method  : "GET",
+        headers	: headers,
+        success : function(data) {
+            var path_asset_bahan = url+'/assets/images/bahan';
+            var additional = '';
+            if (data['success'] == true) {
+                $.each(data['result'], function (indexInArray, valueOfElement) { 
+                     additional += '<div class="col-sm-3 grid_element">';
+                     additional += '<div class="card_additional">';
+                     additional += '<img src="'+path_asset_bahan+'/'+valueOfElement.foto+'" class="image_additonal">'; 
+                     additional += '<div class="text-image">'+valueOfElement.nama_daging+'</div>';
+                     additional += '<input type="checkbox" class="checbox_image" />';
+                     additional += '<div class="card_additional_body">';
+                     additional += '<div class="row form_card_additonal_product">';
+                     additional += '<div class="col-sm-12">';
+                     additional += '<div class="card_additional_text">Rp. '+valueOfElement.harga+'</div>';
+                     additional += '<div class="input-group"><span class="input-group-btn"><button type="button" class="tombol_additional btn-number" disabled="disabled" data-type="minus" data-field="quant[1]"><i class="icofont-minus icon-number_additional"></i></button></span><input type="text" name="quant[1]" class="form-nedd_additional input-number" value="1" min="1" max="1000"><span class="input-group-btn"><button type="button" class="tombol_additional btn-number" data-type="plus" data-field="quant[1]"><i class="icofont-plus icon-number_additional"></i></button></span></div>';
+                     additional += '</div>';
+                     additional += '</div>';
+                     additional += '</div>';
+                     additional += '</div>';
+                     additional += '</div>';
+
+                });
+                $('.additional_content_box').append(additional);
+            }
+        }
+    });
 
 $('.btn-number').click(function(e){
     e.preventDefault();

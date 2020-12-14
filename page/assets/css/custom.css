@@ -242,7 +242,7 @@ nav a:hover {
 
 .imageproduct {
     width: 100%;
-    height: 220px;
+    height: 311px;
     padding: 40px;
 }
 
@@ -787,10 +787,6 @@ button:focus {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.25);
 }
 
-.additional_content_box {
-    margin-top: 26px;
-}
-
 .title-additional-order {
     font-family: 'Poppins', sans-serif;
     font-size: 20px;
@@ -819,6 +815,7 @@ button:focus {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
     width: 125%;
+    margin-top: 30px;
 }
 
 .grid_element {
@@ -832,6 +829,7 @@ button:focus {
 .image_additonal {
     width: 100%;
     z-index: 0;
+    height: 223px;
 }
 
 .text-image {
@@ -891,7 +889,7 @@ button:focus {
     cursor: pointer;
     z-index: 2;
     position: absolute;
-    bottom: 253px;
+    bottom: 258px;
     right: -29px;
 }
 
