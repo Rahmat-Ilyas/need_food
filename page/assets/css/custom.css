@@ -12,7 +12,7 @@ body {
 
 .main {
     background: #FFFFFF;
-    min-height: 690px;
+    min-height: 500px;
 }
 
 .navbar {
@@ -123,6 +123,10 @@ nav a:hover {
 .banner_order {
     background: #F5F0EC;
     padding: 60px 0 60px 0;
+}
+
+.grid_order{
+    margin-bottom: 30px;
 }
 
 .banner_order_additional {

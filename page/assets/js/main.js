@@ -41,6 +41,7 @@ $(document).ready(function () {
             }
         });
     });
+    
 
 $('.btn-number').click(function(e){
     e.preventDefault();

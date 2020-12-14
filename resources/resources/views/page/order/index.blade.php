@@ -5,15 +5,11 @@
         <div class="row justify-content-center">
             <div class="col-lg-12">
                 <div class="box">
-
-                    <div class="row">
+                    <div class="row grid_order">
                         <div class="col-md-2">
                             <div class="box_menu_paket grid_box_paket">
                                 <div class="box_title_paket">Menu</div>
                                 <div id="item_paket"></div>
-                                {{-- <div class="list_menu_paket">YAKINIKU</div>
-                                <div class="list_menu_paket">SHABU</div>
-                                <div class="list_menu_paket">SHABU</div> --}}
                             </div>
 
                             <div class="box_toogle_menu"> <span class="text_toogle">Menu</span> <i class="icofont-caret-down"></i></div>
