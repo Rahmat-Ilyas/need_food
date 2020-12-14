@@ -1265,12 +1265,34 @@ class RestfullApiController extends Controller
 							];
 						}
 					}
+
+					// Set Alat
+					$get_set_alat = SetAlat::where('paket_id', $paket_id)->get();
+					foreach ($get_set_alat as $alt) {
+						$set_jum_alt = floor($jumlah_paket / $alt->per_paket)  * $alt->jumlah;
+						if ($set_jum_alt > 0) {
+							$get_kategori = Kategori::where('id', $alt->kategori_alat_id)->first();
+							if (isset($alt->maksimal)) $jumlah = $alt->maksimal;
+							else $jumlah = $set_jum_alt;
+							$alat_dipilih[] = ['alat_id' => 1, 'nama_alat' => 'Kompor Convina', 'jumlah' => '1 pcs'];
+							$alat_dipilih[] = ['alat_id' => 2, 'nama_alat' => 'Kompor Rinnai', 'jumlah' => '1 pcs'];
+
+							$alat[] = [
+								'paket_id' => $paket_id,
+								'kategori_alat_id' => $alt->kategori_alat_id,
+								'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
+								'jumlah_alat' => $jumlah.' pcs',
+								'alat_dipilih' => $alat_dipilih
+							];
+						}
+					}
 				}
 
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
 				$pemesanan['bahan'] = $bahan;
+				$pemesanan['alat'] = $alat;
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
 					$set_paket = [];
@@ -1635,6 +1657,14 @@ class RestfullApiController extends Controller
 	public function getsAdditional()
 	{
 		$data = Additional::all();
+		$result = [];
+		foreach ($data as $dta) {
+			$bahan = Bahan::where('id', $dta->bahan_id)->first();
+			$dta['foto'] = $bahan->foto;
+			unset($dta['created_at']);
+			unset($dta['updated_at']);
+			$result[] = $dta;
+		}
 		return response()->json([
 			'success' => true,
 			'message' => 'Success get data',
@@ -1647,6 +1677,10 @@ class RestfullApiController extends Controller
 		$data = Additional::where('id', $id)->first();
 
 		if ($data) {
+			$bahan = Bahan::where('id', $data->bahan_id)->first();
+			unset($data['created_at']);
+			unset($data['updated_at']);
+			$data['foto'] = $bahan->foto;
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
