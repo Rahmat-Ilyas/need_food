@@ -68,6 +68,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('datapesanan', 'RestfullApiController@getsPesanan');
     Route::get('datapesanan/{id}', 'RestfullApiController@getPesanan');
     Route::get('datapesanan/status/{status}', 'RestfullApiController@getStatusPesanan');
+    Route::get('datapesanan/today/{status}', 'RestfullApiController@getPesananToday');
     Route::post('datapesanan/store', 'RestfullApiController@setPesanan');
     Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
     Route::put('datapesanan/updatedriver/{id}', 'RestfullApiController@updateDriverPesanan');
@@ -80,6 +81,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('kelolamenu/setpaket', 'RestfullApiController@setPaket');
     Route::post('kelolamenu/editpaket/{id}', 'RestfullApiController@putPaket');
     Route::delete('kelolamenu/deletepaket/{id}', 'RestfullApiController@deletePaket');
+    Route::post('getalatpaket', 'RestfullApiController@getAlatPaket');
 
     // ADDITIONAL DAGING
     Route::get('kelolamenu/getadditional', 'RestfullApiController@getsAdditional');

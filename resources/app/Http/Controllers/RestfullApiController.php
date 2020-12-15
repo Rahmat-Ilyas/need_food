@@ -1171,7 +1171,7 @@ class RestfullApiController extends Controller
 		$pemesanan = Pemesanan::where('id', $id)->first();
 		$result = $this->getDataPesanan($pemesanan, $id);
 
-		if ($result) {
+		if (count($result) > 0) {
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
@@ -1190,7 +1190,7 @@ class RestfullApiController extends Controller
 		$pemesanan = Pemesanan::where('status', $status)->orderBy('id', 'desc')->get();
 		$result = $this->getDataPesanan($pemesanan);
 
-		if ($result) {
+		if (count($result) > 0) {
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
@@ -1200,6 +1200,31 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function getPesananToday(Request $request, $status)
+	{
+		$data = [];
+		$pemesanan = Pemesanan::where('status', $status)->orderBy('id', 'desc')->get();
+		foreach ($pemesanan as $res) {
+			if (date('dmy') == date('dmy', strtotime($res->created_at))) {
+				$data[] = $res;
+			}
+		}
+		$result = $this->getDataPesanan($data);
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data is empty'
 			], 404);
 		}
 	}
@@ -1705,6 +1730,43 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function getAlatPaket(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'paket_id' => 'required|array',
+			'jumlah' => 'required|array'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if (!is_array($request->paket_id) || !is_array($request->jumlah)) {
+			return response()->json([
+				'success' => false,
+				'message' => 'input is not array'
+			], 401);  
+		}
+
+		$set_paket = [];
+		foreach ($request->paket_id as $i => $dta) {
+			$set_paket[] = ['paket_id' => $request->paket_id[$i], 'jumlah' => $request->jumlah[$i]];
+		}
+
+		$result = $this->set_paket($set_paket, 1, 'alat');
+
+		return response()->json([
+			'success' => false,
+			'message' => 'success get data',
+			'result' => $result
+		], 401); 
+	}
+
+	// ADDITIONAL
 	public function getsAdditional()
 	{
 		$data = Additional::all();
