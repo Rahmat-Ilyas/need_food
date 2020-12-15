@@ -1209,7 +1209,7 @@ class RestfullApiController extends Controller
 		$data = [];
 		$pemesanan = Pemesanan::where('status', $status)->orderBy('id', 'desc')->get();
 		foreach ($pemesanan as $res) {
-			if (date('dmy') == date('dmy', strtotime($res->created_at))) {
+			if (date('dmy') == date('dmy', strtotime($res->tanggal_antar))) {
 				$data[] = $res;
 			}
 		}
