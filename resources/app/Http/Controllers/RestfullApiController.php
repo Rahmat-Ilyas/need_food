@@ -1244,104 +1244,11 @@ class RestfullApiController extends Controller
 				unset($transaksi['created_at']);
 				unset($transaksi['updated_at']);
 
-				// Data Set Alat/Bahan Pesanan
-				$bahan = [];
-				$alat = [];
-				$total_paket = 0;
-				$x = 0;
-				$y = 0;
-				foreach ($set_paket as $set) {
-					$paket_id = $set['paket_id'];
-					$jumlah_paket = $set['jumlah'];
-					$total_paket = $total_paket + $set['jumlah'];
-					// Set Bahan
-					$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
-					foreach ($get_set_bahan as $bhn) {
-						$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
-						if ($set_jum_bhn > 0) {
-							$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
-							if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
-							else $jumlah = $set_jum_bhn;
-							$bahan[$x] = [
-								'key' => $x,
-								'bahan_id' => $bhn->bahan_id,
-								'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
-								'jumlah_bahan' => $jumlah,
-								'satuan' => $get_bahan ? $get_bahan->satuan : null,
-							];
-							$x = $x + 1;
-						}
-					}
-
-					// Set Alat
-					$get_set_alat = SetAlat::where('paket_id', $paket_id)->get();
-					foreach ($get_set_alat as $alt) {
-						$set_jum_alt = floor($jumlah_paket / $alt->per_paket)  * $alt->jumlah;
-						if ($set_jum_alt > 0) {
-							$get_kategori = Kategori::where('id', $alt->kategori_alat_id)->first();
-							if (isset($alt->maksimal)) $jumlah = $alt->maksimal;
-							else $jumlah = $set_jum_alt;
-							$alat_dipilih = [];
-							$alat_pesanan = AlatPesanan::where('pemesanan_id', $id)->where('kategori_alat_id', $alt->kategori_alat_id)->get();
-							foreach ($alat_pesanan as $alpes) {
-								$get_alat = Alat::where('id', $alpes->alat_id)->first();
-								$alat_dipilih[] = [
-									'alat_id' => $alpes->alat_id,
-									'nama_alat' => $get_alat->nama,
-									'jumlah' => $alpes->jumlah.' pcs',
-								];
-							}
-							
-							$alat[$y] = [
-								'key' => $y,
-								'kategori_alat_id' => $alt->kategori_alat_id,
-								'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
-								'jumlah_alat' => $jumlah,
-								'alat_dipilih' => $alat_dipilih
-							];
-							$y = $y + 1;
-						}
-					}
-				}
-
-				// Set Bahan Fix
-				$search = array_column($bahan, 'key', 'bahan_id');
-				$bahan_fix = [];
-				foreach ($search as $fix => $key) {
-					$jumlah = 0;
-					foreach ($bahan as $ext) {
-						if ($ext['bahan_id'] == $fix) {
-							$jumlah = $jumlah + $ext['jumlah_bahan'];
-						}
-					}
-					$bahan[$key]['jumlah_bahan'] = $jumlah.' '.$bahan[$key]['satuan'];
-					unset($bahan[$key]['key']);
-					unset($bahan[$key]['satuan']);
-					$bahan_fix[] = $bahan[$key];
-				}
-
-				// Set Alat Fix
-				$search = array_column($alat, 'key', 'kategori_alat_id');
-				$alat_fix = [];
-				if ($total_paket >= 5) {
-					foreach ($search as $fix => $key) {
-						$jumlah = 0;
-						foreach ($alat as $ext) {
-							if ($ext['kategori_alat_id'] == $fix) {
-								$jumlah = $jumlah + $ext['jumlah_alat'];
-							}
-						}
-						$alat[$key]['jumlah_alat'] = $jumlah.' pcs';
-						unset($alat[$key]['key']);
-						$alat_fix[] = $alat[$key];
-					}
-				}
-
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
-				$pemesanan['bahan'] = $bahan_fix;
-				$pemesanan['alat'] = $alat_fix;
+				$pemesanan['bahan'] = $this->set_paket($set_paket, $id, 'bahan');
+				$pemesanan['alat'] = $this->set_paket($set_paket, $id, 'alat');
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
 					$set_paket = [];
@@ -1385,10 +1292,111 @@ class RestfullApiController extends Controller
 					$pesanan['paket'] = $paket;
 					$pesanan['additional'] = $additional;
 					$pesanan['transaksi'] = $transaksi;
+					$pesanan['bahan'] = $this->set_paket($set_paket, $pesanan->id, 'bahan');
+					$pesanan['alat'] = $this->set_paket($set_paket, $pesanan->id, 'alat');
 				}
 			}
 		}
 		return $pemesanan;
+	}
+
+	protected function set_paket($set_paket, $pemesanan_id, $req)
+	{
+		// Data Set Alat/Bahan Pesanan
+		$bahan = [];
+		$alat = [];
+		$total_paket = 0;
+		$x = 0;
+		$y = 0;
+		foreach ($set_paket as $set) {
+			$paket_id = $set['paket_id'];
+			$jumlah_paket = $set['jumlah'];
+			$total_paket = $total_paket + $set['jumlah'];
+			// Set Bahan
+			$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
+			foreach ($get_set_bahan as $bhn) {
+				$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
+				if ($set_jum_bhn > 0) {
+					$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
+					if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
+					else $jumlah = $set_jum_bhn;
+					$bahan[$x] = [
+						'key' => $x,
+						'bahan_id' => $bhn->bahan_id,
+						'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
+						'jumlah_bahan' => $jumlah,
+						'satuan' => $get_bahan ? $get_bahan->satuan : null,
+					];
+					$x = $x + 1;
+				}
+			}
+
+			// Set Alat
+			$get_set_alat = SetAlat::where('paket_id', $paket_id)->get();
+			foreach ($get_set_alat as $alt) {
+				$set_jum_alt = floor($jumlah_paket / $alt->per_paket)  * $alt->jumlah;
+				if ($set_jum_alt > 0) {
+					$get_kategori = Kategori::where('id', $alt->kategori_alat_id)->first();
+					if (isset($alt->maksimal)) $jumlah = $alt->maksimal;
+					else $jumlah = $set_jum_alt;
+					$alat_dipilih = [];
+					$alat_pesanan = AlatPesanan::where('pemesanan_id', $pemesanan_id)->where('kategori_alat_id', $alt->kategori_alat_id)->get();
+					foreach ($alat_pesanan as $alpes) {
+						$get_alat = Alat::where('id', $alpes->alat_id)->first();
+						$alat_dipilih[] = [
+							'alat_id' => $alpes->alat_id,
+							'nama_alat' => $get_alat->nama,
+							'jumlah' => $alpes->jumlah.' pcs',
+						];
+					}
+					
+					$alat[$y] = [
+						'key' => $y,
+						'kategori_alat_id' => $alt->kategori_alat_id,
+						'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
+						'jumlah_alat' => $jumlah,
+						'alat_dipilih' => $alat_dipilih
+					];
+					$y = $y + 1;
+				}
+			}
+		}
+
+		// Set Bahan Fix
+		$search = array_column($bahan, 'key', 'bahan_id');
+		$bahan_fix = [];
+		foreach ($search as $fix => $key) {
+			$jumlah = 0;
+			foreach ($bahan as $ext) {
+				if ($ext['bahan_id'] == $fix) {
+					$jumlah = $jumlah + $ext['jumlah_bahan'];
+				}
+			}
+			$bahan[$key]['jumlah_bahan'] = $jumlah.' '.$bahan[$key]['satuan'];
+			unset($bahan[$key]['key']);
+			unset($bahan[$key]['satuan']);
+			$bahan_fix[] = $bahan[$key];
+		}
+
+		// Set Alat Fix
+		$search = array_column($alat, 'key', 'kategori_alat_id');
+		$alat_fix = [];
+		if ($total_paket >= 5) {
+			foreach ($search as $fix => $key) {
+				$jumlah = 0;
+				foreach ($alat as $ext) {
+					if ($ext['kategori_alat_id'] == $fix) {
+						$jumlah = $jumlah + $ext['jumlah_alat'];
+					}
+				}
+				$alat[$key]['jumlah_alat'] = $jumlah.' pcs';
+				unset($alat[$key]['key']);
+				$alat_fix[] = $alat[$key];
+			}
+		}
+
+		if ($req == 'bahan') return $bahan_fix;
+		else if ($req == 'alat') return $alat_fix;
 	}
 
 	public function updateStatusPesanan(Request $request, $id)
@@ -1561,7 +1569,18 @@ class RestfullApiController extends Controller
 
 	public function getsPaket()
 	{
-		$data = Paket::all();
+		$result = Paket::all();
+		$data = [];
+		foreach ($result as $dta) {
+			$get_item = SetBahan::where('paket_id', $dta->id)->where('jenis', 'utama')->get();
+			$item = [];
+			foreach ($get_item as $get) {
+				$bahan = Bahan::where('id', $get->bahan_id)->first();
+				$item[] = $bahan->nama;
+			}
+			$dta['item_paket'] = $item;
+			$data[] = $dta;
+		}
 		return response()->json([
 			'success' => true,
 			'message' => 'Success get data',
@@ -1574,6 +1593,14 @@ class RestfullApiController extends Controller
 		$data = Paket::where('id', $id)->first();
 
 		if ($data) {
+			$get_item = SetBahan::where('paket_id', $id)->where('jenis', 'utama')->get();
+			$item = [];
+			foreach ($get_item as $get) {
+				$bahan = Bahan::where('id', $get->bahan_id)->first();
+				$item[] = $bahan->nama;
+			}
+			$data['item_paket'] = $item;
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',

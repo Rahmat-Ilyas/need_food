@@ -357,8 +357,8 @@ class ConfigController extends Controller
 					<div class="col-md-4">
 					<div class="price_card text-center">
 					<div class="pricing-header text-dark" style="background-image: url('. asset('assets/images/paket/'.$dta->foto) .'); background-repeat: no-repeat; background-position: center; background-size: cover;">
-					<span class="price">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
-					<span class="name" style="font-size: 20px;">'.$dta->nama.'</span>
+					<span class="price text-white" style="text-shadow: black 0.1em 0.1em 0.2em;">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
+					<span class="name text-white" style="font-size: 20px; text-shadow: black 0.1em 0.1em 0.2em;">'.$dta->nama.'</span>
 					</div>
 					<p class="m-t-20"><i><b>'.$dta->keterangan.'</b></i></p>
 					<ul class="price-features" id="bahan-utama">'.$bahan_utama.'</ul>
