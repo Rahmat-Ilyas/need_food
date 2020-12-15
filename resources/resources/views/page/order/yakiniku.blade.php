@@ -2,9 +2,8 @@
     <div class="row">
         <div class="col-lg-8 menu_grid">
             <div class="row">
-                <div class="col-lg-12">
-                    <img src="{{ asset('page/assets/images/product/yakiniku.jpg') }}"
-                        class="imageproduct">
+                <div class="col-lg-12 img-paket">
+                    
                 </div>
                 <div class="col-lg-8">
                     <div class="label_rating">9.0</div>
@@ -26,12 +25,8 @@
                 </div>
                 <div class="row">
                     <div class="container">
-                        <div class="col-lg-12">
-                            <p class="text-card-order">Lorem ipsum dolor sit amet,
-                                consectetur
-                                adipiscing elit. Fringilla sed tellus orci praesent sem
-                                eget.
-                                Amet eu, habitant id vel magna vitae </p>
+                        <div class="col-lg-12 group_text_order">
+                            
                         </div>
                     </div>
                 </div>
@@ -42,8 +37,9 @@
         <div class="col-lg-4">
             <div class="grid_group_button_order">
                 <div class="paket_general">
-                    <p> <span class="currency-general">Rp 100.000</span><span
-                            class="sub-currency">/ Paket</span></p>
+                    <p id="nominals">
+                         
+                    </p>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
@@ -68,7 +64,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="tombol-lg tombol-keranjang">Masukkan Keranjang</button>
+                    <button class="tombol-lg tombol-keranjang text-button">Masukkan Keranjang</button>
                 </div>
             </div>
         </div>

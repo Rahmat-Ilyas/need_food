@@ -32,13 +32,6 @@
                     <img src="{{ asset('page/assets/images/logo.png') }}" id="gramLogo">
                 </a>
 
-
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
@@ -109,8 +102,7 @@
 <script src="{{ asset('page/assets/js/jquery-3.5.1.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('page/assets/js/mains.js') }}"></script>
-
+<script src="{{ asset('page/assets/js/main.js') }}"></script>
 @stack('skript')
 
 </html>
