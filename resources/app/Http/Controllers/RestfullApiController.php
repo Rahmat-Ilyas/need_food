@@ -1229,6 +1229,44 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function getPesananDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'status' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if ($request->status != 'pengantaran' && $request->status != 'penjemputan') {
+			return response()->json([
+				'success' => false,
+				'message' => 'status not found'
+			], 401);   
+		}
+
+		$pemesanan = Pemesanan::where($request->status, $id)->orderBy('id', 'desc')->get();
+		$result = $this->getDataPesanan($pemesanan);
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data is empty'
+			], 404);
+		}
+	}
+
 	protected function getDataPesanan($pemesanan, $id = null)
 	{
 		if ($pemesanan) {
@@ -1375,13 +1413,23 @@ class RestfullApiController extends Controller
 						];
 					}
 					
-					$alat[$y] = [
-						'key' => $y,
-						'kategori_alat_id' => $alt->kategori_alat_id,
-						'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
-						'jumlah_alat' => $jumlah,
-						'alat_dipilih' => $alat_dipilih
-					];
+					if ($req == 'alat_front') {
+						$alat[$y] = [
+							'key' => $y,
+							'kategori_alat_id' => $alt->kategori_alat_id,
+							'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
+							'jumlah_alat' => $jumlah,
+							'foto' => $get_kategori ? $get_kategori->foto : null,
+						];
+					} else {
+						$alat[$y] = [
+							'key' => $y,
+							'kategori_alat_id' => $alt->kategori_alat_id,
+							'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
+							'jumlah_alat' => $jumlah,
+							'alat_dipilih' => $alat_dipilih
+						];
+					}
 					$y = $y + 1;
 				}
 			}
@@ -1422,6 +1470,7 @@ class RestfullApiController extends Controller
 
 		if ($req == 'bahan') return $bahan_fix;
 		else if ($req == 'alat') return $alat_fix;
+		else if ($req == 'alat_front') return $alat_fix;
 	}
 
 	public function updateStatusPesanan(Request $request, $id)
@@ -1757,7 +1806,7 @@ class RestfullApiController extends Controller
 			$set_paket[] = ['paket_id' => $request->paket_id[$i], 'jumlah' => $request->jumlah[$i]];
 		}
 
-		$result = $this->set_paket($set_paket, 1, 'alat');
+		$result = $this->set_paket($set_paket, null,'alat_front');
 
 		return response()->json([
 			'success' => false,

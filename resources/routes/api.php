@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('datapesanan/{id}', 'RestfullApiController@getPesanan');
     Route::get('datapesanan/status/{status}', 'RestfullApiController@getStatusPesanan');
     Route::get('datapesanan/today/{status}', 'RestfullApiController@getPesananToday');
+    Route::get('datapesanan/driver/{id}', 'RestfullApiController@getPesananDriver');
     Route::post('datapesanan/store', 'RestfullApiController@setPesanan');
     Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
     Route::put('datapesanan/updatedriver/{id}', 'RestfullApiController@updateDriverPesanan');
