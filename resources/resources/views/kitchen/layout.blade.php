@@ -167,16 +167,8 @@
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-wpforms"></i> <span> Data Pemesanan </span> <span class="menu-arrow"></span> </a>
               <ul class="list-unstyled">
-                <li><a href="{{ url('kitchen/datapesanan/pesananbaru') }}">Pemesanan Masuk</a></li>
-                <li><a href="maudiubah">Pesanan Keluar</a></li>
-              </ul>
-            </li>
-            <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="ti-menu-alt"></i> <span> Kelola Menu </span> <span class="menu-arrow"></span> </a>
-              <ul class="list-unstyled">
-                <li><a href="{{ url('kitchen/kelolamenu/paketmenu') }}">Paket Menu</a></li>
-                <li><a href="{{ url('kitchen/kelolamenu/additional') }}">Additional Daging</a></li>
-                <li><a href="{{ url('kitchen/kelolamenu/bahantambahan') }}">Bahan Tambahan</a></li>
+                <li><a href="{{ url('kitchen/datapesanan/pesananbaru') }}">Pemesanan Baru</a></li>
+                <li><a href="maudiubah">Pesanan Diproses</a></li>
               </ul>
             </li>
             <li class="has_sub">

@@ -1171,7 +1171,7 @@ class RestfullApiController extends Controller
 		$pemesanan = Pemesanan::where('id', $id)->first();
 		$result = $this->getDataPesanan($pemesanan, $id);
 
-		if (count($result) > 0) {
+		if ($result) {
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',

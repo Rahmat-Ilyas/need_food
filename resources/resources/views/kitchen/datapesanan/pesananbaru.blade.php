@@ -48,71 +48,61 @@
 </div>
 
 <!-- MODAL DETAIL -->
-<div class="modal detail-alat" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+<div class="modal set-alat" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				<h4 class="modal-title" id="myModalLabel">Detail Alat</h4>
 			</div>
-			<div class="modal-body" style="padding: 20px 40px 20px 40px">
-				<dl class="row mb-0">
-					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Kode Barang:</dt>
-						<dd class="col-sm-7" id="dtl_kd_alat"></dd>	
-					</div>
-					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Jumlah Alat:</dt>
-						<dd class="col-sm-7"><span id="dtl_jumlah_alat"></span> pcs</dd>
-					</div>
-					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Nama Barang:</dt>
-						<dd class="col-sm-7" id="dtl_nama"></dd>
-					</div>
-					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Alat Keluar:</dt>
-						<dd class="col-sm-7"><span id="dtl_alat_keluar"></span> pcs</dd>
-					</div>
-					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Kategori:</dt>
-						<dd class="col-sm-7" id="dtl_kategori"></dd>
-					</div>
-					<div class="col-sm-6 row">
-						<dt class="col-sm-5">Sisa Alat:</dt>
-						<dd class="col-sm-7"><span id="dtl_sisa_alat"></span> pcs</dd>
-					</div>
-				</dl>
-				<hr>
-				<div class="panel-group" id="accordion-test-2"> 
-					<div class="panel panel-default"> 
-						<div class="panel-heading"> 
-							<h4 class="panel-title"> 
-								<a data-toggle="collapse" data-parent="#accordion-test-2" href="#collapseOne-2" aria-expanded="false" class="collapsed">
-									Riwayat Pembelian Barang
-								</a> 
-							</h4> 
-						</div> 
-						<div id="collapseOne-2" class="panel-collapse collapse"> 
-							<div class="panel-body">
-								<table class="table table-bordered" id="tableDetail" style="margin-top: -15px; font-size: 13px;">
-									<thead>
+			<div class="modal-body" style="padding: 10px 40px 10px 40px">
+				<table class="table table-bordered" id="tableDetail" style="font-size: 13px;">
+					<thead>
+						<tr>
+							<th width="200">Kategori Alat</th>
+							<th>Alat Dipilih</th>
+						</tr>
+					</thead>
+					<tbody id="kategori-alat">
+						<tr>
+							<td>Kompor</td>
+							<td>
+								<div class="form-group form-inline row">
+									<div class="col-sm-9">
+										<input type="hidden" name="id" id="id">
+			                            <select class="form-control select2" style="height: 35px; width: 100%;" id="daging_edt" required="">
+			                                
+			                            </select>
+									</div>
+									<div class="col-sm-3">
+										<a href="#" class="btn btn-primary btn-sm btn-block"><i class="fa fa-plus" id="tambah-item"></i> Tambah Alat</a>
+									</div>
+								</div>
+								<table class="table m-b-0">
+									<tbody id="pilih-alat">
 										<tr>
-											<th>No</th>
-											<th>KD Pembelian</th>
-											<th>Tggl Pembelian</th>
-											<th>Jumlah Beli</th>
-											<th>Total Harga</th>
-											<th>Supplier</th>
+											<td width="250">Kompor Konvina</td>
+											<td class="row">
+												<div class="col-sm-8">
+													<input type="hidden" name="kategori_id[]">
+													<input type="hidden" name="alat_id[]" id="alat_id">
+													<input type="number" class="form-control" name="jumlah[]" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+												</div>
+												<div class="col-sm-4 p-0">
+													<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+												</div>
+											</div>
+											</td>
+											<td width="50">
+												<a href="#" class="btn btn-danger btn-sm" id="hapus-item"><i class="fa fa-trash"></i> Hapus Alat</a>
+											</td>
 										</tr>
-									</thead>
-									<tbody id="riwayat-beli">
-										
 									</tbody>
 								</table>
-							</div> 
-						</div> 
-					</div>
-				</div> 
+							</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
@@ -139,30 +129,43 @@
 		function getPesanan() {
 			var dataTable = $('#tabelPesananbaru').DataTable();
 			$.ajax({
-				url     : host+"/configuration",
-				method  : "POST",
+				url     : host+"/api/datapesanan",
+				method  : "GET",
 				headers	: headers,
-				data	: { req: 'pesananbaru' },
 				success : function(data) {
-					console.log(data)
 					dataTable.clear().draw();
 					$.each(data.result, function(key, val) {
+						var dt = new Date(val.tanggal_antar);
 						dataTable.row.add([
 							val.kd_pemesanan,
 							val.nama,
 							val.no_telepon,
 							val.no_wa,
-							val.jadwal_antar,
+							dt.getDate()+'/'+dt.getMonth()+'/'+dt.getYear()+' ('+val.waktu_antar+')',
 							val.deskripsi_lokasi,
 							val.catatan,
 							`<div class="text-center">
-							<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".detail-alat"><i class="fa fa-eye"></i></a>
+							<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Set Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i> Set Alat</a>
 							</div>`,
 							]).draw(false);
 					});
 				}
 			});
 		}
+
+		$(document).on('click', '#set-alat', function(event) {
+			event.preventDefault();
+			var id = $(this).attr('dta-id');
+
+			$.ajax({
+				url     : host+"/api/datapesanan/"+id,
+				method  : "GET",
+				headers	: headers,
+				success : function(data) {
+					console.log(data.result)
+				}
+			});
+		});
 	});
 </script>
 @endsection
