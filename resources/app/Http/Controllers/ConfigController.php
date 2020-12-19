@@ -733,6 +733,114 @@ class ConfigController extends Controller
 					], 500);	
 				}
 			}
+
+			// SET ALAT FROM KITCHEN
+			if ($request->req == 'setAlatPilih') {
+				$result = '';
+				foreach ($request->data as $dta) {
+					// Option
+					$option = '<option value="">Pilih Alat</option>';
+					$get_option = Alat::where('kategori_id', $dta['kategori_alat_id'])->get();
+					foreach ($get_option as $opt) {
+						$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
+					}
+
+					// Set Alat
+					$alat_dipilih = '';
+					if (isset($dta['alat_dipilih'])) {
+						foreach ($dta['alat_dipilih'] as $adp) {
+							$alat_dipilih .= '
+								<tr id="this-remove">
+									<td width="250">'.$adp['nama_alat'].'</td>
+									<td class="row">
+										<div class="col-sm-8">
+											<input type="hidden" name="kategori_id[]" value="'.$dta['kategori_alat_id'].'">
+											<input type="hidden" name="alat_id[]" value="'.$adp['alat_id'].'">
+											<input type="number" class="form-control" name="jumlah[]" required="" value="'.filter_var($adp['jumlah'], FILTER_SANITIZE_NUMBER_INT).'" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+										</div>
+										<div class="col-sm-4 p-0">
+											<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+										</div>
+									</div>
+									</td>
+									<td width="50">
+										<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$dta['kategori_alat_id'].'"><i class="fa fa-trash"></i> Hapus</a>
+									</td>
+								</tr>';
+						}
+					}
+
+					// Set Kategori
+					$result .= '
+						<tr>
+							<td>'.$dta['kategori_alat'].'</td>
+							<td>'.$dta['jumlah_alat'].'</td>
+							<td>
+								<div class="form-group row">
+									<div class="col-sm-10">
+			                            <select class="form-control select2" style="height: 35px; width: 100%;" id="alat-dipilih'.$dta['kategori_alat_id'].'" ktgr-id="'.$dta['kategori_alat_id'].'" required="">
+			                                '.$option.'
+			                            </select>
+									</div>
+								</div>
+								<table class="table m-b-0">
+									<tbody id="pilih-alat'.$dta['kategori_alat_id'].'">
+										'.$alat_dipilih.'
+									</tbody>
+								</table>
+							</td>
+						</tr>';
+				}
+
+				return response()->json($result);
+			}
+
+			// SELECT ALAT FROM KITCHEN
+			if ($request->req == 'alatSelected') {
+				$alat = Alat::where('id', $request->alat_id)->first();
+				$result = '';
+				if ($alat) {
+					$result = '
+					<tr id="this-remove">
+						<td width="250">'.$alat->nama.'</td>
+						<td class="row">
+							<div class="col-sm-8">
+								<input type="hidden" name="kategori_id[]" value="'.$alat->kategori_id.'">
+								<input type="hidden" name="alat_id[]" value="'.$alat->id.'">
+								<input type="number" class="form-control" name="jumlah[]" required="" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+							</div>
+							<div class="col-sm-4 p-0">
+								<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+							</div>
+						</div>
+						</td>
+						<td width="50">
+							<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$alat->kategori_id.'"><i class="fa fa-trash"></i> Hapus</a>
+						</td>
+					</tr>';
+				}
+
+				return response()->json($result);
+			}
+
+			// CHECK ALAT EXITS KITCHEN
+			if ($request->req == 'cekAlatExits') {
+				$getid_alat = Alat::where('kategori_id', $request->ktgr_id)->get();
+				$option = '<option value="">Pilih Alat</option>';
+
+				if (isset($request->alat_id)) {
+					foreach ($getid_alat as $opt) {
+						if (!in_array($opt->id, $request->alat_id)) {
+							$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
+						}
+					}
+				} else {
+					foreach ($getid_alat as $opt) {
+						$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
+					}
+				}
+				return response()->json($option);
+			}
 		}
 	}
 

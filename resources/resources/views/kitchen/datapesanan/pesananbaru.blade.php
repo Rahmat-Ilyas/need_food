@@ -50,64 +50,30 @@
 <!-- MODAL DETAIL -->
 <div class="modal set-alat" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="myModalLabel">Detail Alat</h4>
+		<form id="formPilihAlat">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">Detail Alat</h4>
+				</div>
+				<div class="modal-body" style="padding: 10px 40px 10px 40px">
+					<table class="table table-bordered" id="tableDetail" style="font-size: 13px;">
+						<thead>
+							<tr>
+								<th width="150">Kategori Alat</th>
+								<th width="20">Jumlah</th>
+								<th>Alat Dipilih</th>
+							</tr>
+						</thead>
+						<tbody id="kategori-alat">
+							
+						</tbody>
+					</table>
+					<button type="submit" class="btn btn-default waves-effect">Simpan</button>
+					<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
+				</div>
 			</div>
-			<div class="modal-body" style="padding: 10px 40px 10px 40px">
-				<table class="table table-bordered" id="tableDetail" style="font-size: 13px;">
-					<thead>
-						<tr>
-							<th width="200">Kategori Alat</th>
-							<th>Alat Dipilih</th>
-						</tr>
-					</thead>
-					<tbody id="kategori-alat">
-						<tr>
-							<td>Kompor</td>
-							<td>
-								<div class="form-group form-inline row">
-									<div class="col-sm-9">
-										<input type="hidden" name="id" id="id">
-			                            <select class="form-control select2" style="height: 35px; width: 100%;" id="daging_edt" required="">
-			                                
-			                            </select>
-									</div>
-									<div class="col-sm-3">
-										<a href="#" class="btn btn-primary btn-sm btn-block"><i class="fa fa-plus" id="tambah-item"></i> Tambah Alat</a>
-									</div>
-								</div>
-								<table class="table m-b-0">
-									<tbody id="pilih-alat">
-										<tr>
-											<td width="250">Kompor Konvina</td>
-											<td class="row">
-												<div class="col-sm-8">
-													<input type="hidden" name="kategori_id[]">
-													<input type="hidden" name="alat_id[]" id="alat_id">
-													<input type="number" class="form-control" name="jumlah[]" placeholder="Jumlah..." style="height: 35px; width: 100%;">
-												</div>
-												<div class="col-sm-4 p-0">
-													<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
-												</div>
-											</div>
-											</td>
-											<td width="50">
-												<a href="#" class="btn btn-danger btn-sm" id="hapus-item"><i class="fa fa-trash"></i> Hapus Alat</a>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
-			</div>
-		</div><!-- /.modal-content -->
+		</form>
 	</div><!-- /.modal-dialog -->
 </div>
 @endsection
@@ -162,10 +128,62 @@
 				method  : "GET",
 				headers	: headers,
 				success : function(data) {
-					console.log(data.result)
+					var data = data.result.alat;
+					$.ajax({
+	                    url: host + "/configuration",
+	                    method: "POST",
+	                    headers: headers,
+	                    data: { data: data, req: 'setAlatPilih' },
+	                    success: function(result) {
+	                        $('#kategori-alat').html(result);
+							$('.select2').select2({
+								placeholder: "Pilih Alat"
+							});
+
+							$.each(data, function(index, val) {
+								 cekAlatExits(val.kategori_alat_id)
+							});
+	                    }
+	                });
 				}
 			});
 		});
+
+		$(document).on('change', '.select2', function(event) {
+			event.preventDefault();
+			var ktgr_id = $(this).attr('ktgr-id');
+			var alat_dipilih = $(this).val();
+
+			$.ajax({
+                url: host + "/configuration",
+                method: "POST",
+                headers: headers,
+                data: { kategori_id: ktgr_id, alat_id: alat_dipilih, req: 'alatSelected' },
+                success: function(data) {
+                    $('#pilih-alat'+ktgr_id).append(data);
+					cekAlatExits(ktgr_id);
+                }
+            });
+		});
+
+		$(document).on('click', '#hapus-item', function(event) {
+			var ktgr_id = $(this).attr('ktgr-id');
+			$(this).parents('#this-remove').remove();
+			cekAlatExits(ktgr_id);
+		});
+
+		function cekAlatExits(ktgr_id) {
+			var data = $('#formPilihAlat').serialize();
+			$.ajax({
+                url: host + "/configuration",
+                method: "POST",
+                headers: headers,
+                data: data+'&ktgr_id='+ktgr_id+'&req=cekAlatExits',
+                success: function(data) {
+                    $('#alat-dipilih'+ktgr_id).html(data);
+                }
+            });
+		}
 	});
 </script>
 @endsection
