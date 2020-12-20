@@ -1421,4 +1421,30 @@ $(document).ready(function () {
       });
    });
 
+   // PILIH ALAT PESANAN
+   $('#formPilihAlat').submit(function(event) {
+      event.preventDefault();
+
+      var data = $('#formPilihAlat').serialize();
+      $.ajax({
+         url     : host+"/api/datapesanan/setalatpesanan",
+         method  : "POST",
+         headers  : headers,
+         data  : data,
+         success : function(data) {
+            Swal.fire({
+               title: 'Berhasil Diproses',
+               text: data.message,
+               type: 'success',
+               onClose: () => {
+                  $('.modal').modal('hide');
+               }
+            });
+         },
+         error: function (data) {
+            setError(data);
+         }
+      });
+   });
+
 });

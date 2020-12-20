@@ -69,6 +69,7 @@
 							
 						</tbody>
 					</table>
+					<input type="hidden" name="pesanan_id" id="pesanan_id">
 					<button type="submit" class="btn btn-default waves-effect">Simpan</button>
 					<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
 				</div>
@@ -122,6 +123,7 @@
 		$(document).on('click', '#set-alat', function(event) {
 			event.preventDefault();
 			var id = $(this).attr('dta-id');
+			$('#pesanan_id').val(id);
 
 			$.ajax({
 				url     : host+"/api/datapesanan/"+id,

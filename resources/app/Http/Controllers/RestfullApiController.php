@@ -1408,7 +1408,7 @@ class RestfullApiController extends Controller
 						$get_alat = Alat::where('id', $alpes->alat_id)->first();
 						$alat_dipilih[] = [
 							'alat_id' => $alpes->alat_id,
-							'nama_alat' => $get_alat->nama,
+							'nama_alat' => $get_alat ? $get_alat->nama : null,
 							'jumlah' => $alpes->jumlah.' pcs',
 						];
 					}
@@ -1599,6 +1599,110 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
+	}
+
+	public function setAlatPesanan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'pesanan_id' => 'required|integer',
+		]);
+
+		$set_paket = [];
+		$getPaket = PaketPesanan::where('pemesanan_id', $request->pesanan_id)->get();
+		foreach ($getPaket as $pkt) {
+			$set_paket[] = ['paket_id' => $pkt->paket_id, 'jumlah' => $pkt->jumlah];
+		}
+		$getAlatPaket = $this->set_paket($set_paket, $request->pesanan_id,'alat');
+
+		$error = null;
+		if ($validator->fails()) $error = $validator->errors();
+		else if (!is_array($request->kategori_id) || !is_array($request->alat_id) || !is_array($request->jumlah)) $error = 'Inputan tidak lengkap';
+		else if (!isset($request->kategori_id) || !isset($request->alat_id) || !isset($request->jumlah) || count($request->kategori_id) != count($request->alat_id) || count($request->kategori_id) != count($request->jumlah) || count($request->alat_id) != count($request->jumlah)) $error = 'Inputan tidak lengkap';
+		else if (count($getAlatPaket) == 0) $error = 'Paket tidak ada';
+
+		$data = [];
+		$input = [];
+		if (is_array($request->kategori_id) && is_array($request->alat_id) && is_array($request->jumlah)) {
+			foreach ($request->kategori_id as $i => $kat) {
+				$data[] = [
+					'key' => $i,
+					'kategori_id' => $kat, 
+					'alat_id' => $request->alat_id[$i], 
+					'jumlah' => $request->jumlah[$i]
+				];
+
+				$input[] = [
+					'pemesanan_id' => $request->pesanan_id,
+					'kategori_alat_id' => $kat,
+					'alat_id' => $request->alat_id[$i], 
+					'jumlah' => $request->jumlah[$i]
+				];
+			}
+
+			$search = array_column($data, 'key', 'kategori_id');
+			$alat_req = [];
+			foreach ($search as $fix => $key) {
+				$jumlah = 0;
+				foreach ($data as $ext) {
+					if ($ext['kategori_id'] == $fix) {
+						$jumlah = $jumlah + $ext['jumlah'];
+					}
+				}
+				$data[$key]['jumlah'] = $jumlah;
+				unset($data[$key]['key']);
+				$alat_req[] = $data[$key];
+			}
+
+			foreach ($getAlatPaket as $alt) {
+				$cek = $this->search($alt['kategori_alat_id'], $alat_req);
+				$jumlah_alat = filter_var($alt['jumlah_alat'], FILTER_SANITIZE_NUMBER_INT);
+				if ($cek != false) {
+					if ($cek > $jumlah_alat) {
+						$error = "Jumlah alat (".$alt['kategori_alat'].") melebihi ketentuan";
+						break;
+					} else if ($cek < $jumlah_alat) {
+						$error = "Jumlah alat (".$alt['kategori_alat'].") tidak memenuhi";
+						break;
+					}
+				} else {
+					$error = "Lengkapi semua jumlah alat yang diminta";
+					break;
+				}
+			}
+
+		}
+
+		if ($error != null) {
+			return response()->json([
+				'success' => false,
+				'message' => $error
+			], 401);
+		} else {
+			$alat_pesanan = AlatPesanan::where('pemesanan_id', $request->pesanan_id)->get();
+			foreach ($alat_pesanan as $del_aps) {
+				$del_aps->delete();
+			}
+
+			foreach ($input as $aps) {
+				AlatPesanan::create($aps);
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Alat pesanan berhasil diatur'
+			], 200);
+		}
+
+	}
+
+	private function search($key, $data) 
+	{
+		foreach ($data as $dta) {
+			if ($key == $dta['kategori_id']) {
+				return $dta['jumlah'];
+			}
+		}
+		return false;
 	}
 
 	// PAKET

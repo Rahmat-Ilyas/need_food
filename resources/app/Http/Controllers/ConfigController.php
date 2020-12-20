@@ -778,7 +778,7 @@ class ConfigController extends Controller
 							<td>
 								<div class="form-group row">
 									<div class="col-sm-10">
-			                            <select class="form-control select2" style="height: 35px; width: 100%;" id="alat-dipilih'.$dta['kategori_alat_id'].'" ktgr-id="'.$dta['kategori_alat_id'].'" required="">
+			                            <select class="form-control select2" style="height: 35px; width: 100%;" id="alat-dipilih'.$dta['kategori_alat_id'].'" ktgr-id="'.$dta['kategori_alat_id'].'">
 			                                '.$option.'
 			                            </select>
 									</div>
