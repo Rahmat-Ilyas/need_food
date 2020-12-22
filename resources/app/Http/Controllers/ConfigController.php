@@ -28,14 +28,14 @@ class ConfigController extends Controller
 	{
 		if (isset($request->req)) {
 			if ($request->req == 'pesananbaru') {
-				$request = [];
-				$pemesanan = Pemesanan::where('status', 'waiting')->get();
+				$result = [];
+				$pemesanan = Pemesanan::where('status', 'Delivery')->get();
 				foreach ($pemesanan as $dta) {
 					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
 					$result[] = $dta;
 				}
 
-				if ($result) {
+				if (count($result) > 0) {
 					return response()->json([
 						'success' => true,
 						'message' => 'Success get data',
@@ -45,7 +45,7 @@ class ConfigController extends Controller
 					return response()->json([
 						'success' => false,
 						'message' => 'Data not found'
-					], 404);
+					], 204);
 				}
 			} else if ($request->req == 'seleksibahanpaket') {
 				$bahan = Bahan::orderBy('id', 'desc')->get();

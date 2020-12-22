@@ -80,7 +80,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -108,7 +108,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -324,7 +324,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -349,7 +349,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -554,7 +554,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -740,7 +740,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1063,11 +1063,11 @@ class RestfullApiController extends Controller
 			'waktu_antar' => 'required',
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
-			'logitude' => 'required',
+			'longitude' => 'required',
 			'paket_id' => 'required',
 			'jumlah_paket' => 'required',
+			'biaya_pengiriman' => 'required|integer',
 		]);
-
 
 		if ($validator->fails()) {
 			return response()->json([
@@ -1082,19 +1082,20 @@ class RestfullApiController extends Controller
 			$date = date('dmY');
 			if ($getId) {
 				$findId = sprintf('%02s', $getId->id+1);
-				$kd_pemesanan = 'NFC-'.$findId.$date;
+				$kd_pemesanan = 'KSN-'.$findId.$date;
 			}
-			else $kd_pemesanan = 'NFC-01'.$date;
+			else $kd_pemesanan = 'KSN-01'.$date;
 
 			// set data
 			$pemesanan = $request->all();
 			$pemesanan['kd_pemesanan'] = $kd_pemesanan;
-			$pemesanan['status'] = 'waiting';
+			$pemesanan['status'] = 'New';
 			$request->catatan ? $request->catatan : $pemesanan['catatan'] = '-';
 			unset($pemesanan['paket_id']);
 			unset($pemesanan['jumlah_paket']);
 			unset($pemesanan['additional_id']);
 			unset($pemesanan['jumlah_adt']);
+			unset($pemesanan['biaya_pengiriman']);
 			$pmsn = Pemesanan::create($pemesanan);
 
 			$harga_paket = 0;
@@ -1128,9 +1129,9 @@ class RestfullApiController extends Controller
 			$transaksi['pemesanan_id'] = $pmsn->id;
 			$transaksi['harga_paket'] = $harga_paket;
 			$transaksi['harga_additional'] = $harga_additional;
-			$transaksi['biaya_pengiriman'] = 0;
+			$transaksi['biaya_pengiriman'] = $request->biaya_pengiriman;
 			$transaksi['harga_lainnya'] = 0;
-			$transaksi['total_harga'] = $harga_paket + $harga_additional;
+			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
 
 			return response()->json([
@@ -1162,7 +1163,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1181,7 +1182,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1200,7 +1201,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1225,7 +1226,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data is empty'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1263,7 +1264,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data is empty'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1537,7 +1538,7 @@ class RestfullApiController extends Controller
 					return response()->json([
 						'success' => false,
 						'message' => 'status not found'
-					], 404); 
+					], 401); 
 				}
 				$update->save();
 			} else {
@@ -1788,7 +1789,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 
@@ -1956,7 +1957,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 204);
 		}
 	}
 }

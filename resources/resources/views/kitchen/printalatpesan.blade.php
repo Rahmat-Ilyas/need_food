@@ -58,7 +58,7 @@
 							<thead>
 								<tr>
 									<th rowspan="2" style="padding-bottom: 30px; width: 2px;">No</th>
-									<th rowspan="2" style="padding-bottom: 30px;">Kode Alat</th>
+									<th rowspan="2" style="padding-bottom: 30px;">Kategori</th>
 									<th rowspan="2" style="padding-bottom: 30px;">Nama Alat</th>
 									<th rowspan="2" style="padding-bottom: 30px;">Jumlah</th>
 									<th colspan="2">Keterangan</th>
@@ -68,55 +68,8 @@
 									<th style="width: 100px;">Tidak</th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td>1</td>
-									<td>2ad2-0244</td>
-									<td>Panci Suki Besar (single)</td>
-									<td>1</td>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>2</td>
-									<td>au45-sd32</td>
-									<td>Kompor Konvina Portebel</td>
-									<td>1</td>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>3</td>
-									<td>e988-95c3</td>
-									<td>Grill Pan Bundar</td>
-									<td>1</td>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>4</td>
-									<td>65dd-2223</td>
-									<td>Pirex Kotak</td>
-									<td>5</td>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>5</td>
-									<td>c81f-ec1c</td>
-									<td>Sumpit Kayu</td>
-									<td>5</td>
-									<td></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>6</td>
-									<td>0cef-27d1</td>
-									<td>Jepitan stainlees</td>
-									<td>5</td>
-									<td></td>
-									<td></td>
-								</tr>
+							<tbody id="data-alat">
+								
 							</tbody>
 						</table>
 					</div>
@@ -148,34 +101,61 @@
 				method  : "POST",
 				headers	: headers,
 				data	: { req: 'pesananbaru' },
-				success : function(data) {
+				success : function(data, textStatus, xhr) {
 					dataTable.clear().draw();
-					$.each(data.result, function(key, val) {
-						dataTable.row.add([
-							val.kd_pemesanan,
-							val.nama,
-							val.no_telepon+ '/' +val.no_wa,
-							val.jadwal_antar,
-							val.deskripsi_lokasi,
-							`<div class="text-center">
-							<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="print-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Print Alat Pesanan"><i class="fa fa-print"></i> Print Alat Pesanan</a>
-							</div>`,
-							]).draw(false);
-					});
+					if (xhr.status == 200) {
+						$.each(data.result, function(key, val) {
+							dataTable.row.add([
+								val.kd_pemesanan,
+								val.nama,
+								val.no_telepon+ '/' +val.no_wa,
+								val.jadwal_antar,
+								val.deskripsi_lokasi,
+								`<div class="text-center">
+								<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="print-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Print Alat Pesanan"><i class="fa fa-print"></i> Print Alat Pesanan</a>
+								</div>`,
+								]).draw(false);
+						});
+					}
 				}
 			});
 		}
 
 		$(document).on('click', '#print-alat', function() {
 			var id = $(this).attr('dta-id');
+			var data_alat = [];
 			$.ajax({
-				url     : host+"/configuration",
-				method  : "POST",
+				url     : host+"/api/datapesanan/"+id,
+				method  : "GET",
 				headers	: headers,
-				data	: { req: 'printalat', id: id },
 				success : function(data) {
+					var dt = new Date(data.result.tanggal_antar);
+					data.result.tanggal_antar = dt.getDate()+'/'+dt.getMonth()+'/'+dt.getFullYear();
 					$.each(data.result, function(key, val) {
 						$('#'+key).text(val);
+					});
+
+					$.each(data.result.alat, function(key, val) {
+						$.each(val.alat_dipilih, function(key1, val1) {
+							val1['kategori'] = val.kategori_alat;			
+							data_alat.push(val1);
+						});					
+					});
+
+					var nomor = 1;
+					$('#data-alat').html('');
+					$.each(data_alat, function(index, val) {
+						$('#data-alat').append(`
+							<tr>
+								<td>`+nomor+`</td>
+								<td>`+val.kategori+`</td>
+								<td>`+val.nama_alat+`</td>
+								<td>`+val.jumlah+`</td>
+								<td></td>
+								<td></td>
+							</tr>
+						`);
+						nomor = nomor + 1;
 					});
 
 					$('.print').printArea();

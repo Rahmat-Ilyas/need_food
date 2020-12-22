@@ -26,14 +26,13 @@
 					<table id="tabelPesananbaru" class="table table-striped table-bordered">
 						<thead>
 							<tr>
-								<th>Kode Pesanan</th>
+								<th width="100">Kode Pesanan</th>
 								<th>Nama</th>
 								<th>Telepon</th>
 								<th>WhhatsApp</th>
 								<th>Jadwal Antar</th>
-								<th>Alamat</th>
 								<th>Catatan</th>
-								<th class="text-center">Aksi</th>
+								<th width="150" class="text-center">Aksi</th>
 							</tr>
 						</thead>
 
@@ -96,26 +95,28 @@
 		function getPesanan() {
 			var dataTable = $('#tabelPesananbaru').DataTable();
 			$.ajax({
-				url     : host+"/api/datapesanan",
+				url     : host+"/api/datapesanan/status/proccess",
 				method  : "GET",
 				headers	: headers,
-				success : function(data) {
+				success : function(data, textStatus, xhr) {
 					dataTable.clear().draw();
-					$.each(data.result, function(key, val) {
-						var dt = new Date(val.tanggal_antar);
-						dataTable.row.add([
-							val.kd_pemesanan,
-							val.nama,
-							val.no_telepon,
-							val.no_wa,
-							dt.getDate()+'/'+dt.getMonth()+'/'+dt.getYear()+' ('+val.waktu_antar+')',
-							val.deskripsi_lokasi,
-							val.catatan,
-							`<div class="text-center">
-							<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Set Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i> Set Alat</a>
-							</div>`,
-							]).draw(false);
-					});
+					if (xhr.status == 200) {
+						$.each(data.result, function(key, val) {
+							var dt = new Date(val.tanggal_antar);
+							dataTable.row.add([
+								val.kd_pemesanan,
+								val.nama,
+								val.no_telepon,
+								val.no_wa,
+								dt.getDate()+'/'+dt.getMonth()+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
+								val.catatan,
+								`<div class="text-center">
+								<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Set Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i> Set Alat</a>
+								<a href="#" role="button" class="btn btn-default btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="fa fa-shopping-basket"></i> Selesai</a>
+								</div>`,
+								]).draw(false);
+						});
+					}
 				}
 			});
 		}
@@ -186,6 +187,53 @@
                 }
             });
 		}
+
+		$(document).on('click', '#selesai-packing', function(event) {
+			event.preventDefault();
+			var id = $(this).attr('dta-id');
+			var unset = null;
+
+			$.ajax({
+				url     : host+"/api/datapesanan/"+id,
+				method  : "GET",
+				headers	: headers,
+				success : function(data) {
+					var data = data.result.alat;
+					$.each(data, function(index, val) {
+						 if (val.alat_dipilih.length == 0) unset = true;
+					});
+
+					if (unset) {
+						Swal.fire({
+			               title: 'Alat Belum Diatur',
+			               text: 'Pastikan anda telah mengatur alat yang akan dikirim sebelum melakukan proses ini!',
+			               type: 'warning'
+			            });
+					} else {
+						$.ajax({
+							url     : host+"/api/datapesanan/updatestatus/"+id,
+							method  : "PUT",
+							headers	: headers,
+							data 	: { status: 'Delivery' },
+							success : function(data) {
+								getPesanan();
+								Swal.fire({
+					               title: 'Berhasil Diproses',
+					               text: 'Pesanan telah diselesaikan, pemberitahuan akan di kirim ke Driver',
+					               type: 'success'
+					            });
+							}, error: function (data) {
+					            Swal.fire({
+					               title: 'Gagal Diproses',
+					               text: data.message,
+					               type: 'error'
+					            });
+					        }
+						});
+					}
+				}
+			});
+		});
 	});
 </script>
 @endsection
