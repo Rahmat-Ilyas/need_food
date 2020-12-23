@@ -16,6 +16,7 @@ Route::get('/order','landingpagecontroller@orderindex')->name('page.order.index'
 Route::get('/keranjang','landingpagecontroller@keranjang_index')->name('page.keranjang');
 Route::get('/keranjang/detail_alat','landingpagecontroller@detail_alat')->name('page.detail_alat');
 Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.pengantaran');
+Route::post('/get_paket/data','landingpagecontroller@getpaket')->name('get.paket');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {

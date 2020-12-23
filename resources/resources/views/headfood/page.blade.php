@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/icofont/icofont.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/toastr.min.css') }}">
 </head>
 
 <body>
@@ -103,6 +104,7 @@
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/main.js') }}"></script>
+<script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
 @stack('skript')
 
 </html>

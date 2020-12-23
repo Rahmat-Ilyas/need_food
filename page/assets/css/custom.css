@@ -994,6 +994,14 @@ button:focus {
     background: rgba(0, 0, 0, 0.5);
 }
 
+#cartmodal{
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#modal-body-cart{
+    background: #ffffff;
+}
+
 #modal-header{
     background: #EF8C17;
 }
@@ -1136,7 +1144,68 @@ footer {
     display: none;
 }
 
+.flat_button{
+    width: 68px;
+    height: 48px;
+    border: 1px solid #FF9742;
+    box-sizing: border-box;
+    border-radius: 9px 0px 0px 9px;
+    cursor: pointer;
+}
 
+.grid_button_flag{
+    position: fixed;
+    bottom: -4px;
+    right: 12px;
+    top: 320px;
+}
+
+.icofont-shopping-cart{
+    font-size: 30px;
+    color: #FF9742;
+    position: relative;
+    left: 20px;
+    top: 7px;
+}
+
+.icofont-cart{
+    font-size: 30px;
+    color: #fff;
+}
+
+.pill_number{
+    position: absolute;
+    right: 8px;
+    top: 2px;
+}
+
+.img-keranjang-modal{
+    width: 80px;
+    height: 80px;
+}
+
+.text-image-keranjang-modal{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #8A8A8A;
+}
+
+.grid-form-modal{
+    margin-top: 30px;
+}
+
+.text-currency-keranjang{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: bold;
+    color: #FF9742;
+    margin-left: 0px;
+    margin-top: 5px;
+}
 
 @media only screen and (max-width:576px) {
 
@@ -1508,6 +1577,10 @@ footer {
 
     .value_toogle:hover{
         box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
+    }
+
+    .grid_button_flag{
+        left: 300px;
     }
 
 }

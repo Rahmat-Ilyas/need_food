@@ -26,4 +26,11 @@ class landingpagecontroller extends Controller
     public function pengantaran(){
         return view('page.pengantaran.index');
     }
+
+    public function getpaket(Request $request){
+        $paket = $request['paket'];
+        $qty = $request['qty'];
+
+        dd($paket);
+    }
 }

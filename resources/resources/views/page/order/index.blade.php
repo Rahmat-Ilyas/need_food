@@ -57,7 +57,7 @@
                                         <li>- &nbsp; 5 Sirlon US 200g</li>
                                     </ul>
                                     <div class="col-sm-12">
-                                        <button id="cekapi" class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
+                                        <button id="additional_get" class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
                                     </div>
                                 </div>
                             </div>
@@ -69,5 +69,28 @@
         </div>
     </div>
 </section>
+
+<div class="flat_button grid_button_flag">
+    <i class="icofont-shopping-cart" id="icon_flat"></i>
+    <span class="badge badge-danger pill_number">0</span>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="cartmodal" tabindex="-1" role="dialog" aria-labelledby="cartmodalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content" id="modal-header">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-title"><i class="icofont-cart"></i> Keranjang </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body-cart">
+
+            
+
+        </div>
+      </div>
+    </div>
+  </div>
 
 @endsection

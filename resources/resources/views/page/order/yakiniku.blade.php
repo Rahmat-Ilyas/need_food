@@ -28,6 +28,9 @@
                         <div class="col-lg-12 group_text_order">
                             
                         </div>
+                        <div class="tampung_value">
+
+                        </div>
                     </div>
                 </div>
 
@@ -51,7 +54,7 @@
                                 </button>
                             </span>
                             <input type="text" name="quant[1]" class="form-nedd input-number"
-                                value="1" min="1" max="1000">
+                                value="1" min="1" id="get_qty_paket" max="1000">
                             <span class="input-group-btn">
                                 <button type="button" class="tombols btn-number" data-type="plus"
                                     data-field="quant[1]">
@@ -64,7 +67,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <button class="tombol-lg tombol-keranjang text-button">Masukkan Keranjang</button>
+                    <button class="tombol-lg tombol-keranjang text-button" id="send_to_card_paket">Masukkan Keranjang</button>
                 </div>
             </div>
         </div>
