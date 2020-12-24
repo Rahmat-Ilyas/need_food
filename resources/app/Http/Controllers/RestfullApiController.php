@@ -80,7 +80,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -108,7 +108,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -324,7 +324,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -349,7 +349,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -554,7 +554,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -740,7 +740,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -1163,7 +1163,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -1182,7 +1182,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -1201,16 +1201,28 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
-	public function getPesananToday(Request $request, $status)
+	public function getPesananToday(Request $request)
 	{
+		$validator = Validator::make($request->all(), [
+			'status' => 'required',
+			'tanggal' => 'required',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
 		$data = [];
-		$pemesanan = Pemesanan::where('status', $status)->orderBy('id', 'desc')->get();
+		$pemesanan = Pemesanan::where('status', $request->status)->orderBy('id', 'desc')->get();
 		foreach ($pemesanan as $res) {
-			if (date('dmy') == date('dmy', strtotime($res->tanggal_antar))) {
+			if (date('dmy', strtotime($request->tanggal)) == date('dmy', strtotime($res->tanggal_antar))) {
 				$data[] = $res;
 			}
 		}
@@ -1226,7 +1238,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data is empty'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -1264,7 +1276,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data is empty'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -1789,7 +1801,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 
@@ -1957,7 +1969,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 204);
+			], 404);
 		}
 	}
 }

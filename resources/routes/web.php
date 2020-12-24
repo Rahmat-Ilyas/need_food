@@ -19,6 +19,7 @@ Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.penga
 Route::get('/trypemesanan', function() {
 	return view('welcome');
 });
+Route::get('/trynotif', 'landingpagecontroller@trynotif');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {

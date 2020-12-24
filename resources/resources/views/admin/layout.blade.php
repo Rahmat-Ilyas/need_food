@@ -299,20 +299,64 @@
 
   @yield('javascript')
 
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
 
-  <script type="text/javascript">
-    jQuery(document).ready(function($) {
-      $(".select2").select2();
-      $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+   https://firebase.google.com/docs/web/setup#available-libraries -->
+   <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 
-      $('.buttonText').text('Pilih Foto');
+   <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-messaging.js"></script>
 
-      $('.counter').counterUp({
-        delay: 100,
-        time: 1200
-      });
+   <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyA5g4U_FtOK7LX789QyNyJe90DmnastiI8",
+      authDomain: "kesiniku.firebaseapp.com",
+      projectId: "kesiniku",
+      storageBucket: "kesiniku.appspot.com",
+      messagingSenderId: "901477177108",
+      appId: "1:901477177108:web:55420550d15c84c801d401",
+      measurementId: "G-JNBXWW8J17"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    // firebase.analytics();
+    const messaging = firebase.messaging();
 
-      $(".knob").knob();
+
+    messaging.onMessage((payload) => {
+      console.log('Message received. ', payload);
+    });
+
+    messaging.requestPermission()
+    .then(function () {
+      console.log("Notification permission granted.");
+      return messaging.getToken()
+    }).then(function(token) {
+      // print the token on the HTML page
+      console.log(token)
+    })
+    .catch(function (err) {
+     console.log("Unable to get permission to notify.", err);
+   });
+ </script>
+
+
+ <script type="text/javascript">
+  jQuery(document).ready(function($) {
+    $(".select2").select2();
+    $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
+
+    $('.buttonText').text('Pilih Foto');
+
+    $('.counter').counterUp({
+      delay: 100,
+      time: 1200
+    });
+
+    $(".knob").knob();
 
       // DataTables
       $('#datatable').dataTable();
