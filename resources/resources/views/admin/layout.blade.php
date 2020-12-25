@@ -302,61 +302,27 @@
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
 
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-   https://firebase.google.com/docs/web/setup#available-libraries -->
-   <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 
-   <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-messaging.js"></script>
 
-   <script>
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    var firebaseConfig = {
-      apiKey: "AIzaSyA5g4U_FtOK7LX789QyNyJe90DmnastiI8",
-      authDomain: "kesiniku.firebaseapp.com",
-      projectId: "kesiniku",
-      storageBucket: "kesiniku.appspot.com",
-      messagingSenderId: "901477177108",
-      appId: "1:901477177108:web:55420550d15c84c801d401",
-      measurementId: "G-JNBXWW8J17"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    // firebase.analytics();
-    const messaging = firebase.messaging();
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+  <script src="{{ asset('assets/js/admin.firebase.js') }}"></script>
 
+  <script type="text/javascript">
+    jQuery(document).ready(function($) {
+      $(".select2").select2();
+      $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
 
-    messaging.onMessage((payload) => {
-      console.log('Message received. ', payload);
-    });
+      $('.buttonText').text('Pilih Foto');
 
-    messaging.requestPermission()
-    .then(function () {
-      console.log("Notification permission granted.");
-      return messaging.getToken()
-    }).then(function(token) {
-      // print the token on the HTML page
-      console.log(token)
-    })
-    .catch(function (err) {
-     console.log("Unable to get permission to notify.", err);
-   });
- </script>
+      $('.counter').counterUp({
+        delay: 100,
+        time: 1200
+      });
 
-
- <script type="text/javascript">
-  jQuery(document).ready(function($) {
-    $(".select2").select2();
-    $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
-
-    $('.buttonText').text('Pilih Foto');
-
-    $('.counter').counterUp({
-      delay: 100,
-      time: 1200
-    });
-
-    $(".knob").knob();
+      $(".knob").knob();
 
       // DataTables
       $('#datatable').dataTable();
