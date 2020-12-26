@@ -204,35 +204,65 @@ $(".input-number").keydown(function (e) {
     $('#additional_get').click(function (event) {
         event.preventDefault();
         var get_id_addtional = [];
+        var params_additional = '';
+        var id_additional_var = '';  
         $('input:checkbox[name=id_additional]:checked').each(function () {
             get_id_addtional.push($(this).val());
         });
-       
-        // $.each(get_id_addtional,function(index,value){
-        //     $.ajax({
-        //         url     : url+'/api/kelolamenu/getadditional/'+value,
-        //         method  : "GET",
-        //         headers : headers,
-        //         success : function(data) {
-                       
-        //         }
-        //     });
-        // });
+        
+        if (get_id_addtional.length > 0) {
+            if ($(this).data('info') == undefined) {
+                id_additional_var = get_id_addtional;
+            }else{
+                id_additional_var  = [get_id_addtional[get_id_addtional.length - 1]];
+            }
+            console.log(id_additional_var);
+            $.each(id_additional_var,function(index,value){
+                $.ajax({
+                    url     : url+'/api/kelolamenu/getadditional/'+value,
+                    method  : "GET",
+                    headers : headers,
+                    success : function(data) {
+                        get_id_addtional = [];
+                          params_additional = {  
+                            'foto' : data.result['foto'],
+                            'nama' : data.result['nama_daging'],
+                            'harga' : data.result['harga'], 
+                            'kuantitas':5,
+                            'type' : 'additional', 
+                          };      
+                          grouop_value(params_additional);
+                          toastr_notice('success','Berhasil Masukkan Ke Keranjang');                   
+                        }
+                });
+            });
+        }else{
+            toastr_notice('warning','Anda belum memilih paket daging')
+        }
 
+        $(this).attr('data-info','222');
+        $('.pill_number').html(tampung['length']+1);
     })
 
     grouop_value = (params) =>{
         tampung.push(params);
+        console.log(tampung);
     }
 
     $('.grid_button_flag').click(function () {
         var content_cart_modal = '';
-        var path_asset_image =  url+'/assets/images/paket';
+        var path_asset_image = '';
         console.log(tampung);
         if (tampung.length != 0) {
-                
                $('.box-keranjang-modal').remove();
-               $.each(tampung, function (key, values) { 
+               $.each(tampung, function (key, values) {
+                
+                if(values['type'] == 'paket'){
+                    path_asset_image =  url+'/assets/images/paket';
+                   }else{
+                       path_asset_image =  url+'/assets/images/bahan';
+                   }
+                
                 content_cart_modal += '<div class="box-keranjang-modal mt-2">';
                 content_cart_modal += '<div class="row content-modal-cart">';
                 content_cart_modal += '<div class="col-lg-8">';
@@ -256,7 +286,6 @@ $(".input-number").keydown(function (e) {
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
              });
-
              $('#modal-body-cart').append(content_cart_modal);
              $('#cartmodal').modal('show');
         }else{
@@ -275,7 +304,7 @@ $(".input-number").keydown(function (e) {
         "positionClass": "toast-top-right",
         "preventDuplicates": false,
         "onclick": null,
-        "showDuration": "200",
+        "showDuration": "1000",
         "hideDuration": "1000",
         "timeOut": "500",
         "extendedTimeOut": "1000",

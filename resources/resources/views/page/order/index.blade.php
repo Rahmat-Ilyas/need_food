@@ -57,7 +57,7 @@
                                         <li>- &nbsp; 5 Sirlon US 200g</li>
                                     </ul>
                                     <div class="col-sm-12">
-                                        <button id="additional_get" class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
+                                        <button id="additional_get"  class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
                                     </div>
                                 </div>
                             </div>
@@ -84,11 +84,12 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body" id="modal-body-cart">
-
-            
+        <div class="modal-body" id="modal-body-cart">  
 
         </div>
+        <div class="modal-footer" id="modal-footer">
+            <button class="tombol-lg-modal tombol-keranjang text-button"> Checkout Keranjang</button>
+          </div>
       </div>
     </div>
   </div>
