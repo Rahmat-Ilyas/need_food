@@ -25,6 +25,7 @@
 					<h4 class="m-t-0 header-title"><b>Data Inventori Alat</b></h4>
 					<button type="button" class="btn btn-default btn-rounded waves-effect waves-light m-t-10 m-b-20" data-toggle="modal" data-target=".modal-add-alat"><i class="fa fa-plus-circle"></i> &nbsp;Alat Baru</button>
 					<button type="button" class="btn btn-primary btn-rounded waves-effect waves-light m-t-10 m-b-20" data-toggle="modal" data-target=".modal-add-stok"><i class="md-restaurant-menu"></i> &nbsp;Tambah Stok</button>
+					<button type="button" class="btn btn-inverse btn-rounded waves-effect waves-light m-t-10 m-b-20" data-toggle="modal" data-target=".modal-alat-hilang" id="btn-alat-hilang"><i class="fa fa-exclamation-circle"></i> &nbsp;Alat Hilang</button>
 					<table id="dataTableAlat" class="table table-striped table-bordered">
 						<thead>
 							<tr>
@@ -299,6 +300,40 @@
 	</div><!-- /.modal-dialog -->
 </div>
 
+<!-- MODAL ALAT HILANG -->
+<div class="modal modal-alat-hilang" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myModalLabel">Data Alat Hilang</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered" id="tableAlatHilang" style="margin-top: -15px; font-size: 13px;">
+					<thead>
+						<tr>
+							<th>No</th>
+							<th>KD Pemesanan</th>
+							<th>Nama Pemesan</th>
+							<th>Nama Alat</th>
+							<th>Jumlah Hilang</th>
+							<th>Tggl Hilang</th>
+							<th>Aksi</th>
+						</tr>
+					</thead>
+					<tbody id="alat-hilang">
+
+					</tbody>
+				</table>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div>
+
 <!-- MODAL HAPUS -->
 <div class="modal modal-delete" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-sm" role="document">
@@ -451,6 +486,35 @@
 				}
 			});
 		});
+
+		// ALAT HILANG
+		$('#btn-alat-hilang').click(function() {
+			$.ajax({
+				url: host + "/api/inventori/getalathilang",
+				method: "GET",
+				headers: headers,
+				success: function (data) {
+					var tableAlatHilang = $('#tableAlatHilang').DataTable();
+					tableAlatHilang.clear().draw();
+					var no = 1;
+					$.each(data.result, function (key, vl) {
+						tableAlatHilang.row.add([
+							no,
+							vl.kd_pemesanan,
+							vl.nama_pemesan,
+							vl.nama_alat,
+							vl.jumlah_hilang,
+							vl.tanggal_hilang,
+							`<td class="text-center">
+							<a href="#" class="btn btn-sm btn-default" id="set-alat-kembali" data-id="` + vl.id + `" ><i class="fa fa-reply"></i> Telah Kembali</a>
+							</td>`
+							]).draw(false);
+						no = no + 1;
+					});
+				}
+			});
+		});
+
 	});
 </script>
 @endsection

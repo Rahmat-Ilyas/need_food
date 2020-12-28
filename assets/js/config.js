@@ -40,45 +40,45 @@ $(document).ready(function () {
          serverSide: true,
          ajax: host + '/datatable?req=dtGetAlat',
          columns: [{
-               data: 'no',
-               name: 'no'
-            },
-            {
-               data: 'foto',
-               name: 'foto',
-               orderable: false,
-               searchable: false
-            },
-            {
-               data: 'kd_alat',
-               name: 'kd_alat'
-            },
-            {
-               data: 'nama',
-               name: 'nama'
-            },
-            {
-               data: 'kategori',
-               name: 'kategori'
-            },
-            {
-               data: 'jumlah_alat',
-               name: 'jumlah_alat'
-            },
-            {
-               data: 'alat_keluar',
-               name: 'alat_keluar'
-            },
-            {
-               data: 'sisa_alat',
-               name: 'sisa_alat'
-            },
-            {
-               data: 'action',
-               name: 'action',
-               orderable: false,
-               searchable: false
-            },
+            data: 'no',
+            name: 'no'
+         },
+         {
+            data: 'foto',
+            name: 'foto',
+            orderable: false,
+            searchable: false
+         },
+         {
+            data: 'kd_alat',
+            name: 'kd_alat'
+         },
+         {
+            data: 'nama',
+            name: 'nama'
+         },
+         {
+            data: 'kategori',
+            name: 'kategori'
+         },
+         {
+            data: 'jumlah_alat',
+            name: 'jumlah_alat'
+         },
+         {
+            data: 'alat_keluar',
+            name: 'alat_keluar'
+         },
+         {
+            data: 'sisa_alat',
+            name: 'sisa_alat'
+         },
+         {
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
+         },
          ]
       });
    }
@@ -112,10 +112,10 @@ $(document).ready(function () {
                   'Rp. ' + vl.total_harga,
                   '<a href="#" id="detail-supplier" data-id="' + vl.supplier_id + '">' + vl.supplier + '</a>',
                   `<td class="text-center">
-						<a href="#" class="text-primary" id="edit-add-alat" data-id="` + vl.id + `"><i class="fa fa-pencil"></i></a>&nbsp;
-						<a href="#" class="text-danger" id="delete-add-alat" data-id="` + vl.id + `"><i class="fa fa-trash-o"></i></a>
-						</td>`
-               ]).draw(false);
+                  <a href="#" class="text-primary" id="edit-add-alat" data-id="` + vl.id + `"><i class="fa fa-pencil"></i></a>&nbsp;
+                  <a href="#" class="text-danger" id="delete-add-alat" data-id="` + vl.id + `"><i class="fa fa-trash-o"></i></a>
+                  </td>`
+                  ]).draw(false);
                no = no + 1;
             });
          }
@@ -358,6 +358,53 @@ $(document).ready(function () {
       });
    });
 
+   // SET ALAT KEMBALI 
+   $(document).on('click', '#set-alat-kembali', function(e) {
+      var id = $(this).attr('data-id');
+      swal({
+         title: "Alat Kembali",
+         html: `<form id="thisalatKembali">
+         <div class="text-left">
+         <div class="form-group row">
+         <div class="col-sm-9">
+         <input type="number" class="form-control" required="" name="jumlah_alat" placeholder="Jumlah Alat Kembali" value="">
+         </div>
+         <div class="col-sm-3">
+         <input type="tex" class="form-control" value="pcs" disabled>
+         </div>
+         </div>
+         </div>
+         </form>`,
+         showCancelButton: true,
+         confirmButtonClass: 'btn-primary btn-md waves-effect waves-light',
+         cancelButtonClass: 'btn-white btn-md waves-effect',
+         confirmButtonText: 'Selesai',
+         focusConfirm: false,
+         preConfirm: () => {
+            var data = $(document).find('#thisalatKembali').serialize();
+            $.ajax({
+               url: host + "/api/inventori/setalatkembali/"+id,
+               method: "POST",
+               headers: headers,
+               data: data,
+               success: function (data) {
+                  Swal.fire({
+                     title: 'Berhasil Diproses',
+                     text: 'Alat telah kembali',
+                     type: 'success',
+                     onClose: () => {
+                        $('.modal').modal('hide');
+                     }
+                  });
+               },
+               error: function (data) {
+                  setError(data);
+               }
+            });
+         }
+      });
+   });
+
    // DELETE ALAT
    $('#delete-alat').click(function () {
       var id = $(this).attr('data-id');
@@ -392,37 +439,37 @@ $(document).ready(function () {
          serverSide: true,
          ajax: host + '/datatable?req=dtGetBahan',
          columns: [{
-               data: 'no',
-               name: 'no'
-            },
-            {
-               data: 'foto',
-               name: 'foto',
-               orderable: false,
-               searchable: false
-            },
-            {
-               data: 'kd_bahan',
-               name: 'kd_bahan'
-            },
-            {
-               data: 'nama',
-               name: 'nama'
-            },
-            {
-               data: 'kategori',
-               name: 'kategori'
-            },
-            {
-               data: 'jumlah_bahan',
-               name: 'jumlah_bahan'
-            },
-            {
-               data: 'action',
-               name: 'action',
-               orderable: false,
-               searchable: false
-            },
+            data: 'no',
+            name: 'no'
+         },
+         {
+            data: 'foto',
+            name: 'foto',
+            orderable: false,
+            searchable: false
+         },
+         {
+            data: 'kd_bahan',
+            name: 'kd_bahan'
+         },
+         {
+            data: 'nama',
+            name: 'nama'
+         },
+         {
+            data: 'kategori',
+            name: 'kategori'
+         },
+         {
+            data: 'jumlah_bahan',
+            name: 'jumlah_bahan'
+         },
+         {
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
+         },
          ]
       });
    }
@@ -456,10 +503,10 @@ $(document).ready(function () {
                   'Rp. ' + vl.total_harga,
                   '<a href="#" id="detail-supplier" data-id="' + vl.supplier_id + '">' + vl.supplier + '</a>',
                   `<td class="text-center">
-						<a href="#" class="text-primary" id="edit-add-bahan" data-id="` + vl.id + `"><i class="fa fa-pencil"></i></a>&nbsp;
-						<a href="#" class="text-danger" id="delete-add-bahan" data-id="` + vl.id + `"><i class="fa fa-trash-o"></i></a>
-						</td>`
-               ]).draw(false);
+                  <a href="#" class="text-primary" id="edit-add-bahan" data-id="` + vl.id + `"><i class="fa fa-pencil"></i></a>&nbsp;
+                  <a href="#" class="text-danger" id="delete-add-bahan" data-id="` + vl.id + `"><i class="fa fa-trash-o"></i></a>
+                  </td>`
+                  ]).draw(false);
 
                no = no + 1;
             });
@@ -737,29 +784,29 @@ $(document).ready(function () {
          serverSide: true,
          ajax: host + '/datatable?req=dtKategori',
          columns: [{
-               data: 'no',
-               name: 'no'
-            },
-            {
-               data: 'foto',
-               name: 'foto',
-               orderable: false,
-               searchable: false
-            },
-            {
-               data: 'kategori',
-               name: 'kategori'
-            },
-            {
-               data: 'jenis',
-               name: 'jenis'
-            },
-            {
-               data: 'action',
-               name: 'action',
-               orderable: false,
-               searchable: false
-            },
+            data: 'no',
+            name: 'no'
+         },
+         {
+            data: 'foto',
+            name: 'foto',
+            orderable: false,
+            searchable: false
+         },
+         {
+            data: 'kategori',
+            name: 'kategori'
+         },
+         {
+            data: 'jenis',
+            name: 'jenis'
+         },
+         {
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
+         },
          ],
       });
    }
@@ -926,10 +973,10 @@ $(document).ready(function () {
                      val.email,
                      val.kategori,
                      `<div class="text-center">
-							<button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-supplier" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="` + val.id + `"><i class="fa fa-edit"></i></button>
-							<button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-supplier" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="` + val.id + `"><i class="fa fa-trash"></i></button>
-							</div>`,
-                  ]).draw(false);
+                     <button type="button" class="btn btn-success btn-sm waves-effect waves-light" id="edit-supplier" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit" data-id="` + val.id + `"><i class="fa fa-edit"></i></button>
+                     <button type="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-supplier" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete" data-id="` + val.id + `"><i class="fa fa-trash"></i></button>
+                     </div>`,
+                     ]).draw(false);
                   no = no + 1;
                }
             });
@@ -1025,14 +1072,14 @@ $(document).ready(function () {
    // GET PAKET
    function getPaket() {
       $.ajax({
-           url: host + "/configuration",
-           method: "POST",
-           headers: headers,
-           data: { req: 'getPaket'},
-           success: function(data) {
-               $('#setPaket').html(data);
-           }
-       });
+        url: host + "/configuration",
+        method: "POST",
+        headers: headers,
+        data: { req: 'getPaket'},
+        success: function(data) {
+         $('#setPaket').html(data);
+      }
+   });
    }
 
    // ADD PAKET
@@ -1188,47 +1235,47 @@ $(document).ready(function () {
          serverSide: true,
          ajax: host + '/datatable?req=dtDriver',
          columns: [{
-               data: 'no',
-               name: 'no'
-            },
-            {
-               data: 'foto',
-               name: 'foto',
-               orderable: false,
-               searchable: false
-            },
-            {
-               data: 'nama',
-               name: 'nama'
-            },
-            {
-               data: 'alamat',
-               name: 'alamat'
-            },
-            {
-               data: 'email',
-               name: 'email'
-            },
-            {
-               data: 'telepon',
-               name: 'telepon'
-            },
-            {
-               data: 'username',
-               name: 'username'
-            },
-            {
-               data: 'status',
-               name: 'status',
-               orderable: false,
-               searchable: false
-            },
-            {
-               data: 'action',
-               name: 'action',
-               orderable: false,
-               searchable: false
-            },
+            data: 'no',
+            name: 'no'
+         },
+         {
+            data: 'foto',
+            name: 'foto',
+            orderable: false,
+            searchable: false
+         },
+         {
+            data: 'nama',
+            name: 'nama'
+         },
+         {
+            data: 'alamat',
+            name: 'alamat'
+         },
+         {
+            data: 'email',
+            name: 'email'
+         },
+         {
+            data: 'telepon',
+            name: 'telepon'
+         },
+         {
+            data: 'username',
+            name: 'username'
+         },
+         {
+            data: 'status',
+            name: 'status',
+            orderable: false,
+            searchable: false
+         },
+         {
+            data: 'action',
+            name: 'action',
+            orderable: false,
+            searchable: false
+         },
          ],
       });
    }
@@ -1333,7 +1380,7 @@ $(document).ready(function () {
          { data: 'keterangan', name: 'keterangan' },
          { data: 'action', name: 'action', orderable: false, searchable: false },
          ]
-     });
+      });
    }
 
    // SET ADDITIONAL 

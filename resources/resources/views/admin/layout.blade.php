@@ -133,11 +133,6 @@
                       </div>
                     </a>
                   </li>
-                  <li>
-                    <a href="javascript:void(0);" class="list-group-item text-right">
-                      <small class="font-600">See all notifications</small>
-                    </a>
-                  </li>
                 </ul>
               </li>
               <li class="dropdown top-menu-item-xs">
@@ -163,7 +158,10 @@
               <a href="{{ url('admin/') }}" class="waves-effect"><i class="ti-home"></i> <span> Dashboard </span></a>
             </li>
             <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-wpforms"></i> <span> Data Pemesanan </span> <span class="menu-arrow"></span> </a>
+              <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-wpforms"></i> 
+                <span class="label label-danger pull-right">3</span>
+                <span> Data Pemesanan </span> 
+              </a>
               <ul class="list-unstyled">
                 <li><a href="{{ url('admin/datapesanan/pesananbaru') }}">Pemesanan Baru</a></li>
                 <li><a href="maudiubah">Pesanan Diproses</a></li>

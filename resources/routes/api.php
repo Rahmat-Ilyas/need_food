@@ -31,9 +31,11 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('inventori/getalat', 'RestfullApiController@invGetsalat');
     Route::get('inventori/getalat/{id}', 'RestfullApiController@invGetalat');
     Route::get('inventori/getalat/kategori/{id}', 'RestfullApiController@invGetalatkategori');
+    Route::get('inventori/getalathilang', 'RestfullApiController@invAlathilang');
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
     Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
     Route::post('inventori/editalat/{id}', 'RestfullApiController@invPutalat');
+    Route::post('inventori/setalatkembali/{alathilang_id}', 'RestfullApiController@setAlatkembali');
     Route::delete('inventori/deletealat/{id}', 'RestfullApiController@deleteAlat');
 
     // INVENTORI BAHAN  
@@ -63,6 +65,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('setdriver', 'RestfullApiController@setDriver');
     Route::post('editdriver/{id}', 'RestfullApiController@putDriver');
     Route::delete('deletedriver/{id}', 'RestfullApiController@deleteDriver');
+    Route::post('driver/cekalat/{pesanan_id}', 'RestfullApiController@cekAlatDriver');
 
     // PEMESANAN
     Route::get('datapesanan', 'RestfullApiController@getsPesanan');

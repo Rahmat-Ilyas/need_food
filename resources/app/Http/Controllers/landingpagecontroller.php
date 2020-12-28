@@ -28,32 +28,71 @@ class landingpagecontroller extends Controller
     }
 
     public function trynotif() {
+        $this->notification('New', 2);
+    }
+
+    protected function notification($status, $pesanan_id) {
+        if ($status == 'New') {
+            $to = 'admin_device';
+            $title = 'Pesanan Baru';
+            $body = 'Pesanan baru masuk, mohon diperiksa';
+        } else if ($status == 'Accept') {
+            $to = 'admin_device';
+            $title = 'Bukti Pembayaran';
+            $body = 'Pelanggan telah mengirimkan bukti pembayaran';
+        } else if ($status == 'Proccess') {
+            $to = 'kitchen_device';
+            $title = 'Pesanan Baru';
+            $body = 'Terdapat pesanan baru yang harus di proses';
+        } else if ($status == 'Delivery') {
+            $to = 'driver_device';
+            $title = 'Pesanan Siap Diantar';
+            $body = 'Terdapat pesanan yang harus di antar';
+        } else if ($status == 'Arrived') {
+            $to = 'admin_device';
+            $title = 'Pesanan Sampai';
+            $body = 'Pesanan telah sampai di tujuan';
+        } else if ($status == 'Taking') {
+            $to = 'driver_device';
+            $title = 'Pesanan Selseai';
+            $body = 'Pesanan telah selesai dan siap di jemput kembali';
+        } else if ($status == 'Done') {
+            $to = 'admin_device';
+            $title = 'Pesanan Selesai';
+            $body = 'Satu pesanan telah selesai';
+        } else {
+            return;
+        }
+
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
-          CURLOPT_URL => 'https://kesiniku-default-rtdb.firebaseio.com/device_token.json',
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => '',
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => 'GET',
-      ));
+            CURLOPT_URL => 'https://kesiniku-default-rtdb.firebaseio.com/device_token/'.$to.'.json',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type:application/json'],
+            CURLOPT_ENCODING => 'json',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
 
-        $response = curl_exec($curl);
+        $response = json_decode(curl_exec($curl), true);
+        $firebaseToken = [];
+        foreach ($response as $key => $value) {
+            if (isset($value['token'])) {
+                $firebaseToken[] = $value['token'];
+            }
+        }
 
         curl_close($curl);
-
-        $firebaseToken = ['erDQ-F-fIxbhfeiJsg0nG7:APA91bEeqYIIArAOEOmafZHAtY-nVREmdCo1z_Z4lZFZm27andxWb3w5HwCR330sm4HlJzYIlAwczybfiqhitlN6oj-toSS5YMDaKXfbi0aBsBxgPqUjTPoOquFcMaR70DYaqvfOcsx3', 'fMY_P90ACnc:APA91bHC5xhaStEwX9v8nD29pNVLykbtqGGkl_Bt5VgnyKaGtNRacOkLjwdDalBZzPmLZ08xomjdZANaxF78fiWupua6WKEGY99fl8PLhSGEo0oiTPO6WsHSCRuaSKm15nWZ7Qd4KXBb'];
 
         $SERVER_API_KEY = 'AAAA0eQ6FxQ:APA91bH4GjxST2iA14lp29LpvtJafU9C_IDfvX7tmPQ5YmyoOsbZmDxtm9M2XJsJfpVANtUFUNdqx8y-_VMLsvv5BfUrapkNjL2LjnrPF8XnpPCNTQxFVdR3ZJH2pda71tzSLEZPeQLm';
 
         $data = [
             "registration_ids" => $firebaseToken,
             "notification" => [
-                "title" => "Tes Notif Dong",
-                "body" => "Hey, Selamat Natal",  
+                "title" => $title,
+                "body" => $body,  
             ],
             "webpush" => [
                 "headers" => [
@@ -62,6 +101,10 @@ class landingpagecontroller extends Controller
             ],
             "android" => [
                 "priority" => "high"
+            ],
+            "data" => [
+                "needfood.technest.com.KEY_SYNC_REQUEST" => "sync",
+                'pesanan_id' => $pesanan_id
             ],
             "priority" => 10
         ];

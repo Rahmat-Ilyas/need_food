@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Model\PaketPesanan;
+use App\Model\KeritikSaran;
 use App\Model\AlatPesanan;
 use App\Model\AdtPesanan;
+use App\Model\AlatHilang;
 use App\Model\Additional;
 use App\Model\Pemesanan;
 use App\Model\Transaksi;
 use App\Model\ItemPaket;
 use App\Model\AuthLogin;
 use App\Model\Kategori;
+use App\Model\Keuangan;
 use App\Model\Supplier;
 use App\Model\AddBahan;
 use App\Model\SetBahan;
@@ -110,6 +113,32 @@ class RestfullApiController extends Controller
 				'message' => 'Data not found'
 			], 404);
 		}
+	}
+
+	public function invAlathilang()
+	{
+		$data = AlatHilang::orderBy('id', 'desc')->get();
+		$result = [];
+		foreach ($data as $dta) {
+			$pesanan = Pemesanan::where('id', $dta->pemesanan_id)->first();
+			$alat = Alat::where('id', $dta->alat_id)->first();
+			$dta['kd_pemesanan'] = $pesanan->kd_pemesanan;
+			$dta['nama_pemesan'] = $pesanan->nama;
+			$dta['nama_alat'] = $alat->nama;
+			$dta['jumlah_hilang'] = $dta->jumlah_hilang.' pcs';
+			$dta['tanggal_hilang'] = date('Y-m-d', strtotime($dta->created_at));
+			unset($dta->created_at);
+			unset($dta->updated_at);
+
+
+			$result[] = $dta;
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result'  => $result
+		], 200);
 	}
 
 	public function invSetalat(Request $request)
@@ -249,6 +278,43 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
+	}
+
+	public function setAlatkembali(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'jumlah_alat' => 'required|integer',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$alathilang = AlatHilang::where('id', $id)->first();
+		$alat = Alat::where('id', $alathilang->alat_id)->first();
+		if ($request->jumlah_alat > $alathilang->jumlah_hilang || $request->jumlah_alat <= 0) {
+			return response()->json([
+				'success' => false,
+				'message' => 'Jumlah alat melebihi ketentuan'
+			], 401); 
+		} else if ($request->jumlah_alat == $alathilang->jumlah_hilang) {
+			$alathilang->delete();
+		} else {
+			$alathilang->jumlah_hilang = $alathilang->jumlah_hilang - $request->jumlah_alat;
+			$alathilang->save();
+		}
+
+		$alat->jumlah_alat = $alat->jumlah_alat + $request->jumlah_alat;
+		$alat->save();
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success set alat kembali'
+		], 200);
 	}
 
 	public function deleteAlat($id)
@@ -1098,6 +1164,8 @@ class RestfullApiController extends Controller
 			unset($pemesanan['biaya_pengiriman']);
 			$pmsn = Pemesanan::create($pemesanan);
 
+			$this->notification('New', $pmsn->id);
+
 			$harga_paket = 0;
 			$harga_additional = 0;
 
@@ -1201,7 +1269,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
-			], 404);
+			], 205);
 		}
 	}
 
@@ -1512,6 +1580,11 @@ class RestfullApiController extends Controller
 				], 401); 
 			}
 
+			$this->notification($request->status, $id);
+			if ($request->status == 'Delivery') {
+				$this->reduceAlatBahan($id);
+			}
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success update data'
@@ -1708,6 +1781,85 @@ class RestfullApiController extends Controller
 
 	}
 
+	public function cekAlatDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'alat_id' => 'required|array',
+			'jumlah' => 'required|array'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if (!is_array($request->alat_id) || !is_array($request->jumlah) || count($request->alat_id) != count($request->jumlah)) {
+			return response()->json([
+				'success' => false,
+				'message' => 'input tidak sesuai'
+			], 401);  
+		}
+
+		$pemesanan = Pemesanan::where('id', $id)->first();
+		$result = $this->getDataPesanan($pemesanan, $id);
+
+		$i = 0;
+		foreach ($result->alat as $kat) {
+			foreach ($kat['alat_dipilih'] as $alt) {
+				if (!in_array($alt['alat_id'], $request->alat_id)) {
+					return response()->json([
+						'success' => false,
+						'message' => 'alat_id tidak sesuai dengan paakaet'
+					], 401);
+				}
+
+				if ($request->jumlah[$i] > $alt['jumlah']) {
+					return response()->json([
+						'success' => false,
+						'message' => 'jumlah yang di input melebihi ketentuan'
+					], 401);
+				}
+
+				$jumlah_keluar = filter_var($alt['jumlah'], FILTER_SANITIZE_NUMBER_INT);
+
+				// Alat Hilang
+				if ($request->jumlah[$i] < $jumlah_keluar) {
+					$jumlah_hilang = $jumlah_keluar - $request->jumlah[$i];
+					$alat_id = $request->alat_id[$i];
+					$alat_hlg = Alat::where('id', $request->alat_id[$i])->first();
+					$jumlah_alat = $alat_hlg->jumlah_alat - $jumlah_hilang;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat_hlg->jumlah_alat = $jumlah_alat;
+					$alat_hlg->save();
+
+					$data = [];
+					$data['pemesanan_id'] = $id;
+					$data['alat_id'] = $alat_id;
+					$data['jumlah_hilang'] = $jumlah_hilang;
+					AlatHilang::create($data);
+				}
+
+				// Alat Kembali
+				$alat = Alat::where('id', $alt['alat_id'])->first();
+				$alat_keluar = $alat->alat_keluar;
+				$update_alat = $alat_keluar - $jumlah_keluar;
+				if ($update_alat <= 0) $update_alat = NULL;
+				$alat->alat_keluar = $update_alat;
+				$alat->save();
+
+				$i = $i + 1;
+			}
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Pengecekan alat selesai'
+		], 200);
+	}
+
 	private function search($key, $data) 
 	{
 		foreach ($data as $dta) {
@@ -1716,6 +1868,34 @@ class RestfullApiController extends Controller
 			}
 		}
 		return false;
+	}
+
+	private function reduceAlatBahan($pesanan_id)
+	{
+		$pemesanan = Pemesanan::where('id', $pesanan_id)->first();
+		$result = $this->getDataPesanan($pemesanan, $pesanan_id);
+		// Kurangi Bahan
+		foreach ($result->bahan as $bhn) {
+			$bahan = Bahan::where('id', $bhn['bahan_id'])->first();
+			$jumlah_keluar = filter_var($bhn['jumlah_bahan'], FILTER_SANITIZE_NUMBER_INT);
+			$jumlah_bahan = $bahan->jumlah_bahan;
+			$update_bahan = $jumlah_bahan - $jumlah_keluar;
+			if ($update_bahan < 0) $update_bahan = 0; 
+			$bahan->jumlah_bahan = $update_bahan;
+			$bahan->save();
+		}
+
+		// Kurangi Alat
+		foreach ($result->alat as $kat) {
+			foreach ($kat['alat_dipilih'] as $alt) {
+				$alat = Alat::where('id', $alt['alat_id'])->first();
+				$jumlah_keluar = filter_var($alt['jumlah'], FILTER_SANITIZE_NUMBER_INT);
+				$alat_keluar = $alat->alat_keluar;
+				$update_alat = $alat_keluar + $jumlah_keluar;
+				$alat->alat_keluar = $update_alat;
+				$alat->save();
+			}
+		}
 	}
 
 	// PAKET
@@ -1925,11 +2105,18 @@ class RestfullApiController extends Controller
 
 		$result = $this->set_paket($set_paket, null,'alat_front');
 
-		return response()->json([
-			'success' => false,
-			'message' => 'success get data',
-			'result' => $result
-		], 401); 
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Tidak ada alat tersedia'
+			], 200);
+		} 
 	}
 
 	// ADDITIONAL
@@ -1971,5 +2158,102 @@ class RestfullApiController extends Controller
 				'message' => 'Data not found'
 			], 404);
 		}
+	}
+
+	// NOTIFIKASI
+	protected function notification($status, $pesanan_id) {
+		if ($status == 'New' || $status == 'new') {
+			$to = 'admin_device';
+			$title = 'Pesanan Baru';
+			$body = 'Pesanan baru masuk, mohon diperiksa';
+		} else if ($status == 'Accept' || $status == 'accept') {
+			$to = 'admin_device';
+			$title = 'Bukti Pembayaran';
+			$body = 'Pelanggan telah mengirimkan bukti pembayaran';
+		} else if ($status == 'Proccess' || $status == 'proccess') {
+			$to = 'kitchen_device';
+			$title = 'Pesanan Baru';
+			$body = 'Terdapat pesanan baru yang harus di proses';
+		} else if ($status == 'Delivery' || $status == 'delivery') {
+			$to = 'driver_device';
+			$title = 'Pesanan Siap Diantar';
+			$body = 'Terdapat pesanan yang harus di antar';
+		} else if ($status == 'Arrived' || $status == 'arrived') {
+			$to = 'admin_device';
+			$title = 'Pesanan Sampai';
+			$body = 'Pesanan telah sampai di tujuan';
+		} else if ($status == 'Taking' || $status == 'taking') {
+			$to = 'driver_device';
+			$title = 'Pesanan Selseai';
+			$body = 'Pesanan telah selesai dan siap di jemput kembali';
+		} else if ($status == 'Done' || $status == 'done') {
+			$to = 'admin_device';
+			$title = 'Pesanan Selesai';
+			$body = 'Satu pesanan telah selesai';
+		} else {
+			return;
+		}
+
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://kesiniku-default-rtdb.firebaseio.com/device_token/'.$to.'.json',
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_HTTPHEADER => ['Content-Type:application/json'],
+			CURLOPT_ENCODING => 'json',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_CUSTOMREQUEST => 'GET',
+		));
+
+		$response = json_decode(curl_exec($curl), true);
+		$firebaseToken = [];
+		foreach ($response as $key => $value) {
+			if (isset($value['token'])) {
+				$firebaseToken[] = $value['token'];
+			}
+		}
+
+		curl_close($curl);
+
+		$SERVER_API_KEY = 'AAAA0eQ6FxQ:APA91bH4GjxST2iA14lp29LpvtJafU9C_IDfvX7tmPQ5YmyoOsbZmDxtm9M2XJsJfpVANtUFUNdqx8y-_VMLsvv5BfUrapkNjL2LjnrPF8XnpPCNTQxFVdR3ZJH2pda71tzSLEZPeQLm';
+
+		$data = [
+			"registration_ids" => $firebaseToken,
+			"notification" => [
+				"title" => $title,
+				"body" => $body,  
+			],
+			"webpush" => [
+				"headers" => [
+					"Urgency" => "high"
+				]
+			],
+			"android" => [
+				"priority" => "high"
+			],
+			"data" => [
+				"needfood.technest.com.KEY_SYNC_REQUEST" => "sync",
+				'pesanan_id' => $pesanan_id
+			],
+			"priority" => 10
+		];
+		$dataString = json_encode($data);
+
+		$headers = [
+			'Authorization: key=' . $SERVER_API_KEY,
+			'Content-Type: application/json',
+		];
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+		$response = curl_exec($ch);
 	}
 }
