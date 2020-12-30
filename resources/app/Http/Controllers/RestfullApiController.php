@@ -2179,6 +2179,9 @@ class RestfullApiController extends Controller
 			'waktu' => 'required'
 		]);
 
+		if (!isset($request->order)) $order = 'asc';
+		else $order = 'desc';
+
 		if ($validator->fails()) {
 			return response()->json([
 				'success' => false,
@@ -2194,11 +2197,11 @@ class RestfullApiController extends Controller
 		}
 
 		if ($request->jenis == 'All' || $request->jenis == 'all') {
-			$result = Keuangan::orderBy('id', 'desc')->get();
+			$result = Keuangan::orderBy('id', $order)->get();
 		} else if ($request->jenis == 'Debit' || $request->jenis == 'debit') {
-			$result = Keuangan::where('jenis', 'Debit')->orderBy('id', 'desc')->get();
+			$result = Keuangan::where('jenis', 'Debit')->orderBy('id', $order)->get();
 		} else if ($request->jenis == 'Kredit' || $request->jenis == 'kredit') {
-			$result = Keuangan::where('jenis', 'Kredit')->orderBy('id', 'desc')->get();
+			$result = Keuangan::where('jenis', 'Kredit')->orderBy('id', $order)->get();
 		}
 
 		$data = [];

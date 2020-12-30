@@ -257,7 +257,7 @@
             $.ajax({
                 url: host + "/api/keuangan/getdata",
                 method: "GET",
-                data: { jenis: jenis, waktu: waktu },
+                data: { jenis: jenis, waktu: waktu, order: 'desc' },
                 headers: headers,
                 success: function (data) {
                     var tableDebitKredit = $('#tableDebitKredit').DataTable();
