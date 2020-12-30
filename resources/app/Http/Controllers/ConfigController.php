@@ -9,6 +9,7 @@ use App\Model\Pemesanan;
 use App\Model\Transaksi;
 use App\Model\Kategori;
 use App\Model\Supplier;
+use App\Model\Keuangan;
 use App\Model\AddBahan;
 use App\Model\SetBahan;
 use App\Model\AddAlat;
@@ -839,6 +840,24 @@ class ConfigController extends Controller
 						$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
 					}
 				}
+				return response()->json($option);
+			}
+
+			// GET YEAR 
+			if ($request->req == 'getyears') {
+				$result = Keuangan::all();
+				$year = [];
+				foreach ($result as $dta) {
+					$year[] = date('Y', strtotime($dta->tanggal));
+				}
+				sort($year);
+				$option = '';
+				foreach (array_unique($year) as $thn) {
+					if ($thn == date('Y')) $select = 'selected';
+					else $select = '';
+					$option .= '<option value="'.$thn.'" '.$select.'>'.$thn.'</option>';
+				}
+
 				return response()->json($option);
 			}
 		}

@@ -186,8 +186,8 @@
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-money"></i> <span> Keuangan </span> <span class="menu-arrow"></span> </a>
               <ul class="list-unstyled">
-                <li><a href="ui-buttons.html">Kelola Debit/Kredit</a></li>
-                <li><a href="ui-buttons.html">Laporan Keuangan</a></li>
+                <li><a href="{{ url('admin/keuangan/debitkredit') }}">Kelola Debit-Kredit</a></li>
+                <li><a href="{{ url('admin/keuangan/laporankeuangan') }}">Laporan Keuangan</a></li>
               </ul>
             </li>
             <li class="has_sub">
@@ -195,9 +195,6 @@
             </li>
             <li class="has_sub">
               <a href="{{ url('admin/datadriver') }}" class="waves-effect"><i class="ti-id-badge"></i> <span> Data Driver </span></a>
-            </li>
-            <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="ti-image"></i> <span> Kelola Gallery </span></a>
             </li>
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="ti-comment-alt"></i> <span> Keritik & Saran </span></a>

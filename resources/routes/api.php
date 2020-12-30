@@ -91,6 +91,14 @@ Route::group(['middleware' => 'auth:api'], function(){
     // ADDITIONAL DAGING
     Route::get('kelolamenu/getadditional', 'RestfullApiController@getsAdditional');
     Route::get('kelolamenu/getadditional/{id}', 'RestfullApiController@getAdditional');
+
+    // KEUANGAN
+    Route::post('keuangan/create', 'RestfullApiController@setKeuangan');
+    Route::get('keuangan/getdata', 'RestfullApiController@getsKeuangan');
+    Route::get('keuangan/getdata/{id}', 'RestfullApiController@getKeuangan');
+    Route::put('keuangan/edit/{id}', 'RestfullApiController@putKeuangan');
+    Route::delete('keuangan/delete/{id}', 'RestfullApiController@deleteKeuangan');
+
 });
 
 Route::fallback(function() {

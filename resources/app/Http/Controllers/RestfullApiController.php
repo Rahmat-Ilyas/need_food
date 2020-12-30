@@ -178,6 +178,8 @@ class RestfullApiController extends Controller
 			$beli = AddAlat::create($add_alat);
 			$result = $alat;
 
+			$this->debitkredit($beli->id, 'alat');
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
@@ -267,6 +269,8 @@ class RestfullApiController extends Controller
 			$updt = Alat::where('id', $crt->alat_id)->first();
 			$updt->jumlah_alat = $updt->jumlah_alat + $crt->jumlah_beli;
 			$updt->save();
+
+			$this->debitkredit($crt->id, 'alat');
 
 			return response()->json([
 				'success' => true,
@@ -456,6 +460,8 @@ class RestfullApiController extends Controller
 			$beli = AddBahan::create($add_bahan);
 			$result = $bahan;
 
+			$this->debitkredit($beli->id, 'bahan');
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
@@ -543,6 +549,7 @@ class RestfullApiController extends Controller
 			$add_bahan = $request->all();
 			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
 			$crt = AddBahan::create($add_bahan);
+			$this->debitkredit($crt->id, 'bahan');
 			$updt = Bahan::where('id', $crt->bahan_id)->first();
 			$updt->jumlah_bahan = $updt->jumlah_bahan + $crt->jumlah_beli;
 			$updt->save();
@@ -1581,8 +1588,12 @@ class RestfullApiController extends Controller
 			}
 
 			$this->notification($request->status, $id);
-			if ($request->status == 'Delivery') {
+			if ($request->status == 'Delivery' || $request->status == 'delivery') {
 				$this->reduceAlatBahan($id);
+			}
+
+			if ($request->status == 'Proccess' || $request->status == 'proccess') {
+				$this->debitkredit($id, 'pesanan');
 			}
 
 			return response()->json([
@@ -2158,6 +2169,260 @@ class RestfullApiController extends Controller
 				'message' => 'Data not found'
 			], 404);
 		}
+	}
+
+	// KEUANGAN 
+	public function getsKeuangan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'jenis' => 'required',
+			'waktu' => 'required'
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+		
+		if (($request->jenis != 'Debit' && $request->jenis != 'debit') && ($request->jenis != 'Kredit' && $request->jenis != 'kredit') && ($request->jenis != 'All' && $request->jenis != 'all')) {
+			return response()->json([
+				'success' => false,
+				'message' => 'Jenis tidak sesuai'
+			], 401);  
+		}
+
+		if ($request->jenis == 'All' || $request->jenis == 'all') {
+			$result = Keuangan::orderBy('id', 'desc')->get();
+		} else if ($request->jenis == 'Debit' || $request->jenis == 'debit') {
+			$result = Keuangan::where('jenis', 'Debit')->orderBy('id', 'desc')->get();
+		} else if ($request->jenis == 'Kredit' || $request->jenis == 'kredit') {
+			$result = Keuangan::where('jenis', 'Kredit')->orderBy('id', 'desc')->get();
+		}
+
+		$data = [];
+		$data_kas = [];
+		$uang_kas = 0;
+		$total_debit = 0;
+		$total_kredit = 0;
+
+		if (strlen($request->waktu) == 10) {
+			foreach ($result as $dta) {
+				if (date('dmy', strtotime($dta->tanggal)) == date('dmy', strtotime($request->waktu))) {
+					$data[] = $dta;
+					if ($dta->jenis == 'Debit') {
+						$uang_kas = $uang_kas + $dta->nominal;						
+						$total_debit = $total_debit + $dta->nominal;						
+					} else if ($dta->jenis == 'Kredit') {
+						$uang_kas = $uang_kas - $dta->nominal;						
+						$total_kredit = $total_kredit + $dta->nominal;	
+					}
+				}
+			}
+		} else if (strlen($request->waktu) == 7) {
+			foreach ($result as $dta) {
+				if (date('Y-m', strtotime($dta->tanggal)) == $request->waktu) {
+					$data[] = $dta;
+					if ($dta->jenis == 'Debit') {
+						$uang_kas = $uang_kas + $dta->nominal;						
+						$total_debit = $total_debit + $dta->nominal;						
+					} else if ($dta->jenis == 'Kredit') {
+						$uang_kas = $uang_kas - $dta->nominal;						
+						$total_kredit = $total_kredit + $dta->nominal;	
+					}
+				}
+			}
+		} else if (strlen($request->waktu) == 4) {
+			foreach ($result as $dta) {
+				if (date('Y', strtotime($dta->tanggal)) == $request->waktu) {
+					$data[] = $dta;
+					if ($dta->jenis == 'Debit') {
+						$uang_kas = $uang_kas + $dta->nominal;						
+						$total_debit = $total_debit + $dta->nominal;						
+					} else if ($dta->jenis == 'Kredit') {
+						$uang_kas = $uang_kas - $dta->nominal;						
+						$total_kredit = $total_kredit + $dta->nominal;	
+					}
+				}
+			}
+		}
+
+		if ($request->jenis == 'Debit' || $request->jenis == 'debit' || $request->jenis == 'Kredit' || $request->jenis == 'kredit') $uang_kas = 0;
+
+		$data_kas['uang_kas'] = $uang_kas;
+		$data_kas['total_debit'] = $total_debit;
+		$data_kas['total_kredit'] = $total_kredit;
+
+		if (count($data) > 0 && count($data_kas) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'data_kas' => $data_kas,
+				'result' => $data
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found',
+			], 203);
+		}
+	}
+
+	public function getKeuangan($id)
+	{
+		$data = Keuangan::where('id', $id)->first();
+		if ($data) {
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function setKeuangan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'uraian' => 'required',
+			'jenis' => 'required',
+			'nominal' => 'required|integer',
+			'tanggal' => 'required|date'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if ($request->jenis != 'Debit' && $request->jenis != 'Kredit') {
+			return response()->json([
+				'success' => false,
+				'message' => 'Jenis tidak sesuai'
+			], 401);  
+		}
+
+		try {
+			$data = $request->all();
+			$data['tanggal'] = date('Y-m-d', strtotime($request->tanggal)).' '.date('H:i:s');
+			Keuangan::create($data);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function putKeuangan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'uraian' => 'required',
+			'jenis' => 'required',
+			'nominal' => 'required|integer',
+			'tanggal' => 'required|date'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Keuangan::find($id);
+			if ($update) {
+				$update->uraian = $request->uraian;
+				$update->jenis = $request->jenis;
+				$update->nominal = $request->nominal;
+				$update->tanggal = $request->tanggal;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteKeuangan($id)
+	{
+		try {
+			$delete = Keuangan::find($id);
+			if ($delete) {
+				$delete->delete();
+				return response()->json([
+					'success' => true,
+					'message' => 'Success delete data'
+				], 200);				
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	protected function debitkredit($id, $from)
+	{
+		$data = [];
+		if ($from == 'pesanan') {
+			$pesanan = Pemesanan::where('id', $id)->first();
+			$transaksi = Transaksi::where('pemesanan_id', $id)->first();
+			$data['uraian'] = 'Pemesanan dengan kode pesanan "'.$pesanan->kd_pemesanan.'"';
+			$data['nominal'] = $transaksi->total_harga;
+			$data['jenis'] = 'Debit';
+			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($transaksi->created_at));
+		} else if ($from == 'alat') {
+			$addalat = AddAlat::where('id', $id)->first();
+			$alat = Alat::where('id', $addalat->alat_id)->first();
+			$data['uraian'] = 'Pembelian alat "'.$alat->nama.'"';
+			$data['nominal'] = $addalat->total_harga;
+			$data['jenis'] = 'Kredit';
+			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($addalat->created_at));
+		} else if ($from == 'bahan') {
+			$addbahan = AddBahan::where('id', $id)->first();
+			$bahan = Bahan::where('id', $addbahan->bahan_id)->first();
+			$data['uraian'] = 'Pembelian bahan "'.$bahan->nama.'"';
+			$data['nominal'] = $addbahan->total_harga;
+			$data['jenis'] = 'Kredit';
+			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($addbahan->created_at));
+		}
+		Keuangan::create($data);
 	}
 
 	// NOTIFIKASI
