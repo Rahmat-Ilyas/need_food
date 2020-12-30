@@ -9,7 +9,7 @@
 
   <link rel="shortcut icon" href="{{ asset('assets/images/fav.png') }}">
 
-  <title>Halaman Dapur - NeedFood</title>
+  <title>Halaman Dapur - Kesiniku</title>
 
   <!--Morris Chart CSS -->
   <link rel="stylesheet" href="{{ asset('assets/plugins/morris/morris.css') }}">

@@ -4,16 +4,16 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h4 class="page-title">Pesanan Baru</h4>
+				<h4 class="page-title">Alat Pesanan</h4>
 				<ol class="breadcrumb">
 					<li>
-						<a href="#">NeedFood</a>
+						<a href="#">Kesiniku</a>
 					</li>
 					<li>
-						<a href="#">Data Pesanan</a>
+						<a href="#">Print</a>
 					</li>
 					<li class="active">
-						Pesanan Baru
+						Alat Pesanan
 					</li>
 				</ol>
 			</div>

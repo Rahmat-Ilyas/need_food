@@ -9,7 +9,7 @@
 
   <link rel="shortcut icon" href="{{ asset('assets/images/fav.png') }}">
 
-  <title>Admin - NeedFood</title>
+  <title>Admin - Kesiniku</title>
 
   <!--Morris Chart CSS -->
   <link rel="stylesheet" href="{{ asset('assets/plugins/morris/morris.css') }}">
@@ -197,7 +197,7 @@
               <a href="{{ url('admin/datadriver') }}" class="waves-effect"><i class="ti-id-badge"></i> <span> Data Driver </span></a>
             </li>
             <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="ti-comment-alt"></i> <span> Keritik & Saran </span></a>
+              <a href="{{ url('admin/kritiksaran') }}" class="waves-effect"><i class="ti-comment-alt"></i> <span> Keritik & Saran </span></a>
             </li>
           </ul>
           <div class="clearfix"></div>

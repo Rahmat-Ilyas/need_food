@@ -99,6 +99,13 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('keuangan/edit/{id}', 'RestfullApiController@putKeuangan');
     Route::delete('keuangan/delete/{id}', 'RestfullApiController@deleteKeuangan');
 
+    // KERITIK & SARAN
+    Route::post('kritiksaran/create', 'RestfullApiController@setKritiksaran');
+    Route::get('kritiksaran/getdata', 'RestfullApiController@getsKritiksaran');
+    Route::get('kritiksaran/getdata/{id}', 'RestfullApiController@getKritiksaran');
+    Route::delete('kritiksaran/delete/{id}', 'RestfullApiController@deleteKritiksaran');
+
+
 });
 
 Route::fallback(function() {

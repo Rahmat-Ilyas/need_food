@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\PaketPesanan;
-use App\Model\KeritikSaran;
+use App\Model\KritikSaran;
 use App\Model\AlatPesanan;
 use App\Model\AdtPesanan;
 use App\Model\AlatHilang;
@@ -2428,6 +2428,100 @@ class RestfullApiController extends Controller
 		Keuangan::create($data);
 	}
 
+	// KRITIK & SARAN 
+	public function getsKritiksaran(Request $request)
+	{
+		$result = KritikSaran::orderBy('id', 'desc')->get();
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result' => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found',
+			], 203);
+		}
+	}
+
+	public function getKritiksaran($id)
+	{
+		$data = KritikSaran::where('id', $id)->first();
+		if ($data) {
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+	public function setKritiksaran(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'email' => 'required|email',
+			'pesan' => 'required'
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data = $request->all();
+			$res = KritikSaran::create($data);
+
+			$this->notification('Kritiksaran', $res->id);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteKritiksaran($id)
+	{
+		try {
+			$delete = KritikSaran::find($id);
+			if ($delete) {
+				$delete->delete();
+				return response()->json([
+					'success' => true,
+					'message' => 'Success delete data'
+				], 200);				
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
 	// NOTIFIKASI
 	protected function notification($status, $pesanan_id) {
 		if ($status == 'New' || $status == 'new') {
@@ -2458,6 +2552,10 @@ class RestfullApiController extends Controller
 			$to = 'admin_device';
 			$title = 'Pesanan Selesai';
 			$body = 'Satu pesanan telah selesai';
+		} else if ($status == 'Kritiksaran') {
+			$to = 'admin_device';
+			$title = 'Pesan Masuk';
+			$body = 'Kritik & Saran dari costumer, cek segera';
 		} else {
 			return;
 		}

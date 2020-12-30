@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\PaketPesanan;
+use App\Model\KritikSaran;
 use App\Model\AdtPesanan;
 use App\Model\Additional;
 use App\Model\Pemesanan;
@@ -979,6 +980,24 @@ class ConfigController extends Controller
 				return '<div class="text-center">
 				<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="edit-additional" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Edit" data-toggle="modal" data-target=".modal-edit"><i class="fa fa-edit"></i></a>
 				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-additional" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+				</div>';
+			})->rawColumns(['action'])->toJson();
+		} else if ($request->req == 'dtGetKritiksaran') {
+			$result = KritikSaran::orderBy('id', 'desc')->get();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$dta->no = $no;
+				$dta->tanggal = date('d/m/Y', strtotime($dta->created_at));
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('action', function($dta) {
+				return '<div class="text-center">
+				<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-kritiksaran" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".modal-detail"><i class="fa fa-eye"></i></a>
+				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kritiksaran" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 				</div>';
 			})->rawColumns(['action'])->toJson();
 		}
