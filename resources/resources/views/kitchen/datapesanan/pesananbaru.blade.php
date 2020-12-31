@@ -112,7 +112,7 @@
 								val.catatan,
 								`<div class="text-center">
 								<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Set Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i> Set Alat</a>
-								<a href="#" role="button" class="btn btn-default btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="fa fa-shopping-basket"></i> Selesai</a>
+								<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="fa fa-shopping-basket"></i> Selesai</a>
 								</div>`,
 								]).draw(false);
 						});

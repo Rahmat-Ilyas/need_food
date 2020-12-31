@@ -20,6 +20,8 @@ Route::get('/trypemesanan', function() {
 	return view('welcome');
 });
 Route::get('/trynotif', 'landingpagecontroller@trynotif');
+Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
+Route::get('/gettoken/{id}', 'landingpagecontroller@gettoken');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {

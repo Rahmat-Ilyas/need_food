@@ -79,6 +79,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('datapesanan/uploadbuktipembayaran/{token}', 'RestfullApiController@uploadBuktiPembayaran');
     Route::put('datapesanan/updatetransaksi/{id}', 'RestfullApiController@updateTransaksiPesanan');
     Route::post('datapesanan/setalatpesanan', 'RestfullApiController@setAlatPesanan');
+    Route::post('datapesanan/konfirmasi', 'RestfullApiController@konfirmasiPesanan');
 
     // PAKET MENU
     Route::get('kelolamenu/getpaket', 'RestfullApiController@getsPaket');

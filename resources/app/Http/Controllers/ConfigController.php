@@ -31,8 +31,16 @@ class ConfigController extends Controller
 		if (isset($request->req)) {
 			if ($request->req == 'pesananbaru') {
 				$result = [];
-				$pemesanan = Pemesanan::where('status', 'Delivery')->get();
+				$pemesanan = Pemesanan::where('status', 'New')->orWhere('status', 'Accept')->get();
 				foreach ($pemesanan as $dta) {
+					if ($dta->status == 'New') {
+						$dta['status'] = '<span class="label label-info">Pesanan Baru</span>';
+						$dta['chek'] = 'disabled';
+					}
+					else if ($dta->status == 'Accept') {
+						$dta['status'] = '<span class="label label-primary">Selesai Bayar</span>';
+						$dta['chek'] = 'data-target=".confirm-pesanan"';
+					}
 					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
 					$result[] = $dta;
 				}

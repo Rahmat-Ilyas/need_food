@@ -56,14 +56,14 @@
       <!-- LOGO -->
       <div class="topbar-left">
         <div class="text-center">
-          <a href="{{ url('/admin') }}" class="logo">
+          {{-- <a href="{{ url('/admin') }}" class="logo">
             <b class="icon-c-logo"><strong class="text-custom"><b class="text-warning">N</b><b class="text-white">F</b></strong></b>
             <span><h3 class="text-center"><strong class="text-custom text-warning">NEED</strong><span class="text-white text-capitalize">Food</span></h3></span>
-          </a>
-          {{-- <a href="{{ url('/admin') }}" class="logo">
-            <i class="icon-c-logo"> <img src="{{ asset('assets/images/logo_sm.png') }}" height="42"/> </i>
-            <span><img src="{{ asset('assets/images/logo_light.png') }}" height="20"/></span>
           </a> --}}
+          <a href="{{ url('/admin') }}" class="logo">
+            <i class="icon-c-logo"> <img src="{{ asset('assets/images/logo-sm.png') }}" height="40"/> </i>
+            <span><img src="{{ asset('assets/images/logo-1.png') }}" height="40"/></span>
+          </a>
         </div>
       </div>
 
@@ -164,8 +164,8 @@
               </a>
               <ul class="list-unstyled">
                 <li><a href="{{ url('admin/datapesanan/pesananbaru') }}">Pemesanan Baru</a></li>
-                <li><a href="maudiubah">Pesanan Diproses</a></li>
-                <li><a href="maudiubah">Riwayat Pemasanan</a></li>
+                <li><a href="{{ url('admin/datapesanan/pesanandiproses') }}">Pesanan Diproses</a></li>
+                <li><a href="{{ url('admin/datapesanan/riwayatpesanan') }}">Riwayat Pemasanan</a></li>
               </ul>
             </li>
             <li class="has_sub">
@@ -216,7 +216,7 @@
     <input type="hidden" id="host" value="{{ url('/') }}">
 
     <footer class="footer text-right">
-      © 2016. All rights reserved.
+      © {{ date('Y') }}. Kesiniku - All rights reserved.
     </footer>
 
   </div>

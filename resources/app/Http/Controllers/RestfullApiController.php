@@ -1698,6 +1698,47 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function konfirmasiPesanan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'pemesanan_id' => 'required|integer',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$pesanan = Pemesanan::where('id', $request->pemesanan_id)->first();
+		if ($pesanan) {
+			$foto = $request->file('foto');
+			$nama_foto = 'img_konfirmasi_'.time().'.'.$foto->getClientOriginalExtension();
+
+			$pesanan->bukti_pembayaran = $nama_foto;
+			$pesanan->status = 'Accept';
+			$pesanan->save();
+
+			$path = 'assets/images/konfirmasi';
+			$foto->move($path, $nama_foto);
+
+			$this->notification('Accept', $pesanan->id);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success upload bukti pembayaran'
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'data not found'
+			], 401);   
+		}
+
+	}
+
 	public function setAlatPesanan(Request $request)
 	{
 		$validator = Validator::make($request->all(), [

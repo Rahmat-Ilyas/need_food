@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Pemesanan;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -25,6 +27,35 @@ class landingpagecontroller extends Controller
 
     public function pengantaran(){
         return view('page.pengantaran.index');
+    }
+
+    public function gettoken($id) {
+        $data = Pemesanan::where('id', $id)->first();
+        if ($data) {
+            $crypt = '17'.$id.'-'.$data->no_wa.'_'.$data->kd_pemesanan;
+            $token = crypt($id+14, $crypt);
+            $token = str_replace('/', 'R', $token);
+            $token = str_replace('?', 'M', $token);
+            $token = str_replace('=', 'T', $token);
+
+            dd($token);
+        } else {
+            echo "id not found";
+        }
+    }
+
+    public function konfirmasi($token) {
+        $data = Pemesanan::all();
+        foreach ($data as $dta) {
+            $crypt = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
+            $this_token = crypt($dta->id+14, $crypt);
+            $this_token = str_replace('/', 'R', $this_token);
+            $this_token = str_replace('?', 'M', $this_token);
+            $this_token = str_replace('=', 'T', $this_token);
+            if ($token == $this_token) {
+                echo $dta->id;
+            }
+        }
     }
 
     public function trynotif() {
