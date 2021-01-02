@@ -29,7 +29,7 @@
 								<th width="100">Kode Pesanan</th>
 								<th>Nama</th>
 								<th>Telepon</th>
-								<th>WhhatsApp</th>
+								<th>WhatsApp</th>
 								<th>Jadwal Antar</th>
 								<th>Catatan</th>
 								<th width="150" class="text-center">Aksi</th>
@@ -103,12 +103,17 @@
 					if (xhr.status == 200) {
 						$.each(data.result, function(key, val) {
 							var dt = new Date(val.tanggal_antar);
+                            var month = dt.getMonth();
+                            var date = dt.getDate();
+                            if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+                            if (dt.getDate() < 10) date = '0'+dt.getDate();
+                            if (dt.getMonth() == 0) month = '01';
 							dataTable.row.add([
 								val.kd_pemesanan,
 								val.nama,
 								val.no_telepon,
 								val.no_wa,
-								dt.getDate()+'/'+dt.getMonth()+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
+								date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
 								val.catatan,
 								`<div class="text-center">
 								<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Set Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i> Set Alat</a>

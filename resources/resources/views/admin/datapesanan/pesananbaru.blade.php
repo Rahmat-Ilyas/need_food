@@ -30,6 +30,7 @@
 								<th>Nama</th>
 								<th>Alamat</th>
 								<th width="120">Jadwal Antar</th>
+								<th>Catatan</th>
 								<th width="70">Status</th>
 								<th width="50">Aksi</th>
 							</tr>
@@ -45,7 +46,7 @@
 	</div> 
 </div>
 
-<!-- MODAL DETAIL -->
+<!-- MODAL KONFIRMASI -->
 <div class="modal confirm-pesanan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -229,6 +230,7 @@
 							val.nama,
 							val.deskripsi_lokasi,
 							val.jadwal_antar,
+							val.catatan,
 							val.status,
 							`<div class="text-center">
 							<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="confirm-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Konfirmasi Pembayaran" data-toggle="modal" `+val.chek+`><i class="fa fa-check-circle"></i></a>

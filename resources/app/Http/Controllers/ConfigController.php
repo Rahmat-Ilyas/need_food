@@ -57,6 +57,22 @@ class ConfigController extends Controller
 						'message' => 'Data not found'
 					], 204);
 				}
+			} else if ($request->req == 'setMapspesanandetail') {
+				$result = [];
+				$pemesanan = Pemesanan::where('status', 'Proccess')->orWhere('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get();
+
+				if (count($pemesanan) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $pemesanan
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
 			} else if ($request->req == 'seleksibahanpaket') {
 				$bahan = Bahan::orderBy('id', 'desc')->get();
 				$result = $bahan->except($request->item);

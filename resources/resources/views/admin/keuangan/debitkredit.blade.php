@@ -274,6 +274,7 @@
                             var date = dt.getDate();
                             if (dt.getMonth() < 10) month = '0'+dt.getMonth();
                             if (dt.getDate() < 10) date = '0'+dt.getDate();
+                            if (dt.getMonth() == 0) month = '01';
                             tableDebitKredit.row.add([
                                 no,
                                 vl.uraian,
@@ -342,6 +343,7 @@
                     var date = dt.getDate();
                     if (dt.getMonth() < 10) month = '0'+dt.getMonth();
                     if (dt.getDate() < 10) date = '0'+dt.getDate();
+                    if (dt.getMonth() == 0) month = '01';
                     data.result.tanggal = dt.getFullYear()+'-'+month+'-'+date;
                     $.each(data.result, function(key, val) {
                         $('#edt_'+key).val(val);

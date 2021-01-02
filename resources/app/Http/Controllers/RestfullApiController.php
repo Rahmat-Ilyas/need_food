@@ -1542,7 +1542,8 @@ class RestfullApiController extends Controller
 		// Set Alat Fix
 		$search = array_column($alat, 'key', 'kategori_alat_id');
 		$alat_fix = [];
-		if ($total_paket >= 5) {
+		// Dapat alat minimal 1 paket
+		if ($total_paket >= 1) {
 			foreach ($search as $fix => $key) {
 				$jumlah = 0;
 				foreach ($alat as $ext) {
@@ -2447,21 +2448,21 @@ class RestfullApiController extends Controller
 		if ($from == 'pesanan') {
 			$pesanan = Pemesanan::where('id', $id)->first();
 			$transaksi = Transaksi::where('pemesanan_id', $id)->first();
-			$data['uraian'] = 'Pemesanan dengan kode pesanan "'.$pesanan->kd_pemesanan.'"';
+			$data['uraian'] = 'Pemesanan dengan kode pesanan ('.$pesanan->kd_pemesanan.')';
 			$data['nominal'] = $transaksi->total_harga;
 			$data['jenis'] = 'Debit';
 			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($transaksi->created_at));
 		} else if ($from == 'alat') {
 			$addalat = AddAlat::where('id', $id)->first();
 			$alat = Alat::where('id', $addalat->alat_id)->first();
-			$data['uraian'] = 'Pembelian alat "'.$alat->nama.'"';
+			$data['uraian'] = 'Pembelian alat ('.$alat->nama.')';
 			$data['nominal'] = $addalat->total_harga;
 			$data['jenis'] = 'Kredit';
 			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($addalat->created_at));
 		} else if ($from == 'bahan') {
 			$addbahan = AddBahan::where('id', $id)->first();
 			$bahan = Bahan::where('id', $addbahan->bahan_id)->first();
-			$data['uraian'] = 'Pembelian bahan "'.$bahan->nama.'"';
+			$data['uraian'] = 'Pembelian bahan ('.$bahan->nama.')';
 			$data['nominal'] = $addbahan->total_harga;
 			$data['jenis'] = 'Kredit';
 			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($addbahan->created_at));
