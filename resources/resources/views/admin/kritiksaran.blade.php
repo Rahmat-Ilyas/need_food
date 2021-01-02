@@ -28,6 +28,7 @@
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>Kritik & Saran</th>
+                                <th width="20">Status</th>
                                 <th width="50">Aksi</th>
                             </tr>
                         </thead>
@@ -141,8 +142,20 @@
                 { data: 'nama', name: 'nama' },
                 { data: 'email', name: 'email' },
                 { data: 'pesan', name: 'pesan' },
+                { data: 'status', name: 'status', orderable: false, searchable: false },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
                 ]
+            });
+
+            // UPDATE STATUS
+            $.ajax({
+                url: host + "/configuration",
+                method: "POST",
+                headers: headers,
+                data: { req: 'updateKrisar', status: 'view' },
+                success: function (data) {
+                    notifCountView();
+                }
             });
         }
 
@@ -199,6 +212,15 @@
                     });
                 }
             });
+        });
+
+        // NOTIF FIRBASE
+        const messaging = firebase.messaging();
+
+        messaging.onMessage((payload) => {
+            console.log('Notification ', payload);
+            getData();
+            notifCountView();
         });
     });
 </script>

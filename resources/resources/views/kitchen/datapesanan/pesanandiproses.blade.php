@@ -124,6 +124,7 @@
 					}
 				}
 			});
+			notifCountView();
 		}
 
 		$(document).on('click', '#set-alat', function(event) {
@@ -239,6 +240,15 @@
 				}
 			});
 		});
+
+		// NOTIF FIRBASE
+        const messaging = firebase.messaging();
+
+        messaging.onMessage((payload) => {
+            console.log('Notification ', payload);
+            getPesanan();
+            notifCountView();
+        });
 	});
 </script>
 @endsection

@@ -213,6 +213,7 @@
 		});
 
 		//GET PESANAN
+		$('#tabelPesananbaru').DataTable({ "order": [] });
 		getPesanan();
 		function getPesanan() {
 			var dataTable = $('#tabelPesananbaru').DataTable();
@@ -240,6 +241,7 @@
 					});
 				}
 			});
+			notifCountView();
 		}
 
 		// KONFIRMASI PESANAN
@@ -366,6 +368,15 @@
 				}
 			});
 		});
+
+		// NOTIF FIRBASE
+        const messaging = firebase.messaging();
+
+        messaging.onMessage((payload) => {
+            console.log('Notification ', payload);
+            getPesanan();
+            notifCountView();
+        });
 	});
 </script>
 @endsection

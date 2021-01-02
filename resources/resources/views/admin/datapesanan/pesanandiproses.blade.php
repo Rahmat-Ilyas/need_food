@@ -208,6 +208,7 @@
 		});
 
 		//GET PESANAN
+		$('#tabelDataPesanan').DataTable({ "order": [] });
 		getPesanan('proccess');
 		function getPesanan(status) {
 			var dataTable = $('#tabelDataPesanan').DataTable();
@@ -311,6 +312,15 @@
 				}
 			});
 		});
+
+		// NOTIF FIRBASE
+        const messaging = firebase.messaging();
+
+        messaging.onMessage((payload) => {
+            console.log('Notification ', payload);
+            getPesanan('proccess');
+            notifCountView();
+        });
 	});
 </script>
 @endsection

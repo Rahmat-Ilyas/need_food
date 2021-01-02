@@ -31,7 +31,7 @@ class ConfigController extends Controller
 		if (isset($request->req)) {
 			if ($request->req == 'pesananbaru') {
 				$result = [];
-				$pemesanan = Pemesanan::where('status', 'New')->orWhere('status', 'Accept')->get();
+				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->where('status', 'New')->orWhere('status', 'Accept')->get();
 				foreach ($pemesanan as $dta) {
 					if ($dta->status == 'New') {
 						$dta['status'] = '<span class="label" style="background-color: #C5E9FF; color: #005789; font-size: 11px;">Pesanan Baru</span>';
@@ -984,6 +984,171 @@ class ConfigController extends Controller
 
 				return response()->json($option);
 			}
+
+			// UPDATE KRITIK SARAN 
+			if ($request->req == 'updateKrisar') {
+				if ($request->status == 'view') {
+					$krisar = KritikSaran::where('status', 'new')->get();
+					foreach ($krisar as $krs) {
+						$krs->status = 'view';
+						$krs->save();
+					}
+				} else if ($request->status == 'old') {
+					$krisar = KritikSaran::where('status', 'view')->get();
+					foreach ($krisar as $krs) {
+						$tanggal_masuk = $krs->created_at;
+						$tanggal_sekrng = date('Y-m-d H:i:s');
+						if (strtotime($tanggal_masuk) + 86400 < strtotime($tanggal_sekrng)) {
+							$krs->status = 'old';
+							$krs->save();
+						}
+					}
+				}
+			}
+
+			// NOTIF COUNT VIEW ADMIN
+			if ($request->req == 'notifCountViewAdmin') {
+				$result = [];
+
+				$notf_view_count = 0;
+				$set_notif = [];
+
+				$psnNew = Pemesanan::where('status', 'New')->get();
+				foreach ($psnNew as $psn) {
+					$set_notif[$notf_view_count]['created_at'] = date('Y-m-d H:i:s', strtotime($psn->created_at));
+					$set_notif[$notf_view_count]['jenis'] = 'order';
+					$set_notif[$notf_view_count]['keterangan'] = $psn->kd_pemesanan;
+					
+					$notf_view_count = $notf_view_count + 1;
+				}
+
+				$psnAccept = Pemesanan::where('status', 'Accept')->get();
+				foreach ($psnAccept as $psn) {
+					$set_notif[$notf_view_count]['created_at'] = date('Y-m-d H:i:s', strtotime($psn->updated_at));
+					$set_notif[$notf_view_count]['jenis'] = 'accept';
+					$set_notif[$notf_view_count]['keterangan'] = $psn->kd_pemesanan;
+					
+					$notf_view_count = $notf_view_count + 1;
+				}
+
+				$kritik_saran = 0;
+				$kritikSaran = KritikSaran::where('status', 'new')->get();
+				foreach ($kritikSaran as $krs) {
+					$set_notif[$notf_view_count]['created_at'] = date('Y-m-d H:i:s', strtotime($krs->created_at));
+					$set_notif[$notf_view_count]['jenis'] = 'krisar';
+					$set_notif[$notf_view_count]['keterangan'] = $krs->email;
+					
+					$notf_view_count = $notf_view_count + 1;
+					$kritik_saran = $kritik_saran + 1;
+				}
+
+				array_multisort(array_column($set_notif, 'created_at'), SORT_DESC, $set_notif);
+				$notf_view = '';
+				foreach ($set_notif as $ntf) {
+					if ($ntf['jenis'] == 'accept') {
+						$notf_view .= '
+						<a href="'.url('admin/datapesanan/pesananbaru').'" class="list-group-item">
+	                        <div class="media">
+	                            <div class="pull-left p-r-10">
+	                                <em class="fa fa-credit-card noti-success"></em>
+	                            </div>
+	                            <div class="media-body">
+	                                <h5 class="media-heading">Bukti Pembayaran ('.$ntf['keterangan'].')</h5>
+	                                <p class="m-0">
+	                                    <small>Pelanggan telah mengirimkan bukti pembayaran</small>
+	                                </p>
+	                            </div>
+	                        </div>
+	                    </a>';
+					} else if ($ntf['jenis'] == 'order') {
+						$notf_view .= '
+						<a href="'.url('admin/datapesanan/pesananbaru').'" class="list-group-item">
+	                        <div class="media">
+	                            <div class="pull-left p-r-10">
+	                                <em class="fa fa-ticket noti-primary"></em>
+	                            </div>
+	                            <div class="media-body">
+	                                <h5 class="media-heading">Pesanan Baru ('.$ntf['keterangan'].')</h5>
+	                                <p class="m-0">
+	                                    <small>Pesanan baru masuk, mohon diperiksa</small>
+	                                </p>
+	                            </div>
+	                        </div>
+	                    </a>';
+					} else if ($ntf['jenis'] == 'krisar') {
+						$notf_view .= '
+						<a href="'.url('admin/kritiksaran').'" class="list-group-item">
+                            <div class="media">
+                                <div class="pull-left p-r-10">
+                                    <em class="fa fa-envelope-o noti-warning"></em>
+                                </div>
+                                <div class="media-body">
+                                    <h5 class="media-heading">Pesan Masuk ('.$ntf['keterangan'].')</h5>
+                                    <p class="m-0">
+                                        <small>Kritik & Saran dari costumer, cek segera</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>';
+					}
+				}
+
+				if ($notf_view_count == 0) $notf_view = '<h3 class="text-center" style="margin-top: 70px;"><i>Tidak ada notifikasi</i></h3>';
+
+				$pesanan_baru = count(Pemesanan::where('status', 'New')->orWhere('status', 'Accept')->get());
+				$pesanan_proses = count(Pemesanan::where('status', 'Proccess')->orWhere('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get());
+				$data_pesanan = $pesanan_baru + $pesanan_proses;
+
+				$result['notf_view'] = $notf_view;
+				$result['notf_view_count'] = $notf_view_count;
+				$result['data_pesanan'] = $data_pesanan;
+				$result['pesanan_baru'] = $pesanan_baru;
+				$result['pesanan_proses'] = $pesanan_proses;
+				$result['kritik_saran'] = $kritik_saran;
+				return response()->json($result);
+			}
+
+			// NOTIF COUNT VIEW KITCHEN
+			if ($request->req == 'notifCountViewKitchen') {
+				$result = [];
+
+				$notf_view_count = 0;
+				$notf_view = '';
+				$set_notif = [];
+
+				$psnProccess = Pemesanan::where('status', 'Proccess')->orderBy('updated_at', 'desc')->get();
+				foreach ($psnProccess as $psn) {
+					$notf_view .= '
+					<a href="javascript:void(0);" class="list-group-item">
+						<div class="media">
+                        	<div class="pull-left p-r-10">
+                         		<em class="fa fa-cutlery noti-purple"></em>
+                        	</div>
+	                        <div class="media-body">
+	                          	<h5 class="media-heading">Pesanan Baru ('.$psn->kd_pemesanan.')</h5>
+	                          	<p class="m-0">
+	                            	<small>Terdapat pesanan baru yang harus di proses</small>
+	                          	</p>
+	                        </div>
+                      	</div>
+                    </a>';
+					
+					$notf_view_count = $notf_view_count + 1;
+				}
+
+				if ($notf_view_count == 0) $notf_view = '<h3 class="text-center" style="margin-top: 70px;"><i>Tidak ada notifikasi</i></h3>';
+
+				$pesanan_proses = count(Pemesanan::where('status', 'Proccess')->get());
+				$selesai_proses = count(Pemesanan::where('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get());
+				$data_pesanan = $selesai_proses + $pesanan_proses;
+
+				$result['notf_view'] = $notf_view;
+				$result['notf_view_count'] = $notf_view_count;
+				$result['data_pesanan'] = $data_pesanan;
+				$result['pesanan_proses'] = $pesanan_proses;
+				$result['selesai_proses'] = $selesai_proses;
+				return response()->json($result);
+			}
 		}
 	}
 
@@ -1112,6 +1277,10 @@ class ConfigController extends Controller
 			foreach ($result as $dta) {
 				$dta->no = $no;
 				$dta->tanggal = date('d/m/Y', strtotime($dta->created_at));
+				if ($dta->status == 'new' || $dta->status == 'view') 
+					$dta['status'] = '<span class="label label-success" style="font-size: 11px;">New</span>';
+				else if ($dta->status == 'old') 
+					$dta['status'] = '<span class="label label-inverse" style="font-size: 11px;">Old</span>';
 				$data[] = $dta;
 				$no = $no + 1;
 			}
@@ -1122,7 +1291,7 @@ class ConfigController extends Controller
 				<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-kritiksaran" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".modal-detail"><i class="fa fa-eye"></i></a>
 				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kritiksaran" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 				</div>';
-			})->rawColumns(['action'])->toJson();
+			})->rawColumns(['action', 'status'])->toJson();
 		}
 	}
 }

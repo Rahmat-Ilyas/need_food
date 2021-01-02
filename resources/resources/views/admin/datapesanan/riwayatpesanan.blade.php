@@ -202,6 +202,7 @@
 		});
 
 		//GET PESANAN
+		$('#tabelDataPesanan').DataTable({ "order": [] });
 		getPesanan('all', 'all');
 		function getPesanan(tahun, status) {
 			var dataTable = $('#tabelDataPesanan').DataTable();
@@ -293,6 +294,17 @@
 				}
 			});
 		});
+
+		// NOTIF FIRBASE
+        const messaging = firebase.messaging();
+
+        messaging.onMessage((payload) => {
+            console.log('Notification ', payload);
+            var tahun = $('#year').val();
+			var status = $('#status-pesanan').val();
+			getPesanan(tahun, status);
+            notifCountView();
+        });
 	});
 </script>
 @endsection
