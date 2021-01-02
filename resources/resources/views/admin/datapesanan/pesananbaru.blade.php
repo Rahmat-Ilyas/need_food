@@ -26,7 +26,7 @@
 					<table id="tabelPesananbaru" class="table table-striped table-bordered">
 						<thead>
 							<tr>
-								<th width="100">Kode Pesanan</th>
+								<th width="110">Kode Pesanan</th>
 								<th>Nama</th>
 								<th>Alamat</th>
 								<th width="120">Jadwal Antar</th>

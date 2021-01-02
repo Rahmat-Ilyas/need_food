@@ -4,7 +4,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h4 class="page-title">Pesanan Baru</h4>
+				<h4 class="page-title">Pesanan Diproses</h4>
 				<ol class="breadcrumb">
 					<li>
 						<a href="#">Kesiniku</a>
@@ -13,7 +13,7 @@
 						<a href="#">Data Pesanan</a>
 					</li>
 					<li class="active">
-						Pesanan Baru
+						Pesanan Diproses
 					</li>
 				</ol>
 			</div>
@@ -22,7 +22,7 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="card-box table-responsive">
-					<h4 class="m-t-0 header-title"><b>Data Pesanan Baru</b></h4>
+					<h4 class="m-t-0 header-title"><b>Data Pesanan Diproses</b></h4>
 					<table id="tabelPesananbaru" class="table table-striped table-bordered">
 						<thead>
 							<tr>

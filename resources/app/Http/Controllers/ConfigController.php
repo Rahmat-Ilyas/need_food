@@ -34,13 +34,87 @@ class ConfigController extends Controller
 				$pemesanan = Pemesanan::where('status', 'New')->orWhere('status', 'Accept')->get();
 				foreach ($pemesanan as $dta) {
 					if ($dta->status == 'New') {
-						$dta['status'] = '<span class="label label-info">Pesanan Baru</span>';
+						$dta['status'] = '<span class="label" style="background-color: #C5E9FF; color: #005789; font-size: 11px;">Pesanan Baru</span>';
 						$dta['chek'] = 'disabled';
 					}
 					else if ($dta->status == 'Accept') {
-						$dta['status'] = '<span class="label label-primary">Selesai Bayar</span>';
+						$dta['status'] = '<span class="label" style="background-color: #C7FFFF; color: #016B6B; font-size: 11px;">Selesai Bayar</span>';
 						$dta['chek'] = 'data-target=".confirm-pesanan"';
 					}
+					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
+					$result[] = $dta;
+				}
+
+				if (count($result) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $result
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
+			} else if ($request->req == 'riwayatpesanan') {
+				$result = [];
+				if ($request->status == 'all') $pemesanan = Pemesanan::orderBy('id', 'desc')->get();
+				else $pemesanan = Pemesanan::where('status', $request->status)->orderBy('id', 'desc')->get();
+
+				foreach ($pemesanan as $dta) {
+					if ($dta->status == 'New') 
+						$dta['status'] = '<span class="label" style="background-color: #C5E9FF; color: #005789; font-size: 11px;">Pesanan Baru</span>';
+					else if ($dta->status == 'Accept') 
+						$dta['status'] = '<span class="label" style="background-color: #C7FFFF; color: #016B6B; font-size: 11px;">Selesai Bayar</span>';
+					else if ($dta->status == 'Proccess') 
+						$dta['status'] = '<span class="label" style="background-color: #eee; color: #777; font-size: 11px;">Diproses Dapur</span>';
+					else if ($dta->status == 'Delivery') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Diantar</span>';
+					else if ($dta->status == 'Arrived') 
+						$dta['status'] = '<span class="label" style="background-color: #FFE5D1; color: #F05600; font-size: 11px;">Pesanan Sampai</span>';
+					else if ($dta->status == 'Taking') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Dijemput</span>';
+					else if ($dta->status == 'Done') 
+						$dta['status'] = '<span class="label" style="background-color: #C8FFE6; color: #089554; font-size: 11px;">Pesanan Selesai</span>';
+					else if ($dta->status == 'Refuse') 
+						$dta['status'] = '<span class="label" style="background-color: #FACFCF; color: #DC0000; font-size: 11px;">Pesanan Ditolak</span>';
+					else if ($dta->status == 'Cancel') 
+						$dta['status'] = '<span class="label" style="background-color: #FFFCB4; color: #8C8820; font-size: 11px;">Pesanan Batal</span>';
+
+					$dta['tanggal'] = date('d/m/Y', strtotime($dta->created_at));
+
+					if ($request->tahun == 'all') {
+						$result[] = $dta;
+					} else {
+						if ($request->tahun == date('Y', strtotime($dta->created_at))) {
+							$result[] = $dta;
+						}
+					}
+				}
+
+				if (count($result) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $result
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
+			} else if ($request->req == 'selesaiDiproses') {
+				$result = [];
+				$pemesanan = Pemesanan::where('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get();
+				foreach ($pemesanan as $dta) {
+					if ($dta->status == 'Delivery') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Diantar</span>';
+					else if ($dta->status == 'Arrived') 
+						$dta['status'] = '<span class="label" style="background-color: #FFE5D1; color: #F05600; font-size: 11px;">Pesanan Sampai</span>';
+					else if ($dta->status == 'Taking') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Dijemput</span>';
 					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
 					$result[] = $dta;
 				}
@@ -73,6 +147,18 @@ class ConfigController extends Controller
 						'message' => 'Data not found'
 					], 204);
 				}
+			} else if ($request->req == 'badgeCount') {
+				$proccess = Pemesanan::where('status', 'Proccess')->get();
+				$delivery = Pemesanan::where('status', 'Delivery')->get();
+				$arrived = Pemesanan::where('status', 'Arrived')->get();
+				$taking = Pemesanan::where('status', 'Taking')->get();
+
+				$result['proccess'] = count($proccess);
+				$result['delivery'] = count($delivery);
+				$result['arrived'] = count($arrived);
+				$result['taking'] = count($taking);
+
+				return response()->json($result, 200);
 			} else if ($request->req == 'seleksibahanpaket') {
 				$bahan = Bahan::orderBy('id', 'desc')->get();
 				$result = $bahan->except($request->item);
@@ -776,46 +862,46 @@ class ConfigController extends Controller
 					if (isset($dta['alat_dipilih'])) {
 						foreach ($dta['alat_dipilih'] as $adp) {
 							$alat_dipilih .= '
-								<tr id="this-remove">
-									<td width="250">'.$adp['nama_alat'].'</td>
-									<td class="row">
-										<div class="col-sm-8">
-											<input type="hidden" name="kategori_id[]" value="'.$dta['kategori_alat_id'].'">
-											<input type="hidden" name="alat_id[]" value="'.$adp['alat_id'].'">
-											<input type="number" class="form-control" name="jumlah[]" required="" value="'.filter_var($adp['jumlah'], FILTER_SANITIZE_NUMBER_INT).'" placeholder="Jumlah..." style="height: 35px; width: 100%;">
-										</div>
-										<div class="col-sm-4 p-0">
-											<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
-										</div>
-									</div>
-									</td>
-									<td width="50">
-										<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$dta['kategori_alat_id'].'"><i class="fa fa-trash"></i> Hapus</a>
-									</td>
-								</tr>';
+							<tr id="this-remove">
+							<td width="250">'.$adp['nama_alat'].'</td>
+							<td class="row">
+							<div class="col-sm-8">
+							<input type="hidden" name="kategori_id[]" value="'.$dta['kategori_alat_id'].'">
+							<input type="hidden" name="alat_id[]" value="'.$adp['alat_id'].'">
+							<input type="number" class="form-control" name="jumlah[]" required="" value="'.filter_var($adp['jumlah'], FILTER_SANITIZE_NUMBER_INT).'" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+							</div>
+							<div class="col-sm-4 p-0">
+							<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+							</div>
+							</div>
+							</td>
+							<td width="50">
+							<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$dta['kategori_alat_id'].'"><i class="fa fa-trash"></i> Hapus</a>
+							</td>
+							</tr>';
 						}
 					}
 
 					// Set Kategori
 					$result .= '
-						<tr>
-							<td>'.$dta['kategori_alat'].'</td>
-							<td>'.$dta['jumlah_alat'].'</td>
-							<td>
-								<div class="form-group row">
-									<div class="col-sm-10">
-			                            <select class="form-control select2" style="height: 35px; width: 100%;" id="alat-dipilih'.$dta['kategori_alat_id'].'" ktgr-id="'.$dta['kategori_alat_id'].'">
-			                                '.$option.'
-			                            </select>
-									</div>
-								</div>
-								<table class="table m-b-0">
-									<tbody id="pilih-alat'.$dta['kategori_alat_id'].'">
-										'.$alat_dipilih.'
-									</tbody>
-								</table>
-							</td>
-						</tr>';
+					<tr>
+					<td>'.$dta['kategori_alat'].'</td>
+					<td>'.$dta['jumlah_alat'].'</td>
+					<td>
+					<div class="form-group row">
+					<div class="col-sm-10">
+					<select class="form-control select2" style="height: 35px; width: 100%;" id="alat-dipilih'.$dta['kategori_alat_id'].'" ktgr-id="'.$dta['kategori_alat_id'].'">
+					'.$option.'
+					</select>
+					</div>
+					</div>
+					<table class="table m-b-0">
+					<tbody id="pilih-alat'.$dta['kategori_alat_id'].'">
+					'.$alat_dipilih.'
+					</tbody>
+					</table>
+					</td>
+					</tr>';
 				}
 
 				return response()->json($result);
@@ -828,21 +914,21 @@ class ConfigController extends Controller
 				if ($alat) {
 					$result = '
 					<tr id="this-remove">
-						<td width="250">'.$alat->nama.'</td>
-						<td class="row">
-							<div class="col-sm-8">
-								<input type="hidden" name="kategori_id[]" value="'.$alat->kategori_id.'">
-								<input type="hidden" name="alat_id[]" value="'.$alat->id.'">
-								<input type="number" class="form-control" name="jumlah[]" required="" placeholder="Jumlah..." style="height: 35px; width: 100%;">
-							</div>
-							<div class="col-sm-4 p-0">
-								<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
-							</div>
-						</div>
-						</td>
-						<td width="50">
-							<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$alat->kategori_id.'"><i class="fa fa-trash"></i> Hapus</a>
-						</td>
+					<td width="250">'.$alat->nama.'</td>
+					<td class="row">
+					<div class="col-sm-8">
+					<input type="hidden" name="kategori_id[]" value="'.$alat->kategori_id.'">
+					<input type="hidden" name="alat_id[]" value="'.$alat->id.'">
+					<input type="number" class="form-control" name="jumlah[]" required="" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+					</div>
+					<div class="col-sm-4 p-0">
+					<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+					</div>
+					</div>
+					</td>
+					<td width="50">
+					<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$alat->kategori_id.'"><i class="fa fa-trash"></i> Hapus</a>
+					</td>
 					</tr>';
 				}
 
@@ -881,6 +967,19 @@ class ConfigController extends Controller
 					if ($thn == date('Y')) $select = 'selected';
 					else $select = '';
 					$option .= '<option value="'.$thn.'" '.$select.'>'.$thn.'</option>';
+				}
+
+				if (isset($request->allexitsfromyear)) {
+					$result = Pemesanan::all();
+					$year = [];
+					foreach ($result as $dta) {
+						$year[] = date('Y', strtotime($dta->created_at));
+					}
+					sort($year);
+					$option = '<option value="all" selected>Semua Data</option>';
+					foreach (array_unique($year) as $thn) {
+						$option .= '<option value="'.$thn.'">'.$thn.'</option>';
+					}
 				}
 
 				return response()->json($option);

@@ -1,10 +1,10 @@
-@extends('admin.layout')
+@extends('kitchen.layout')
 @section('content')
 <div class="content">
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h4 class="page-title">Pesanan Diproses</h4>
+				<h4 class="page-title">Selesai Diproses</h4>
 				<ol class="breadcrumb">
 					<li>
 						<a href="#">Kesiniku</a>
@@ -13,7 +13,7 @@
 						<a href="#">Data Pesanan</a>
 					</li>
 					<li class="active">
-						Pesanan Diproses
+						Selesai Diproses
 					</li>
 				</ol>
 			</div>
@@ -21,48 +21,20 @@
 
 		<div class="row">
 			<div class="col-sm-12">
-				<ul class="nav nav-tabs tabs" style="width: 100%;">
-					<li class="tab active" style="width: 25%;">
-						<a href="#home-2" data-toggle="tab" aria-expanded="true" data-status="proccess" class="getStatus active"> 
-							<span class="hidden-xs"><i class="md-access-time"></i> Diproses Dapur</span>
-							<span class="badge badge-danger" id="badge-proccess" style="font-size: 11px; margin-bottom: 10px;">0</span> 
-						</a> 
-					</li> 
-					<li class="tab" style="width: 25%;"> 
-						<a href="#profile-2" data-toggle="tab" aria-expanded="false" data-status="delivery" class="getStatus "> 
-							<span class="hidden-xs"><i class="md-local-shipping"></i> Pesanan Diantar</span>
-							<span class="badge badge-danger" id="badge-delivery" style="font-size: 11px; margin-bottom: 10px;">0</span> 
-						</a> 
-					</li> 
-					<li class="tab" style="width: 25%;"> 
-						<a href="#messages-2" data-toggle="tab" aria-expanded="false" data-status="arrived" class="getStatus "> 
-							<span class="hidden-xs"><i class="md-local-restaurant"></i> Pesanan Sampai</span>
-							<span class="badge badge-danger" id="badge-arrived" style="font-size: 11px; margin-bottom: 10px;">0</span> 
-						</a> 
-					</li> 
-					<li class="tab" style="width: 25%;"> 
-						<a href="#settings-2" data-toggle="tab" aria-expanded="false" data-status="taking" class="getStatus "> 
-							<span class="hidden-xs"><i class="fa fa-truck"></i> Pesanan Dijemput</span>
-							<span class="badge badge-danger" id="badge-taking" style="font-size: 11px; margin-bottom: 10px;">0</span> 
-						</a> 
-					</li> 
-				</ul>
-
-				<div class="tab-content"> 
-					<h4 class="m-b-20 header-title" style="margin-top: -10px;" id="titleStatus"><b>Diproses Dapur</b></h4>
+				<div class="card-box table-responsive">
+					<h4 class="m-t-0 header-title"><b>Pesanan Selesai Diproses</b></h4>
 					<table id="tabelDataPesanan" class="table table-striped table-bordered">
 						<thead>
 							<tr>
 								<th width="110">Kode Pesanan</th>
 								<th>Nama</th>
 								<th>Alamat</th>
-								<th>Telepon</th>
-								<th>WhatsApp</th>
-								<th width="120">Jadwal Antar</th>
+								<th width="80">Telepon</th>
+								<th width="80">WhatsApp</th>
+								<th width="70">Status</th>
 								<th width="50">Aksi</th>
 							</tr>
 						</thead>
-
 						<tbody>
 
 						</tbody>
@@ -162,12 +134,12 @@
 			'X-CSRF-TOKEN'	: $('meta[name="csrf-token"]').attr('content')
 		}
 
-		// SET MAPS 
+		// SET MAPS
 		$.ajax({
 			url     : host+"/configuration",
 			method  : "POST",
 			headers	: headers,
-			data	: { req: 'setMapspesanandetail' },
+			data	: { req: 'selesaiDiproses' },
 			success : function(data) {
 				google.maps.event.addDomListener(window, 'load', initMap);
 				$.each(data.result, function(key, val) {
@@ -200,69 +172,31 @@
 			}
 		});
 
-		// GET STATUS 
-		$('.getStatus').click(function(event) {
-			var status = $(this).attr('data-status');
-			$('#titleStatus').text($(this).children('.hidden-xs').text());
-			getPesanan(status);
-		});
-
 		//GET PESANAN
-		getPesanan('proccess');
-		function getPesanan(status) {
+		getPesanan();
+		function getPesanan() {
 			var dataTable = $('#tabelDataPesanan').DataTable();
-			dataTable.clear().draw();
 			$.ajax({
-				url     : host+"/api/datapesanan/status/"+status,
-				method  : "GET",
+				url     : host+"/configuration",
+				method  : "POST",
 				headers	: headers,
+				data	: { req: 'selesaiDiproses' },
 				success : function(data) {
+					dataTable.clear().draw();
 					$.each(data.result, function(key, val) {
-						var dt = new Date(val.tanggal_antar);
-						var month = dt.getMonth();
-						var date = dt.getDate();
-						if (dt.getMonth() < 10) month = '0'+dt.getMonth();
-						if (dt.getDate() < 10) date = '0'+dt.getDate();
-						if (dt.getMonth() == 0) month = '01';
 
 						dataTable.row.add([
 							val.kd_pemesanan,
 							val.nama,
 							val.deskripsi_lokasi,
-							val.no_telepon,
 							val.no_wa,
-							date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
+							val.no_telepon,
+							val.status,
 							`<div class="text-center">
 							<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i> Detail</a>
 							</div>`,
 							]).draw(false);
 					});
-					badgeCount();
-				}
-			});
-		}
-
-		// GET JUMLAH STATUS
-		$('#badge-proccess, #badge-delivery, #badge-arrived, #badge-taking').hide();
-		function badgeCount() {
-			$.ajax({
-				url     : host+"/configuration",
-				method  : "POST",
-				headers	: headers,
-				data	: { req: 'badgeCount' },
-				success : function(data) {
-					console.log(data.proccess);
-					if (data.proccess > 0) $('#badge-proccess').show().text(data.proccess);
-					else $('#badge-proccess').hide().text(data.proccess);
-
-					if (data.delivery > 0) $('#badge-delivery').show().text(data.delivery);
-					else $('#badge-delivery').hide().text(data.delivery);
-
-					if (data.arrived > 0) $('#badge-arrived').show().text(data.arrived);
-					else $('#badge-arrived').hide().text(data.arrived);
-
-					if (data.taking > 0) $('#badge-taking').show().text(data.taking);
-					else $('#badge-taking').hide().text(data.taking);
 				}
 			});
 		}

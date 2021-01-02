@@ -167,8 +167,8 @@
             <li class="has_sub">
               <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-wpforms"></i> <span> Data Pemesanan </span> <span class="menu-arrow"></span> </a>
               <ul class="list-unstyled">
-                <li><a href="{{ url('kitchen/datapesanan/pesananbaru') }}">Pemesanan Baru</a></li>
-                <li><a href="maudiubah">Pesanan Diproses</a></li>
+                <li><a href="{{ url('kitchen/datapesanan/pesanandiproses') }}">Pemesanan Diproses</a></li>
+                <li><a href="{{ url('kitchen/datapesanan/selesaidiproses') }}">Selesai Diproses</a></li>
               </ul>
             </li>
             <li class="has_sub">
