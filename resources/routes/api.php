@@ -31,9 +31,11 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('inventori/getalat', 'RestfullApiController@invGetsalat');
     Route::get('inventori/getalat/{id}', 'RestfullApiController@invGetalat');
     Route::get('inventori/getalat/kategori/{id}', 'RestfullApiController@invGetalatkategori');
+    Route::get('inventori/getalathilang', 'RestfullApiController@invAlathilang');
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
     Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
     Route::post('inventori/editalat/{id}', 'RestfullApiController@invPutalat');
+    Route::post('inventori/setalatkembali/{alathilang_id}', 'RestfullApiController@setAlatkembali');
     Route::delete('inventori/deletealat/{id}', 'RestfullApiController@deleteAlat');
 
     // INVENTORI BAHAN  
@@ -63,16 +65,21 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('setdriver', 'RestfullApiController@setDriver');
     Route::post('editdriver/{id}', 'RestfullApiController@putDriver');
     Route::delete('deletedriver/{id}', 'RestfullApiController@deleteDriver');
+    Route::post('driver/cekalat/{pesanan_id}', 'RestfullApiController@cekAlatDriver');
 
     // PEMESANAN
     Route::get('datapesanan', 'RestfullApiController@getsPesanan');
     Route::get('datapesanan/{id}', 'RestfullApiController@getPesanan');
     Route::get('datapesanan/status/{status}', 'RestfullApiController@getStatusPesanan');
+    Route::get('datapesanan/pesanan/today', 'RestfullApiController@getPesananToday');
+    Route::get('datapesanan/driver/{driver_id}', 'RestfullApiController@getPesananDriver');
     Route::post('datapesanan/store', 'RestfullApiController@setPesanan');
     Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
     Route::put('datapesanan/updatedriver/{id}', 'RestfullApiController@updateDriverPesanan');
     Route::put('datapesanan/uploadbuktipembayaran/{token}', 'RestfullApiController@uploadBuktiPembayaran');
     Route::put('datapesanan/updatetransaksi/{id}', 'RestfullApiController@updateTransaksiPesanan');
+    Route::post('datapesanan/setalatpesanan', 'RestfullApiController@setAlatPesanan');
+    Route::post('datapesanan/konfirmasi', 'RestfullApiController@konfirmasiPesanan');
 
     // PAKET MENU
     Route::get('kelolamenu/getpaket', 'RestfullApiController@getsPaket');
@@ -80,10 +87,26 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('kelolamenu/setpaket', 'RestfullApiController@setPaket');
     Route::post('kelolamenu/editpaket/{id}', 'RestfullApiController@putPaket');
     Route::delete('kelolamenu/deletepaket/{id}', 'RestfullApiController@deletePaket');
+    Route::post('getalatpaket', 'RestfullApiController@getAlatPaket');
 
     // ADDITIONAL DAGING
     Route::get('kelolamenu/getadditional', 'RestfullApiController@getsAdditional');
     Route::get('kelolamenu/getadditional/{id}', 'RestfullApiController@getAdditional');
+
+    // KEUANGAN
+    Route::post('keuangan/create', 'RestfullApiController@setKeuangan');
+    Route::get('keuangan/getdata', 'RestfullApiController@getsKeuangan');
+    Route::get('keuangan/getdata/{id}', 'RestfullApiController@getKeuangan');
+    Route::put('keuangan/edit/{id}', 'RestfullApiController@putKeuangan');
+    Route::delete('keuangan/delete/{id}', 'RestfullApiController@deleteKeuangan');
+
+    // KERITIK & SARAN
+    Route::post('kritiksaran/create', 'RestfullApiController@setKritiksaran');
+    Route::get('kritiksaran/getdata', 'RestfullApiController@getsKritiksaran');
+    Route::get('kritiksaran/getdata/{id}', 'RestfullApiController@getKritiksaran');
+    Route::delete('kritiksaran/delete/{id}', 'RestfullApiController@deleteKritiksaran');
+
+
 });
 
 Route::fallback(function() {

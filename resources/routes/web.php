@@ -18,7 +18,12 @@ Route::get('/getpaket','landingpagecontroller@paket_get')->name('page.paket');
 Route::post('/keranjang/paket_pesanan','landingpagecontroller@paket_pesanan')->name('page.keranjang');
 Route::get('/keranjang/detail_alat','landingpagecontroller@detail_alat')->name('page.detail_alat');
 Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.pengantaran');
-Route::post('/get_paket/data','landingpagecontroller@getpaket')->name('get.paket');
+Route::get('/trypemesanan', function() {
+	return view('welcome');
+});
+Route::get('/trynotif', 'landingpagecontroller@trynotif');
+Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
+Route::get('/gettoken/{id}', 'landingpagecontroller@gettoken');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {

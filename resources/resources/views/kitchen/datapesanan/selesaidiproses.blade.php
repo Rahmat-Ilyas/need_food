@@ -1,10 +1,10 @@
-@extends('admin.layout')
+@extends('kitchen.layout')
 @section('content')
 <div class="content">
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h4 class="page-title">Pesanan Baru</h4>
+				<h4 class="page-title">Selesai Diproses</h4>
 				<ol class="breadcrumb">
 					<li>
 						<a href="#">Kesiniku</a>
@@ -13,7 +13,7 @@
 						<a href="#">Data Pesanan</a>
 					</li>
 					<li class="active">
-						Pesanan Baru
+						Selesai Diproses
 					</li>
 				</ol>
 			</div>
@@ -22,20 +22,19 @@
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="card-box table-responsive">
-					<h4 class="m-t-0 header-title"><b>Data Pesanan Baru</b></h4>
-					<table id="tabelPesananbaru" class="table table-striped table-bordered">
+					<h4 class="m-t-0 header-title"><b>Pesanan Selesai Diproses</b></h4>
+					<table id="tabelDataPesanan" class="table table-striped table-bordered">
 						<thead>
 							<tr>
 								<th width="110">Kode Pesanan</th>
 								<th>Nama</th>
 								<th>Alamat</th>
-								<th width="120">Jadwal Antar</th>
-								<th>Catatan</th>
+								<th width="80">Telepon</th>
+								<th width="80">WhatsApp</th>
 								<th width="70">Status</th>
 								<th width="50">Aksi</th>
 							</tr>
 						</thead>
-
 						<tbody>
 
 						</tbody>
@@ -44,28 +43,6 @@
 			</div>
 		</div>
 	</div> 
-</div>
-
-<!-- MODAL KONFIRMASI -->
-<div class="modal confirm-pesanan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title" id="myModalLabel">Foto Bukti Pembayaran</h4>
-			</div>
-			<div class="modal-body">
-				<img src="" id="bukti_pembayaran" style="width: 100%;">
-				<div class="text-center m-t-20">
-					<button type="button" class="btn btn-danger waves-effect" id="refuse-pesanan"><i class="md-close"></i> Tolak Pesanan</button>
-					<button type="button" class="btn btn-success waves-effect" id="acc-pesanan"><i class="md-check"></i> Verifikasi Pesanan</button>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
-			</div>
-		</div>
-	</div>
 </div>
 
 <!-- MODAL DETAIL -->
@@ -157,29 +134,12 @@
 			'X-CSRF-TOKEN'	: $('meta[name="csrf-token"]').attr('content')
 		}
 
-		function setError(data) {
-			var error = '';
-			result = data.responseJSON.message;
-			if (jQuery.type(result) == 'object') {
-				$.each(result, function (key, val) {
-					error = error + ' ' + val[0];
-				});
-			} else {
-				error = data.responseJSON.message;
-			}
-
-			Swal.fire({
-				title: 'Gagal Diproses',
-				text: error,
-				type: 'error'
-			});
-		}
-
+		// SET MAPS
 		$.ajax({
 			url     : host+"/configuration",
 			method  : "POST",
 			headers	: headers,
-			data	: { req: 'pesananbaru' },
+			data	: { req: 'selesaiDiproses' },
 			success : function(data) {
 				google.maps.event.addDomListener(window, 'load', initMap);
 				$.each(data.result, function(key, val) {
@@ -213,15 +173,14 @@
 		});
 
 		//GET PESANAN
-		$('#tabelPesananbaru').DataTable({ "order": [] });
 		getPesanan();
 		function getPesanan() {
-			var dataTable = $('#tabelPesananbaru').DataTable();
+			var dataTable = $('#tabelDataPesanan').DataTable();
 			$.ajax({
 				url     : host+"/configuration",
 				method  : "POST",
 				headers	: headers,
-				data	: { req: 'pesananbaru' },
+				data	: { req: 'selesaiDiproses' },
 				success : function(data) {
 					dataTable.clear().draw();
 					$.each(data.result, function(key, val) {
@@ -230,99 +189,17 @@
 							val.kd_pemesanan,
 							val.nama,
 							val.deskripsi_lokasi,
-							val.jadwal_antar,
-							val.catatan,
+							val.no_wa,
+							val.no_telepon,
 							val.status,
 							`<div class="text-center">
-							<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="confirm-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Konfirmasi Pembayaran" data-toggle="modal" `+val.chek+`><i class="fa fa-check-circle"></i></a>
-							<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i></a>
+							<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i> Detail</a>
 							</div>`,
 							]).draw(false);
 					});
 				}
 			});
-			notifCountView();
 		}
-
-		// KONFIRMASI PESANAN
-		$(document).on('click', '#confirm-pesanan', function(e) {
-			e.preventDefault();
-
-			var id = $(this).attr('dta-id');
-
-			$.ajax({
-				url     : host+"/api/datapesanan/"+id,
-				method  : "GET",
-				headers : headers,
-				success : function(data) {
-					$('#bukti_pembayaran').attr('src', host+'/assets/images/konfirmasi/'+data.result.bukti_pembayaran);
-					$('#acc-pesanan').attr('data-id', id);
-					$('#refuse-pesanan').attr('data-id', id);
-				}
-			});
-		});
-
-		// ACCEPT PESANAN
-		$(document).on('click', '#acc-pesanan', function(e) {
-			var id = $(this).attr('data-id');
-			swal({
-				title: "Verifikasi Pesanan?",
-				html: "Pesanan akan diverifikasi. Lanjutkan?",
-				type: "info",
-				confirmButtonText: 'Lanjutkan',
-				showCancelButton: true,
-				confirmButtonClass: 'btn-success btn-md waves-effect waves-light',
-				cancelButtonClass: 'btn-white btn-md waves-effect',
-				focusConfirm: true,
-				preConfirm: () => {
-					$.ajax({
-						url: host + "/api/datapesanan/updatestatus/"+id,
-						method: "PUT",
-						data: { status: 'Proccess' },
-						headers: headers,
-						success: function (data) {
-							getPesanan();
-							swal('Selesai', 'Pesanan telah diverifikasi!', 'success');
-							$('.modal').modal('hide');
-						},
-						error: function (data) {
-							setError(data);
-						}
-					});
-				}
-			});
-		});
-
-		// TOLAK PESANAN
-		$(document).on('click', '#refuse-pesanan', function(e) {
-			var id = $(this).attr('data-id');
-			swal({
-				title: "Tolak Pesanan?",
-				html: "Pesanan akan ditolak. Lanjutkan?",
-				type: "warning",
-				confirmButtonText: 'Tolak',
-				showCancelButton: true,
-				confirmButtonClass: 'btn-danger btn-md waves-effect waves-light',
-				cancelButtonClass: 'btn-white btn-md waves-effect',
-				focusConfirm: true,
-				preConfirm: () => {
-					$.ajax({
-						url: host + "/api/datapesanan/updatestatus/"+id,
-						method: "PUT",
-						data: { status: 'Refuse' },
-						headers: headers,
-						success: function (data) {
-							getPesanan();
-							swal('Selesai', 'Pesanan telah ditolak!', 'success');
-							$('.modal').modal('hide');
-						},
-						error: function (data) {
-							setError(data);
-						}
-					});
-				}
-			});
-		});
 
 		// DETAIL PESANAN
 		$(document).on('click', '#detail-pesanan', function(e) {
@@ -368,15 +245,6 @@
 				}
 			});
 		});
-
-		// NOTIF FIRBASE
-        const messaging = firebase.messaging();
-
-        messaging.onMessage((payload) => {
-            console.log('Notification ', payload);
-            getPesanan();
-            notifCountView();
-        });
 	});
 </script>
 @endsection

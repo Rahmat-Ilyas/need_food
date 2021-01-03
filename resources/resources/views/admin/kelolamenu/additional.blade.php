@@ -7,7 +7,7 @@
                 <h4 class="page-title">Additional Daging</h4>
                 <ol class="breadcrumb">
                     <li>
-                        <a href="#">NeedFood</a>
+                        <a href="#">Kesiniku</a>
                     </li>
                     <li>
                         <a href="#">Kelola Menu</a>
@@ -162,7 +162,7 @@
         </div>
     </div>
 </div>
-<!-- Modal Hapus Paket -->
+<!-- MODAL HAPUS ADDITIONAL -->
 <div class="modal modal-delete" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">

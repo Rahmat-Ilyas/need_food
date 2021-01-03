@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Model\PaketPesanan;
+use App\Model\KritikSaran;
 use App\Model\AdtPesanan;
 use App\Model\Additional;
 use App\Model\Pemesanan;
 use App\Model\Transaksi;
 use App\Model\Kategori;
 use App\Model\Supplier;
+use App\Model\Keuangan;
 use App\Model\AddBahan;
 use App\Model\SetBahan;
 use App\Model\AddAlat;
@@ -28,14 +30,22 @@ class ConfigController extends Controller
 	{
 		if (isset($request->req)) {
 			if ($request->req == 'pesananbaru') {
-				$request = [];
-				$pemesanan = Pemesanan::where('status', 'waiting')->get();
+				$result = [];
+				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->where('status', 'New')->orWhere('status', 'Accept')->get();
 				foreach ($pemesanan as $dta) {
+					if ($dta->status == 'New') {
+						$dta['status'] = '<span class="label" style="background-color: #C5E9FF; color: #005789; font-size: 11px;">Pesanan Baru</span>';
+						$dta['chek'] = 'disabled';
+					}
+					else if ($dta->status == 'Accept') {
+						$dta['status'] = '<span class="label" style="background-color: #C7FFFF; color: #016B6B; font-size: 11px;">Selesai Bayar</span>';
+						$dta['chek'] = 'data-target=".confirm-pesanan"';
+					}
 					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
 					$result[] = $dta;
 				}
 
-				if ($result) {
+				if (count($result) > 0) {
 					return response()->json([
 						'success' => true,
 						'message' => 'Success get data',
@@ -45,8 +55,110 @@ class ConfigController extends Controller
 					return response()->json([
 						'success' => false,
 						'message' => 'Data not found'
-					], 404);
+					], 204);
 				}
+			} else if ($request->req == 'riwayatpesanan') {
+				$result = [];
+				if ($request->status == 'all') $pemesanan = Pemesanan::orderBy('id', 'desc')->get();
+				else $pemesanan = Pemesanan::where('status', $request->status)->orderBy('id', 'desc')->get();
+
+				foreach ($pemesanan as $dta) {
+					if ($dta->status == 'New') 
+						$dta['status'] = '<span class="label" style="background-color: #C5E9FF; color: #005789; font-size: 11px;">Pesanan Baru</span>';
+					else if ($dta->status == 'Accept') 
+						$dta['status'] = '<span class="label" style="background-color: #C7FFFF; color: #016B6B; font-size: 11px;">Selesai Bayar</span>';
+					else if ($dta->status == 'Proccess') 
+						$dta['status'] = '<span class="label" style="background-color: #eee; color: #777; font-size: 11px;">Diproses Dapur</span>';
+					else if ($dta->status == 'Delivery') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Diantar</span>';
+					else if ($dta->status == 'Arrived') 
+						$dta['status'] = '<span class="label" style="background-color: #FFE5D1; color: #F05600; font-size: 11px;">Pesanan Sampai</span>';
+					else if ($dta->status == 'Taking') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Dijemput</span>';
+					else if ($dta->status == 'Done') 
+						$dta['status'] = '<span class="label" style="background-color: #C8FFE6; color: #089554; font-size: 11px;">Pesanan Selesai</span>';
+					else if ($dta->status == 'Refuse') 
+						$dta['status'] = '<span class="label" style="background-color: #FACFCF; color: #DC0000; font-size: 11px;">Pesanan Ditolak</span>';
+					else if ($dta->status == 'Cancel') 
+						$dta['status'] = '<span class="label" style="background-color: #FFFCB4; color: #8C8820; font-size: 11px;">Pesanan Batal</span>';
+
+					$dta['tanggal'] = date('d/m/Y', strtotime($dta->created_at));
+
+					if ($request->tahun == 'all') {
+						$result[] = $dta;
+					} else {
+						if ($request->tahun == date('Y', strtotime($dta->created_at))) {
+							$result[] = $dta;
+						}
+					}
+				}
+
+				if (count($result) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $result
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
+			} else if ($request->req == 'selesaiDiproses') {
+				$result = [];
+				$pemesanan = Pemesanan::where('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get();
+				foreach ($pemesanan as $dta) {
+					if ($dta->status == 'Delivery') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Diantar</span>';
+					else if ($dta->status == 'Arrived') 
+						$dta['status'] = '<span class="label" style="background-color: #FFE5D1; color: #F05600; font-size: 11px;">Pesanan Sampai</span>';
+					else if ($dta->status == 'Taking') 
+						$dta['status'] = '<span class="label" style="background-color: #EED9FF; color: #7636A8; font-size: 11px;">Pesanan Dijemput</span>';
+					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
+					$result[] = $dta;
+				}
+
+				if (count($result) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $result
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
+			} else if ($request->req == 'setMapspesanandetail') {
+				$result = [];
+				$pemesanan = Pemesanan::where('status', 'Proccess')->orWhere('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get();
+
+				if (count($pemesanan) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $pemesanan
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
+			} else if ($request->req == 'badgeCount') {
+				$proccess = Pemesanan::where('status', 'Proccess')->get();
+				$delivery = Pemesanan::where('status', 'Delivery')->get();
+				$arrived = Pemesanan::where('status', 'Arrived')->get();
+				$taking = Pemesanan::where('status', 'Taking')->get();
+
+				$result['proccess'] = count($proccess);
+				$result['delivery'] = count($delivery);
+				$result['arrived'] = count($arrived);
+				$result['taking'] = count($taking);
+
+				return response()->json($result, 200);
 			} else if ($request->req == 'seleksibahanpaket') {
 				$bahan = Bahan::orderBy('id', 'desc')->get();
 				$result = $bahan->except($request->item);
@@ -357,8 +469,8 @@ class ConfigController extends Controller
 					<div class="col-md-4">
 					<div class="price_card text-center">
 					<div class="pricing-header text-dark" style="background-image: url('. asset('assets/images/paket/'.$dta->foto) .'); background-repeat: no-repeat; background-position: center; background-size: cover;">
-					<span class="price">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
-					<span class="name" style="font-size: 20px;">'.$dta->nama.'</span>
+					<span class="price text-white" style="text-shadow: black 0.1em 0.1em 0.2em;">'.substr($dta->harga, 0, strlen($dta->harga)-3).'K/pax</span>
+					<span class="name text-white" style="font-size: 20px; text-shadow: black 0.1em 0.1em 0.2em;">'.$dta->nama.'</span>
 					</div>
 					<p class="m-t-20"><i><b>'.$dta->keterangan.'</b></i></p>
 					<ul class="price-features" id="bahan-utama">'.$bahan_utama.'</ul>
@@ -733,6 +845,310 @@ class ConfigController extends Controller
 					], 500);	
 				}
 			}
+
+			// SET ALAT FROM KITCHEN
+			if ($request->req == 'setAlatPilih') {
+				$result = '';
+				foreach ($request->data as $dta) {
+					// Option
+					$option = '<option value="">Pilih Alat</option>';
+					$get_option = Alat::where('kategori_id', $dta['kategori_alat_id'])->get();
+					foreach ($get_option as $opt) {
+						$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
+					}
+
+					// Set Alat
+					$alat_dipilih = '';
+					if (isset($dta['alat_dipilih'])) {
+						foreach ($dta['alat_dipilih'] as $adp) {
+							$alat_dipilih .= '
+							<tr id="this-remove">
+							<td width="250">'.$adp['nama_alat'].'</td>
+							<td class="row">
+							<div class="col-sm-8">
+							<input type="hidden" name="kategori_id[]" value="'.$dta['kategori_alat_id'].'">
+							<input type="hidden" name="alat_id[]" value="'.$adp['alat_id'].'">
+							<input type="number" class="form-control" name="jumlah[]" required="" value="'.filter_var($adp['jumlah'], FILTER_SANITIZE_NUMBER_INT).'" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+							</div>
+							<div class="col-sm-4 p-0">
+							<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+							</div>
+							</div>
+							</td>
+							<td width="50">
+							<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$dta['kategori_alat_id'].'"><i class="fa fa-trash"></i> Hapus</a>
+							</td>
+							</tr>';
+						}
+					}
+
+					// Set Kategori
+					$result .= '
+					<tr>
+					<td>'.$dta['kategori_alat'].'</td>
+					<td>'.$dta['jumlah_alat'].'</td>
+					<td>
+					<div class="form-group row">
+					<div class="col-sm-10">
+					<select class="form-control select2" style="height: 35px; width: 100%;" id="alat-dipilih'.$dta['kategori_alat_id'].'" ktgr-id="'.$dta['kategori_alat_id'].'">
+					'.$option.'
+					</select>
+					</div>
+					</div>
+					<table class="table m-b-0">
+					<tbody id="pilih-alat'.$dta['kategori_alat_id'].'">
+					'.$alat_dipilih.'
+					</tbody>
+					</table>
+					</td>
+					</tr>';
+				}
+
+				return response()->json($result);
+			}
+
+			// SELECT ALAT FROM KITCHEN
+			if ($request->req == 'alatSelected') {
+				$alat = Alat::where('id', $request->alat_id)->first();
+				$result = '';
+				if ($alat) {
+					$result = '
+					<tr id="this-remove">
+					<td width="250">'.$alat->nama.'</td>
+					<td class="row">
+					<div class="col-sm-8">
+					<input type="hidden" name="kategori_id[]" value="'.$alat->kategori_id.'">
+					<input type="hidden" name="alat_id[]" value="'.$alat->id.'">
+					<input type="number" class="form-control" name="jumlah[]" required="" placeholder="Jumlah..." style="height: 35px; width: 100%;">
+					</div>
+					<div class="col-sm-4 p-0">
+					<input type="text" class="form-control" value="PCS" disabled style="height: 35px;">
+					</div>
+					</div>
+					</td>
+					<td width="50">
+					<a href="#" class="btn btn-danger btn-sm" id="hapus-item" ktgr-id="'.$alat->kategori_id.'"><i class="fa fa-trash"></i> Hapus</a>
+					</td>
+					</tr>';
+				}
+
+				return response()->json($result);
+			}
+
+			// CHECK ALAT EXITS KITCHEN
+			if ($request->req == 'cekAlatExits') {
+				$getid_alat = Alat::where('kategori_id', $request->ktgr_id)->get();
+				$option = '<option value="">Pilih Alat</option>';
+
+				if (isset($request->alat_id)) {
+					foreach ($getid_alat as $opt) {
+						if (!in_array($opt->id, $request->alat_id)) {
+							$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
+						}
+					}
+				} else {
+					foreach ($getid_alat as $opt) {
+						$option .= '<option value="'.$opt->id.'">'.$opt->nama.'</option>';
+					}
+				}
+				return response()->json($option);
+			}
+
+			// GET YEAR 
+			if ($request->req == 'getyears') {
+				$result = Keuangan::all();
+				$year = [];
+				foreach ($result as $dta) {
+					$year[] = date('Y', strtotime($dta->tanggal));
+				}
+				sort($year);
+				$option = '';
+				foreach (array_unique($year) as $thn) {
+					if ($thn == date('Y')) $select = 'selected';
+					else $select = '';
+					$option .= '<option value="'.$thn.'" '.$select.'>'.$thn.'</option>';
+				}
+
+				if (isset($request->allexitsfromyear)) {
+					$result = Pemesanan::all();
+					$year = [];
+					foreach ($result as $dta) {
+						$year[] = date('Y', strtotime($dta->created_at));
+					}
+					sort($year);
+					$option = '<option value="all" selected>Semua Data</option>';
+					foreach (array_unique($year) as $thn) {
+						$option .= '<option value="'.$thn.'">'.$thn.'</option>';
+					}
+				}
+
+				return response()->json($option);
+			}
+
+			// UPDATE KRITIK SARAN 
+			if ($request->req == 'updateKrisar') {
+				if ($request->status == 'view') {
+					$krisar = KritikSaran::where('status', 'new')->get();
+					foreach ($krisar as $krs) {
+						$krs->status = 'view';
+						$krs->save();
+					}
+				} else if ($request->status == 'old') {
+					$krisar = KritikSaran::where('status', 'view')->get();
+					foreach ($krisar as $krs) {
+						$tanggal_masuk = $krs->created_at;
+						$tanggal_sekrng = date('Y-m-d H:i:s');
+						if (strtotime($tanggal_masuk) + 86400 < strtotime($tanggal_sekrng)) {
+							$krs->status = 'old';
+							$krs->save();
+						}
+					}
+				}
+			}
+
+			// NOTIF COUNT VIEW ADMIN
+			if ($request->req == 'notifCountViewAdmin') {
+				$result = [];
+
+				$notf_view_count = 0;
+				$set_notif = [];
+
+				$psnNew = Pemesanan::where('status', 'New')->get();
+				foreach ($psnNew as $psn) {
+					$set_notif[$notf_view_count]['created_at'] = date('Y-m-d H:i:s', strtotime($psn->created_at));
+					$set_notif[$notf_view_count]['jenis'] = 'order';
+					$set_notif[$notf_view_count]['keterangan'] = $psn->kd_pemesanan;
+					
+					$notf_view_count = $notf_view_count + 1;
+				}
+
+				$psnAccept = Pemesanan::where('status', 'Accept')->get();
+				foreach ($psnAccept as $psn) {
+					$set_notif[$notf_view_count]['created_at'] = date('Y-m-d H:i:s', strtotime($psn->updated_at));
+					$set_notif[$notf_view_count]['jenis'] = 'accept';
+					$set_notif[$notf_view_count]['keterangan'] = $psn->kd_pemesanan;
+					
+					$notf_view_count = $notf_view_count + 1;
+				}
+
+				$kritik_saran = 0;
+				$kritikSaran = KritikSaran::where('status', 'new')->get();
+				foreach ($kritikSaran as $krs) {
+					$set_notif[$notf_view_count]['created_at'] = date('Y-m-d H:i:s', strtotime($krs->created_at));
+					$set_notif[$notf_view_count]['jenis'] = 'krisar';
+					$set_notif[$notf_view_count]['keterangan'] = $krs->email;
+					
+					$notf_view_count = $notf_view_count + 1;
+					$kritik_saran = $kritik_saran + 1;
+				}
+
+				array_multisort(array_column($set_notif, 'created_at'), SORT_DESC, $set_notif);
+				$notf_view = '';
+				foreach ($set_notif as $ntf) {
+					if ($ntf['jenis'] == 'accept') {
+						$notf_view .= '
+						<a href="'.url('admin/datapesanan/pesananbaru').'" class="list-group-item">
+	                        <div class="media">
+	                            <div class="pull-left p-r-10">
+	                                <em class="fa fa-credit-card noti-success"></em>
+	                            </div>
+	                            <div class="media-body">
+	                                <h5 class="media-heading">Bukti Pembayaran ('.$ntf['keterangan'].')</h5>
+	                                <p class="m-0">
+	                                    <small>Pelanggan telah mengirimkan bukti pembayaran</small>
+	                                </p>
+	                            </div>
+	                        </div>
+	                    </a>';
+					} else if ($ntf['jenis'] == 'order') {
+						$notf_view .= '
+						<a href="'.url('admin/datapesanan/pesananbaru').'" class="list-group-item">
+	                        <div class="media">
+	                            <div class="pull-left p-r-10">
+	                                <em class="fa fa-ticket noti-primary"></em>
+	                            </div>
+	                            <div class="media-body">
+	                                <h5 class="media-heading">Pesanan Baru ('.$ntf['keterangan'].')</h5>
+	                                <p class="m-0">
+	                                    <small>Pesanan baru masuk, mohon diperiksa</small>
+	                                </p>
+	                            </div>
+	                        </div>
+	                    </a>';
+					} else if ($ntf['jenis'] == 'krisar') {
+						$notf_view .= '
+						<a href="'.url('admin/kritiksaran').'" class="list-group-item">
+                            <div class="media">
+                                <div class="pull-left p-r-10">
+                                    <em class="fa fa-envelope-o noti-warning"></em>
+                                </div>
+                                <div class="media-body">
+                                    <h5 class="media-heading">Pesan Masuk ('.$ntf['keterangan'].')</h5>
+                                    <p class="m-0">
+                                        <small>Kritik & Saran dari costumer, cek segera</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>';
+					}
+				}
+
+				if ($notf_view_count == 0) $notf_view = '<h3 class="text-center" style="margin-top: 70px;"><i>Tidak ada notifikasi</i></h3>';
+
+				$pesanan_baru = count(Pemesanan::where('status', 'New')->orWhere('status', 'Accept')->get());
+				$pesanan_proses = count(Pemesanan::where('status', 'Proccess')->orWhere('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get());
+				$data_pesanan = $pesanan_baru + $pesanan_proses;
+
+				$result['notf_view'] = $notf_view;
+				$result['notf_view_count'] = $notf_view_count;
+				$result['data_pesanan'] = $data_pesanan;
+				$result['pesanan_baru'] = $pesanan_baru;
+				$result['pesanan_proses'] = $pesanan_proses;
+				$result['kritik_saran'] = $kritik_saran;
+				return response()->json($result);
+			}
+
+			// NOTIF COUNT VIEW KITCHEN
+			if ($request->req == 'notifCountViewKitchen') {
+				$result = [];
+
+				$notf_view_count = 0;
+				$notf_view = '';
+				$set_notif = [];
+
+				$psnProccess = Pemesanan::where('status', 'Proccess')->orderBy('updated_at', 'desc')->get();
+				foreach ($psnProccess as $psn) {
+					$notf_view .= '
+					<a href="javascript:void(0);" class="list-group-item">
+						<div class="media">
+                        	<div class="pull-left p-r-10">
+                         		<em class="fa fa-cutlery noti-purple"></em>
+                        	</div>
+	                        <div class="media-body">
+	                          	<h5 class="media-heading">Pesanan Baru ('.$psn->kd_pemesanan.')</h5>
+	                          	<p class="m-0">
+	                            	<small>Terdapat pesanan baru yang harus di proses</small>
+	                          	</p>
+	                        </div>
+                      	</div>
+                    </a>';
+					
+					$notf_view_count = $notf_view_count + 1;
+				}
+
+				if ($notf_view_count == 0) $notf_view = '<h3 class="text-center" style="margin-top: 70px;"><i>Tidak ada notifikasi</i></h3>';
+
+				$pesanan_proses = count(Pemesanan::where('status', 'Proccess')->get());
+				$selesai_proses = count(Pemesanan::where('status', 'Delivery')->orWhere('status', 'Arrived')->orWhere('status', 'Taking')->get());
+				$data_pesanan = $selesai_proses + $pesanan_proses;
+
+				$result['notf_view'] = $notf_view;
+				$result['notf_view_count'] = $notf_view_count;
+				$result['data_pesanan'] = $data_pesanan;
+				$result['pesanan_proses'] = $pesanan_proses;
+				$result['selesai_proses'] = $selesai_proses;
+				return response()->json($result);
+			}
 		}
 	}
 
@@ -854,6 +1270,28 @@ class ConfigController extends Controller
 				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-additional" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
 				</div>';
 			})->rawColumns(['action'])->toJson();
+		} else if ($request->req == 'dtGetKritiksaran') {
+			$result = KritikSaran::orderBy('id', 'desc')->get();
+			$data = [];
+			$no = 1;
+			foreach ($result as $dta) {
+				$dta->no = $no;
+				$dta->tanggal = date('d/m/Y', strtotime($dta->created_at));
+				if ($dta->status == 'new' || $dta->status == 'view') 
+					$dta['status'] = '<span class="label label-success" style="font-size: 11px;">New</span>';
+				else if ($dta->status == 'old') 
+					$dta['status'] = '<span class="label label-inverse" style="font-size: 11px;">Old</span>';
+				$data[] = $dta;
+				$no = $no + 1;
+			}
+
+			return Datatables::of($data)
+			->addColumn('action', function($dta) {
+				return '<div class="text-center">
+				<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-kritiksaran" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Detail" data-toggle="modal" data-target=".modal-detail"><i class="fa fa-eye"></i></a>
+				<a href="#" role="button" class="btn btn-danger btn-sm waves-effect waves-light" id="hapus-kritiksaran" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Hapus" data-toggle="modal" data-target=".modal-delete"><i class="fa fa-trash"></i></a>
+				</div>';
+			})->rawColumns(['action', 'status'])->toJson();
 		}
 	}
 }

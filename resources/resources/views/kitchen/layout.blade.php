@@ -9,7 +9,7 @@
 
   <link rel="shortcut icon" href="{{ asset('assets/images/fav.png') }}">
 
-  <title>Halaman Dapur - NeedFood</title>
+  <title>Halaman Dapur - Kesiniku</title>
 
   <!--Morris Chart CSS -->
   <link rel="stylesheet" href="{{ asset('assets/plugins/morris/morris.css') }}">
@@ -58,14 +58,14 @@
       <!-- LOGO -->
       <div class="topbar-left">
         <div class="text-center">
-          <a href="{{ url('/kitchen') }}" class="logo">
+          {{-- <a href="{{ url('/kitchen') }}" class="logo">
             <b class="icon-c-logo"><strong class="text-custom"><b class="text-warning">N</b><b class="text-white">F</b></strong></b>
             <span><h3 class="text-center"><strong class="text-custom text-warning">NEED</strong><span class="text-white text-capitalize">Food</span></h3></span>
-          </a>
-          {{-- <a href="{{ url('/kitchen') }}" class="logo">
-            <i class="icon-c-logo"> <img src="{{ asset('assets/images/logo_sm.png') }}" height="42"/> </i>
-            <span><img src="{{ asset('assets/images/logo_light.png') }}" height="20"/></span>
           </a> --}}
+          <a href="{{ url('/admin') }}" class="logo">
+            <i class="icon-c-logo"> <img src="{{ asset('assets/images/logo-sm.png') }}" height="40"/> </i>
+            <span><img src="{{ asset('assets/images/logo-1.png') }}" height="40"/></span>
+          </a>
         </div>
       </div>
 
@@ -78,75 +78,23 @@
               </button>
               <span class="clearfix"></span>
             </div>
-            
-            <form role="search" class="navbar-left app-search pull-left hidden-xs">
-              <input type="text" placeholder="Search..." class="form-control">
-              <a href=""><i class="fa fa-search"></i></a>
-            </form>
-
 
             <ul class="nav navbar-nav navbar-right pull-right">
               <li class="dropdown top-menu-item-xs">
                 <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
-                  <i class="icon-bell"></i> <span class="badge badge-xs badge-danger">3</span>
+                  <i class="icon-bell"></i> <span class="badge badge-xs badge-danger" id="notifViewCount">0</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg">
-                  <li class="list-group slimscroll-noti notification-list">
+                  <li class="list-group slimscroll-noti notification-list" id="notifView">
                     <!-- list item-->
-                    <a href="javascript:void(0);" class="list-group-item">
-                      <div class="media">
-                        <div class="pull-left p-r-10">
-                          <em class="fa fa-diamond noti-primary"></em>
-                        </div>
-                        <div class="media-body">
-                          <h5 class="media-heading">A new order has been placed A new order has been placed</h5>
-                          <p class="m-0">
-                            <small>There are new settings available</small>
-                          </p>
-                        </div>
-                      </div>
-                    </a>
-
-                    <a href="javascript:void(0);" class="list-group-item">
-                      <div class="media">
-                        <div class="pull-left p-r-10">
-                          <em class="fa fa-cog noti-warning"></em>
-                        </div>
-                        <div class="media-body">
-                          <h5 class="media-heading">New settings</h5>
-                          <p class="m-0">
-                            <small>There are new settings available</small>
-                          </p>
-                        </div>
-                      </div>
-                    </a>
-
-                    <a href="javascript:void(0);" class="list-group-item">
-                      <div class="media">
-                        <div class="pull-left p-r-10">
-                          <em class="fa fa-bell-o noti-custom"></em>
-                        </div>
-                        <div class="media-body">
-                          <h5 class="media-heading">Updates</h5>
-                          <p class="m-0">
-                            <small>There are <span class="text-primary font-600">2</span> new updates available</small>
-                          </p>
-                        </div>
-                      </div>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="javascript:void(0);" class="list-group-item text-right">
-                      <small class="font-600">See all notifications</small>
-                    </a>
+                    
                   </li>
                 </ul>
               </li>
               <li class="dropdown top-menu-item-xs">
-                <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="user-img" class="img-circle"> </a>
+                <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('assets/images/logo-sm.png') }}" alt="user-img" class="img-circle"> </a>
                 <ul class="dropdown-menu">
                   <li><a href="javascript:void(0)"><i class="ti-user m-r-10 text-custom"></i> Profile</a></li>
-                  <li><a href="javascript:void(0)"><i class="ti-settings m-r-10 text-custom"></i> Settings</a></li>
                   <li class="divider"></li>
                   <li><a href="{{ route('kitchen.logout') }}"><i class="ti-power-off m-r-10 text-danger"></i> Logout</a></li>
                 </ul>
@@ -165,18 +113,13 @@
               <a href="{{ url('kitchen/') }}" class="waves-effect"><i class="ti-home"></i> <span> Dashboard </span></a>
             </li>
             <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-wpforms"></i> <span> Data Pemesanan </span> <span class="menu-arrow"></span> </a>
+              <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-wpforms"></i> 
+                <span> Data Pemesanan </span> 
+                <span class="label label-danger pull-right" id="dataPesanan">0</span> 
+              </a>
               <ul class="list-unstyled">
-                <li><a href="{{ url('kitchen/datapesanan/pesananbaru') }}">Pemesanan Masuk</a></li>
-                <li><a href="maudiubah">Pesanan Keluar</a></li>
-              </ul>
-            </li>
-            <li class="has_sub">
-              <a href="javascript:void(0);" class="waves-effect"><i class="ti-menu-alt"></i> <span> Kelola Menu </span> <span class="menu-arrow"></span> </a>
-              <ul class="list-unstyled">
-                <li><a href="{{ url('kitchen/kelolamenu/paketmenu') }}">Paket Menu</a></li>
-                <li><a href="{{ url('kitchen/kelolamenu/additional') }}">Additional Daging</a></li>
-                <li><a href="{{ url('kitchen/kelolamenu/bahantambahan') }}">Bahan Tambahan</a></li>
+                <li><a href="{{ url('kitchen/datapesanan/pesanandiproses') }}">Pesanan Diproses <span class="badge badge-xs badge-danger" id="pesananProses">0</span></a></li>
+                <li><a href="{{ url('kitchen/datapesanan/selesaidiproses') }}">Selesai Diproses <span class="badge badge-xs badge-danger" id="selesaiProsesCount">0</span></a></li>
               </ul>
             </li>
             <li class="has_sub">
@@ -211,7 +154,7 @@
     <input type="hidden" id="host" value="{{ url('/') }}">
 
     <footer class="footer text-right">
-      © 2016. All rights reserved.
+      © {{ date('Y') }}. Kesiniku - All rights reserved.
     </footer>
 
   </div>
@@ -289,22 +232,81 @@
   <script src="{{ asset('assets/plugins/bootstrap-sweetalert/sweet-alert.min.js') }}"></script>
   <script src="{{ asset('assets/pages/jquery.sweet-alert.init.js') }}"></script>
 
-  @yield('javascript')
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
 
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-messaging.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+  <script src="{{ asset('assets/js/kitchen.firebase.js') }}"></script>
 
   <script type="text/javascript">
-    jQuery(document).ready(function($) {
-      $(".select2").select2();
-      $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
+    var url = $('#configurl').val();
+    var host = $('#host').val();
 
-      $('.buttonText').text('Pilih Foto');
+    var headers = {
+      "Accept"        : "application/json",
+      "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+      'X-CSRF-TOKEN'  : $('meta[name="csrf-token"]').attr('content')
+    }
 
-      $('.counter').counterUp({
-        delay: 100,
-        time: 1200
+    $('#notifViewCount, #dataPesanan, #pesananProses, #selesaiProsesCount').hide();
+    notifCountView();
+    function notifCountView() {
+      $.ajax({
+        url: host + "/configuration",
+        method: "POST",
+        headers: headers,
+        data: { req: 'notifCountViewKitchen' },
+        success: function (data) {
+          $('#notifView').html(data.notf_view);
+
+          if (data.notf_view_count != 0) $('#notifViewCount').show().text(data.notf_view_count);
+          else $('#notifViewCount').hide().text(data.notf_view_count);
+
+          if (data.data_pesanan != 0) $('#dataPesanan').show().text(data.data_pesanan);
+          else $('#dataPesanan').hide().text(data.data_pesanan);
+
+          if (data.pesanan_proses != 0) $('#pesananProses').show().text(data.pesanan_proses);
+          else $('#pesananProses').hide().text(data.pesanan_proses);
+
+          if (data.selesai_proses != 0) $('#selesaiProsesCount').show().text(data.selesai_proses);
+          else $('#selesaiProsesCount').hide().text(data.selesai_proses);
+        }
       });
+    }
 
-      $(".knob").knob();
+
+    $(document).ready(function($) {
+        // NOTIF FIRBASE
+        const messaging = firebase.messaging();
+
+        messaging.onMessage((payload) => {
+          console.log('Notification ', payload);
+          notifCountView();
+        });
+      });
+    </script>
+
+    @yield('javascript')
+
+
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $(".select2").select2();
+        $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
+
+        $('.buttonText').text('Pilih Foto');
+
+        $('.counter').counterUp({
+          delay: 100,
+          time: 1200
+        });
+
+        $(".knob").knob();
 
       // DataTables
     });

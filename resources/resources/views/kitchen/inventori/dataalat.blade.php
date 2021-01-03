@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('kitchen.layout')
 @section('content')
 <div class="content">
 	<div class="container">

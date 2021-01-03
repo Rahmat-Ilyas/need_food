@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Model\PaketPesanan;
+use App\Model\KritikSaran;
+use App\Model\AlatPesanan;
 use App\Model\AdtPesanan;
+use App\Model\AlatHilang;
 use App\Model\Additional;
 use App\Model\Pemesanan;
 use App\Model\Transaksi;
 use App\Model\ItemPaket;
 use App\Model\AuthLogin;
 use App\Model\Kategori;
+use App\Model\Keuangan;
 use App\Model\Supplier;
 use App\Model\AddBahan;
 use App\Model\SetBahan;
@@ -111,6 +115,32 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function invAlathilang()
+	{
+		$data = AlatHilang::orderBy('id', 'desc')->get();
+		$result = [];
+		foreach ($data as $dta) {
+			$pesanan = Pemesanan::where('id', $dta->pemesanan_id)->first();
+			$alat = Alat::where('id', $dta->alat_id)->first();
+			$dta['kd_pemesanan'] = $pesanan->kd_pemesanan;
+			$dta['nama_pemesan'] = $pesanan->nama;
+			$dta['nama_alat'] = $alat->nama;
+			$dta['jumlah_hilang'] = $dta->jumlah_hilang.' pcs';
+			$dta['tanggal_hilang'] = date('Y-m-d', strtotime($dta->created_at));
+			unset($dta->created_at);
+			unset($dta->updated_at);
+
+
+			$result[] = $dta;
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result'  => $result
+		], 200);
+	}
+
 	public function invSetalat(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
@@ -147,6 +177,8 @@ class RestfullApiController extends Controller
 			$add_alat['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
 			$beli = AddAlat::create($add_alat);
 			$result = $alat;
+
+			$this->debitkredit($beli->id, 'alat');
 
 			return response()->json([
 				'success' => true,
@@ -238,6 +270,8 @@ class RestfullApiController extends Controller
 			$updt->jumlah_alat = $updt->jumlah_alat + $crt->jumlah_beli;
 			$updt->save();
 
+			$this->debitkredit($crt->id, 'alat');
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
@@ -248,6 +282,43 @@ class RestfullApiController extends Controller
 				'message' => $ex->getMessage(),
 			], 500);	
 		}
+	}
+
+	public function setAlatkembali(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'jumlah_alat' => 'required|integer',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$alathilang = AlatHilang::where('id', $id)->first();
+		$alat = Alat::where('id', $alathilang->alat_id)->first();
+		if ($request->jumlah_alat > $alathilang->jumlah_hilang || $request->jumlah_alat <= 0) {
+			return response()->json([
+				'success' => false,
+				'message' => 'Jumlah alat melebihi ketentuan'
+			], 401); 
+		} else if ($request->jumlah_alat == $alathilang->jumlah_hilang) {
+			$alathilang->delete();
+		} else {
+			$alathilang->jumlah_hilang = $alathilang->jumlah_hilang - $request->jumlah_alat;
+			$alathilang->save();
+		}
+
+		$alat->jumlah_alat = $alat->jumlah_alat + $request->jumlah_alat;
+		$alat->save();
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success set alat kembali'
+		], 200);
 	}
 
 	public function deleteAlat($id)
@@ -389,6 +460,8 @@ class RestfullApiController extends Controller
 			$beli = AddBahan::create($add_bahan);
 			$result = $bahan;
 
+			$this->debitkredit($beli->id, 'bahan');
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
@@ -476,6 +549,7 @@ class RestfullApiController extends Controller
 			$add_bahan = $request->all();
 			$add_bahan['kd_beli'] = $this->generate($request->nama.$supplier->nama_supplier);
 			$crt = AddBahan::create($add_bahan);
+			$this->debitkredit($crt->id, 'bahan');
 			$updt = Bahan::where('id', $crt->bahan_id)->first();
 			$updt->jumlah_bahan = $updt->jumlah_bahan + $crt->jumlah_beli;
 			$updt->save();
@@ -1062,11 +1136,11 @@ class RestfullApiController extends Controller
 			'waktu_antar' => 'required',
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
-			'logitude' => 'required',
+			'longitude' => 'required',
 			'paket_id' => 'required',
 			'jumlah_paket' => 'required',
+			'biaya_pengiriman' => 'required|integer',
 		]);
-
 
 		if ($validator->fails()) {
 			return response()->json([
@@ -1081,20 +1155,23 @@ class RestfullApiController extends Controller
 			$date = date('dmY');
 			if ($getId) {
 				$findId = sprintf('%02s', $getId->id+1);
-				$kd_pemesanan = 'NFC-'.$findId.$date;
+				$kd_pemesanan = 'KSN-'.$findId.$date;
 			}
-			else $kd_pemesanan = 'NFC-01'.$date;
+			else $kd_pemesanan = 'KSN-01'.$date;
 
 			// set data
 			$pemesanan = $request->all();
 			$pemesanan['kd_pemesanan'] = $kd_pemesanan;
-			$pemesanan['status'] = 'waiting';
+			$pemesanan['status'] = 'New';
 			$request->catatan ? $request->catatan : $pemesanan['catatan'] = '-';
 			unset($pemesanan['paket_id']);
 			unset($pemesanan['jumlah_paket']);
 			unset($pemesanan['additional_id']);
 			unset($pemesanan['jumlah_adt']);
+			unset($pemesanan['biaya_pengiriman']);
 			$pmsn = Pemesanan::create($pemesanan);
+
+			$this->notification('New', $pmsn->id);
 
 			$harga_paket = 0;
 			$harga_additional = 0;
@@ -1127,9 +1204,9 @@ class RestfullApiController extends Controller
 			$transaksi['pemesanan_id'] = $pmsn->id;
 			$transaksi['harga_paket'] = $harga_paket;
 			$transaksi['harga_additional'] = $harga_additional;
-			$transaksi['biaya_pengiriman'] = 0;
+			$transaksi['biaya_pengiriman'] = $request->biaya_pengiriman;
 			$transaksi['harga_lainnya'] = 0;
-			$transaksi['total_harga'] = $harga_paket + $harga_additional;
+			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
 
 			return response()->json([
@@ -1146,8 +1223,8 @@ class RestfullApiController extends Controller
 
 	public function getsPesanan(Request $request)
 	{
-		if ($request->status) $pemesanan = Pemesanan::where('status', $request->status)->get();
-		else $pemesanan = Pemesanan::all();
+		if ($request->status) $pemesanan = Pemesanan::where('status', $request->status)->orderBy('id', 'desc')->get();
+		else $pemesanan = Pemesanan::orderBy('id', 'desc')->get();
 
 		$result = $this->getDataPesanan($pemesanan);
 
@@ -1186,10 +1263,10 @@ class RestfullApiController extends Controller
 
 	public function getStatusPesanan($status)
 	{
-		$pemesanan = Pemesanan::where('status', $status)->get();
+		$pemesanan = Pemesanan::where('status', $status)->orderBy('id', 'desc')->get();
 		$result = $this->getDataPesanan($pemesanan);
 
-		if ($result) {
+		if (count($result) > 0) {
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
@@ -1199,6 +1276,81 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data not found'
+			], 205);
+		}
+	}
+
+	public function getPesananToday(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'status' => 'required',
+			'tanggal' => 'required',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$data = [];
+		$pemesanan = Pemesanan::where('status', $request->status)->orderBy('id', 'desc')->get();
+		foreach ($pemesanan as $res) {
+			if (date('dmy', strtotime($request->tanggal)) == date('dmy', strtotime($res->tanggal_antar))) {
+				$data[] = $res;
+			}
+		}
+		$result = $this->getDataPesanan($data);
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data is empty'
+			], 404);
+		}
+	}
+
+	public function getPesananDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'status' => 'required',
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if ($request->status != 'pengantaran' && $request->status != 'penjemputan') {
+			return response()->json([
+				'success' => false,
+				'message' => 'status not found'
+			], 401);   
+		}
+
+		$pemesanan = Pemesanan::where($request->status, $id)->orderBy('id', 'desc')->get();
+		$result = $this->getDataPesanan($pemesanan);
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data is empty'
 			], 404);
 		}
 	}
@@ -1243,56 +1395,11 @@ class RestfullApiController extends Controller
 				unset($transaksi['created_at']);
 				unset($transaksi['updated_at']);
 
-				// Data Set Alat/Bahan Pesanan
-				$bahan = [];
-				$alat = [];
-				foreach ($set_paket as $set) {
-					$paket_id = $set['paket_id'];
-					$jumlah_paket = $set['jumlah'];
-					// Set Bahan
-					$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
-					foreach ($get_set_bahan as $bhn) {
-						$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
-						if ($set_jum_bhn > 0) {
-							$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
-							if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
-							else $jumlah = $set_jum_bhn;
-							$bahan[] = [
-								'paket_id' => $paket_id,
-								'bahan_id' => $bhn->bahan_id,
-								'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
-								'jumlah_bahan' => $jumlah.' '.$get_bahan->satuan
-							];
-						}
-					}
-
-					// Set Alat
-					$get_set_alat = SetAlat::where('paket_id', $paket_id)->get();
-					foreach ($get_set_alat as $alt) {
-						$set_jum_alt = floor($jumlah_paket / $alt->per_paket)  * $alt->jumlah;
-						if ($set_jum_alt > 0) {
-							$get_kategori = Kategori::where('id', $alt->kategori_alat_id)->first();
-							if (isset($alt->maksimal)) $jumlah = $alt->maksimal;
-							else $jumlah = $set_jum_alt;
-							$alat_dipilih[] = ['alat_id' => 1, 'nama_alat' => 'Kompor Convina', 'jumlah' => '1 pcs'];
-							$alat_dipilih[] = ['alat_id' => 2, 'nama_alat' => 'Kompor Rinnai', 'jumlah' => '1 pcs'];
-
-							$alat[] = [
-								'paket_id' => $paket_id,
-								'kategori_alat_id' => $alt->kategori_alat_id,
-								'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
-								'jumlah_alat' => $jumlah.' pcs',
-								'alat_dipilih' => $alat_dipilih
-							];
-						}
-					}
-				}
-
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
-				$pemesanan['bahan'] = $bahan;
-				$pemesanan['alat'] = $alat;
+				$pemesanan['bahan'] = $this->set_paket($set_paket, $id, 'bahan');
+				$pemesanan['alat'] = $this->set_paket($set_paket, $id, 'alat');
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
 					$set_paket = [];
@@ -1333,38 +1440,126 @@ class RestfullApiController extends Controller
 					unset($transaksi['created_at']);
 					unset($transaksi['updated_at']);
 
-					// Data Set Alat/Bahan Pesanan
-					$bahan = [];
-					$alat = [];
-					foreach ($set_paket as $set) {
-						$paket_id = $set['paket_id'];
-						$jumlah_paket = $set['jumlah'];
-						// Set Bahan
-						$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
-						foreach ($get_set_bahan as $bhn) {
-							$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
-							if ($set_jum_bhn > 0) {
-								$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
-								if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
-								else $jumlah = $set_jum_bhn;
-								$bahan[] = [
-									'paket_id' => $paket_id,
-									'bahan_id' => $bhn->bahan_id,
-									'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
-									'jumlah_bahan' => $jumlah.' '.$get_bahan->satuan
-								];
-							}
-						}
-					}
-
 					$pesanan['paket'] = $paket;
 					$pesanan['additional'] = $additional;
 					$pesanan['transaksi'] = $transaksi;
-					$pesanan['bahan'] = $bahan;
+					$pesanan['bahan'] = $this->set_paket($set_paket, $pesanan->id, 'bahan');
+					$pesanan['alat'] = $this->set_paket($set_paket, $pesanan->id, 'alat');
 				}
 			}
 		}
 		return $pemesanan;
+	}
+
+	protected function set_paket($set_paket, $pemesanan_id, $req)
+	{
+		// Data Set Alat/Bahan Pesanan
+		$bahan = [];
+		$alat = [];
+		$total_paket = 0;
+		$x = 0;
+		$y = 0;
+		foreach ($set_paket as $set) {
+			$paket_id = $set['paket_id'];
+			$jumlah_paket = $set['jumlah'];
+			$total_paket = $total_paket + $set['jumlah'];
+			// Set Bahan
+			$get_set_bahan = SetBahan::where('paket_id', $paket_id)->get();
+			foreach ($get_set_bahan as $bhn) {
+				$set_jum_bhn = floor($jumlah_paket / $bhn->per_paket)  * $bhn->jumlah;
+				if ($set_jum_bhn > 0) {
+					$get_bahan = Bahan::where('id', $bhn->bahan_id)->first();
+					if (isset($bhn->maksimal)) $jumlah = $bhn->maksimal;
+					else $jumlah = $set_jum_bhn;
+					$bahan[$x] = [
+						'key' => $x,
+						'bahan_id' => $bhn->bahan_id,
+						'nama_bahan' => $get_bahan ? $get_bahan->nama : null,
+						'jumlah_bahan' => $jumlah,
+						'satuan' => $get_bahan ? $get_bahan->satuan : null,
+					];
+					$x = $x + 1;
+				}
+			}
+
+			// Set Alat
+			$get_set_alat = SetAlat::where('paket_id', $paket_id)->get();
+			foreach ($get_set_alat as $alt) {
+				$set_jum_alt = floor($jumlah_paket / $alt->per_paket)  * $alt->jumlah;
+				if ($set_jum_alt > 0) {
+					$get_kategori = Kategori::where('id', $alt->kategori_alat_id)->first();
+					if (isset($alt->maksimal)) $jumlah = $alt->maksimal;
+					else $jumlah = $set_jum_alt;
+					$alat_dipilih = [];
+					$alat_pesanan = AlatPesanan::where('pemesanan_id', $pemesanan_id)->where('kategori_alat_id', $alt->kategori_alat_id)->get();
+					foreach ($alat_pesanan as $alpes) {
+						$get_alat = Alat::where('id', $alpes->alat_id)->first();
+						$alat_dipilih[] = [
+							'alat_id' => $alpes->alat_id,
+							'nama_alat' => $get_alat ? $get_alat->nama : null,
+							'jumlah' => $alpes->jumlah.' pcs',
+						];
+					}
+					
+					if ($req == 'alat_front') {
+						$alat[$y] = [
+							'key' => $y,
+							'kategori_alat_id' => $alt->kategori_alat_id,
+							'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
+							'jumlah_alat' => $jumlah,
+							'foto' => $get_kategori ? $get_kategori->foto : null,
+						];
+					} else {
+						$alat[$y] = [
+							'key' => $y,
+							'kategori_alat_id' => $alt->kategori_alat_id,
+							'kategori_alat' => $get_kategori ? $get_kategori->kategori : null,
+							'jumlah_alat' => $jumlah,
+							'alat_dipilih' => $alat_dipilih
+						];
+					}
+					$y = $y + 1;
+				}
+			}
+		}
+
+		// Set Bahan Fix
+		$search = array_column($bahan, 'key', 'bahan_id');
+		$bahan_fix = [];
+		foreach ($search as $fix => $key) {
+			$jumlah = 0;
+			foreach ($bahan as $ext) {
+				if ($ext['bahan_id'] == $fix) {
+					$jumlah = $jumlah + $ext['jumlah_bahan'];
+				}
+			}
+			$bahan[$key]['jumlah_bahan'] = $jumlah.' '.$bahan[$key]['satuan'];
+			unset($bahan[$key]['key']);
+			unset($bahan[$key]['satuan']);
+			$bahan_fix[] = $bahan[$key];
+		}
+
+		// Set Alat Fix
+		$search = array_column($alat, 'key', 'kategori_alat_id');
+		$alat_fix = [];
+		// Dapat alat minimal 1 paket
+		if ($total_paket >= 1) {
+			foreach ($search as $fix => $key) {
+				$jumlah = 0;
+				foreach ($alat as $ext) {
+					if ($ext['kategori_alat_id'] == $fix) {
+						$jumlah = $jumlah + $ext['jumlah_alat'];
+					}
+				}
+				$alat[$key]['jumlah_alat'] = $jumlah.' pcs';
+				unset($alat[$key]['key']);
+				$alat_fix[] = $alat[$key];
+			}
+		}
+
+		if ($req == 'bahan') return $bahan_fix;
+		else if ($req == 'alat') return $alat_fix;
+		else if ($req == 'alat_front') return $alat_fix;
 	}
 
 	public function updateStatusPesanan(Request $request, $id)
@@ -1391,6 +1586,15 @@ class RestfullApiController extends Controller
 					'success' => false,
 					'message' => 'id not found'
 				], 401); 
+			}
+
+			$this->notification($request->status, $id);
+			if ($request->status == 'Delivery' || $request->status == 'delivery') {
+				$this->reduceAlatBahan($id);
+			}
+
+			if ($request->status == 'Proccess' || $request->status == 'proccess') {
+				$this->debitkredit($id, 'pesanan');
 			}
 
 			return response()->json([
@@ -1431,7 +1635,7 @@ class RestfullApiController extends Controller
 					return response()->json([
 						'success' => false,
 						'message' => 'status not found'
-					], 404); 
+					], 401); 
 				}
 				$update->save();
 			} else {
@@ -1495,6 +1699,258 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function konfirmasiPesanan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'pemesanan_id' => 'required|integer',
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$pesanan = Pemesanan::where('id', $request->pemesanan_id)->first();
+		if ($pesanan) {
+			$foto = $request->file('foto');
+			$nama_foto = 'img_konfirmasi_'.time().'.'.$foto->getClientOriginalExtension();
+
+			$pesanan->bukti_pembayaran = $nama_foto;
+			$pesanan->status = 'Accept';
+			$pesanan->save();
+
+			$path = 'assets/images/konfirmasi';
+			$foto->move($path, $nama_foto);
+
+			$this->notification('Accept', $pesanan->id);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success upload bukti pembayaran'
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'data not found'
+			], 401);   
+		}
+
+	}
+
+	public function setAlatPesanan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'pesanan_id' => 'required|integer',
+		]);
+
+		$set_paket = [];
+		$getPaket = PaketPesanan::where('pemesanan_id', $request->pesanan_id)->get();
+		foreach ($getPaket as $pkt) {
+			$set_paket[] = ['paket_id' => $pkt->paket_id, 'jumlah' => $pkt->jumlah];
+		}
+		$getAlatPaket = $this->set_paket($set_paket, $request->pesanan_id,'alat');
+
+		$error = null;
+		if ($validator->fails()) $error = $validator->errors();
+		else if (!is_array($request->kategori_id) || !is_array($request->alat_id) || !is_array($request->jumlah)) $error = 'Inputan tidak lengkap';
+		else if (!isset($request->kategori_id) || !isset($request->alat_id) || !isset($request->jumlah) || count($request->kategori_id) != count($request->alat_id) || count($request->kategori_id) != count($request->jumlah) || count($request->alat_id) != count($request->jumlah)) $error = 'Inputan tidak lengkap';
+		else if (count($getAlatPaket) == 0) $error = 'Paket tidak ada';
+
+		$data = [];
+		$input = [];
+		if (is_array($request->kategori_id) && is_array($request->alat_id) && is_array($request->jumlah)) {
+			foreach ($request->kategori_id as $i => $kat) {
+				$data[] = [
+					'key' => $i,
+					'kategori_id' => $kat, 
+					'alat_id' => $request->alat_id[$i], 
+					'jumlah' => $request->jumlah[$i]
+				];
+
+				$input[] = [
+					'pemesanan_id' => $request->pesanan_id,
+					'kategori_alat_id' => $kat,
+					'alat_id' => $request->alat_id[$i], 
+					'jumlah' => $request->jumlah[$i]
+				];
+			}
+
+			$search = array_column($data, 'key', 'kategori_id');
+			$alat_req = [];
+			foreach ($search as $fix => $key) {
+				$jumlah = 0;
+				foreach ($data as $ext) {
+					if ($ext['kategori_id'] == $fix) {
+						$jumlah = $jumlah + $ext['jumlah'];
+					}
+				}
+				$data[$key]['jumlah'] = $jumlah;
+				unset($data[$key]['key']);
+				$alat_req[] = $data[$key];
+			}
+
+			foreach ($getAlatPaket as $alt) {
+				$cek = $this->search($alt['kategori_alat_id'], $alat_req);
+				$jumlah_alat = filter_var($alt['jumlah_alat'], FILTER_SANITIZE_NUMBER_INT);
+				if ($cek != false) {
+					if ($cek > $jumlah_alat) {
+						$error = "Jumlah alat (".$alt['kategori_alat'].") melebihi ketentuan";
+						break;
+					} else if ($cek < $jumlah_alat) {
+						$error = "Jumlah alat (".$alt['kategori_alat'].") tidak memenuhi";
+						break;
+					}
+				} else {
+					$error = "Lengkapi semua jumlah alat yang diminta";
+					break;
+				}
+			}
+
+		}
+
+		if ($error != null) {
+			return response()->json([
+				'success' => false,
+				'message' => $error
+			], 401);
+		} else {
+			$alat_pesanan = AlatPesanan::where('pemesanan_id', $request->pesanan_id)->get();
+			foreach ($alat_pesanan as $del_aps) {
+				$del_aps->delete();
+			}
+
+			foreach ($input as $aps) {
+				AlatPesanan::create($aps);
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Alat pesanan berhasil diatur'
+			], 200);
+		}
+
+	}
+
+	public function cekAlatDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'alat_id' => 'required|array',
+			'jumlah' => 'required|array'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if (!is_array($request->alat_id) || !is_array($request->jumlah) || count($request->alat_id) != count($request->jumlah)) {
+			return response()->json([
+				'success' => false,
+				'message' => 'input tidak sesuai'
+			], 401);  
+		}
+
+		$pemesanan = Pemesanan::where('id', $id)->first();
+		$result = $this->getDataPesanan($pemesanan, $id);
+
+		$i = 0;
+		foreach ($result->alat as $kat) {
+			foreach ($kat['alat_dipilih'] as $alt) {
+				if (!in_array($alt['alat_id'], $request->alat_id)) {
+					return response()->json([
+						'success' => false,
+						'message' => 'alat_id tidak sesuai dengan paakaet'
+					], 401);
+				}
+
+				if ($request->jumlah[$i] > $alt['jumlah']) {
+					return response()->json([
+						'success' => false,
+						'message' => 'jumlah yang di input melebihi ketentuan'
+					], 401);
+				}
+
+				$jumlah_keluar = filter_var($alt['jumlah'], FILTER_SANITIZE_NUMBER_INT);
+
+				// Alat Hilang
+				if ($request->jumlah[$i] < $jumlah_keluar) {
+					$jumlah_hilang = $jumlah_keluar - $request->jumlah[$i];
+					$alat_id = $request->alat_id[$i];
+					$alat_hlg = Alat::where('id', $request->alat_id[$i])->first();
+					$jumlah_alat = $alat_hlg->jumlah_alat - $jumlah_hilang;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat_hlg->jumlah_alat = $jumlah_alat;
+					$alat_hlg->save();
+
+					$data = [];
+					$data['pemesanan_id'] = $id;
+					$data['alat_id'] = $alat_id;
+					$data['jumlah_hilang'] = $jumlah_hilang;
+					AlatHilang::create($data);
+				}
+
+				// Alat Kembali
+				$alat = Alat::where('id', $alt['alat_id'])->first();
+				$alat_keluar = $alat->alat_keluar;
+				$update_alat = $alat_keluar - $jumlah_keluar;
+				if ($update_alat <= 0) $update_alat = NULL;
+				$alat->alat_keluar = $update_alat;
+				$alat->save();
+
+				$i = $i + 1;
+			}
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Pengecekan alat selesai'
+		], 200);
+	}
+
+	private function search($key, $data) 
+	{
+		foreach ($data as $dta) {
+			if ($key == $dta['kategori_id']) {
+				return $dta['jumlah'];
+			}
+		}
+		return false;
+	}
+
+	private function reduceAlatBahan($pesanan_id)
+	{
+		$pemesanan = Pemesanan::where('id', $pesanan_id)->first();
+		$result = $this->getDataPesanan($pemesanan, $pesanan_id);
+		// Kurangi Bahan
+		foreach ($result->bahan as $bhn) {
+			$bahan = Bahan::where('id', $bhn['bahan_id'])->first();
+			$jumlah_keluar = filter_var($bhn['jumlah_bahan'], FILTER_SANITIZE_NUMBER_INT);
+			$jumlah_bahan = $bahan->jumlah_bahan;
+			$update_bahan = $jumlah_bahan - $jumlah_keluar;
+			if ($update_bahan < 0) $update_bahan = 0; 
+			$bahan->jumlah_bahan = $update_bahan;
+			$bahan->save();
+		}
+
+		// Kurangi Alat
+		foreach ($result->alat as $kat) {
+			foreach ($kat['alat_dipilih'] as $alt) {
+				$alat = Alat::where('id', $alt['alat_id'])->first();
+				$jumlah_keluar = filter_var($alt['jumlah'], FILTER_SANITIZE_NUMBER_INT);
+				$alat_keluar = $alat->alat_keluar;
+				$update_alat = $alat_keluar + $jumlah_keluar;
+				$alat->alat_keluar = $update_alat;
+				$alat->save();
+			}
+		}
+	}
+
 	// PAKET
 	public function setPaket(Request $request)
 	{
@@ -1537,7 +1993,18 @@ class RestfullApiController extends Controller
 
 	public function getsPaket()
 	{
-		$data = Paket::all();
+		$result = Paket::all();
+		$data = [];
+		foreach ($result as $dta) {
+			$get_item = SetBahan::where('paket_id', $dta->id)->where('jenis', 'utama')->get();
+			$item = [];
+			foreach ($get_item as $get) {
+				$bahan = Bahan::where('id', $get->bahan_id)->first();
+				$item[] = $bahan->nama;
+			}
+			$dta['item_paket'] = $item;
+			$data[] = $dta;
+		}
 		return response()->json([
 			'success' => true,
 			'message' => 'Success get data',
@@ -1550,6 +2017,14 @@ class RestfullApiController extends Controller
 		$data = Paket::where('id', $id)->first();
 
 		if ($data) {
+			$get_item = SetBahan::where('paket_id', $id)->where('jenis', 'utama')->get();
+			$item = [];
+			foreach ($get_item as $get) {
+				$bahan = Bahan::where('id', $get->bahan_id)->first();
+				$item[] = $bahan->nama;
+			}
+			$data['item_paket'] = $item;
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success get data',
@@ -1654,6 +2129,50 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function getAlatPaket(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'paket_id' => 'required|array',
+			'jumlah' => 'required|array'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if (!is_array($request->paket_id) || !is_array($request->jumlah)) {
+			return response()->json([
+				'success' => false,
+				'message' => 'input is not array'
+			], 401);  
+		}
+
+		$set_paket = [];
+		foreach ($request->paket_id as $i => $dta) {
+			$set_paket[] = ['paket_id' => $request->paket_id[$i], 'jumlah' => $request->jumlah[$i]];
+		}
+
+		$result = $this->set_paket($set_paket, null,'alat_front');
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Tidak ada alat tersedia'
+			], 200);
+		} 
+	}
+
+	// ADDITIONAL
 	public function getsAdditional()
 	{
 		$data = Additional::all();
@@ -1692,5 +2211,457 @@ class RestfullApiController extends Controller
 				'message' => 'Data not found'
 			], 404);
 		}
+	}
+
+	// KEUANGAN 
+	public function getsKeuangan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'jenis' => 'required',
+			'waktu' => 'required'
+		]);
+
+		if (!isset($request->order)) $order = 'asc';
+		else $order = 'desc';
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+		
+		if (($request->jenis != 'Debit' && $request->jenis != 'debit') && ($request->jenis != 'Kredit' && $request->jenis != 'kredit') && ($request->jenis != 'All' && $request->jenis != 'all')) {
+			return response()->json([
+				'success' => false,
+				'message' => 'Jenis tidak sesuai'
+			], 401);  
+		}
+
+		if ($request->jenis == 'All' || $request->jenis == 'all') {
+			$result = Keuangan::orderBy('id', $order)->get();
+		} else if ($request->jenis == 'Debit' || $request->jenis == 'debit') {
+			$result = Keuangan::where('jenis', 'Debit')->orderBy('id', $order)->get();
+		} else if ($request->jenis == 'Kredit' || $request->jenis == 'kredit') {
+			$result = Keuangan::where('jenis', 'Kredit')->orderBy('id', $order)->get();
+		}
+
+		$data = [];
+		$data_kas = [];
+		$uang_kas = 0;
+		$total_debit = 0;
+		$total_kredit = 0;
+
+		if (strlen($request->waktu) == 10) {
+			foreach ($result as $dta) {
+				if (date('dmy', strtotime($dta->tanggal)) == date('dmy', strtotime($request->waktu))) {
+					$data[] = $dta;
+					if ($dta->jenis == 'Debit') {
+						$uang_kas = $uang_kas + $dta->nominal;						
+						$total_debit = $total_debit + $dta->nominal;						
+					} else if ($dta->jenis == 'Kredit') {
+						$uang_kas = $uang_kas - $dta->nominal;						
+						$total_kredit = $total_kredit + $dta->nominal;	
+					}
+				}
+			}
+		} else if (strlen($request->waktu) == 7) {
+			foreach ($result as $dta) {
+				if (date('Y-m', strtotime($dta->tanggal)) == $request->waktu) {
+					$data[] = $dta;
+					if ($dta->jenis == 'Debit') {
+						$uang_kas = $uang_kas + $dta->nominal;						
+						$total_debit = $total_debit + $dta->nominal;						
+					} else if ($dta->jenis == 'Kredit') {
+						$uang_kas = $uang_kas - $dta->nominal;						
+						$total_kredit = $total_kredit + $dta->nominal;	
+					}
+				}
+			}
+		} else if (strlen($request->waktu) == 4) {
+			foreach ($result as $dta) {
+				if (date('Y', strtotime($dta->tanggal)) == $request->waktu) {
+					$data[] = $dta;
+					if ($dta->jenis == 'Debit') {
+						$uang_kas = $uang_kas + $dta->nominal;						
+						$total_debit = $total_debit + $dta->nominal;						
+					} else if ($dta->jenis == 'Kredit') {
+						$uang_kas = $uang_kas - $dta->nominal;						
+						$total_kredit = $total_kredit + $dta->nominal;	
+					}
+				}
+			}
+		}
+
+		if ($request->jenis == 'Debit' || $request->jenis == 'debit' || $request->jenis == 'Kredit' || $request->jenis == 'kredit') $uang_kas = 0;
+
+		$data_kas['uang_kas'] = $uang_kas;
+		$data_kas['total_debit'] = $total_debit;
+		$data_kas['total_kredit'] = $total_kredit;
+
+		if (count($data) > 0 && count($data_kas) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'data_kas' => $data_kas,
+				'result' => $data
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found',
+			], 203);
+		}
+	}
+
+	public function getKeuangan($id)
+	{
+		$data = Keuangan::where('id', $id)->first();
+		if ($data) {
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+
+	public function setKeuangan(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'uraian' => 'required',
+			'jenis' => 'required',
+			'nominal' => 'required|integer',
+			'tanggal' => 'required|date'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		if ($request->jenis != 'Debit' && $request->jenis != 'Kredit') {
+			return response()->json([
+				'success' => false,
+				'message' => 'Jenis tidak sesuai'
+			], 401);  
+		}
+
+		try {
+			$data = $request->all();
+			$data['tanggal'] = date('Y-m-d', strtotime($request->tanggal)).' '.date('H:i:s');
+			Keuangan::create($data);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function putKeuangan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'uraian' => 'required',
+			'jenis' => 'required',
+			'nominal' => 'required|integer',
+			'tanggal' => 'required|date'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = Keuangan::find($id);
+			if ($update) {
+				$update->uraian = $request->uraian;
+				$update->jenis = $request->jenis;
+				$update->nominal = $request->nominal;
+				$update->tanggal = $request->tanggal;
+				$update->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteKeuangan($id)
+	{
+		try {
+			$delete = Keuangan::find($id);
+			if ($delete) {
+				$delete->delete();
+				return response()->json([
+					'success' => true,
+					'message' => 'Success delete data'
+				], 200);				
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	protected function debitkredit($id, $from)
+	{
+		$data = [];
+		if ($from == 'pesanan') {
+			$pesanan = Pemesanan::where('id', $id)->first();
+			$transaksi = Transaksi::where('pemesanan_id', $id)->first();
+			$data['uraian'] = 'Pemesanan dengan kode pesanan ('.$pesanan->kd_pemesanan.')';
+			$data['nominal'] = $transaksi->total_harga;
+			$data['jenis'] = 'Debit';
+			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($transaksi->created_at));
+		} else if ($from == 'alat') {
+			$addalat = AddAlat::where('id', $id)->first();
+			$alat = Alat::where('id', $addalat->alat_id)->first();
+			$data['uraian'] = 'Pembelian alat ('.$alat->nama.')';
+			$data['nominal'] = $addalat->total_harga;
+			$data['jenis'] = 'Kredit';
+			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($addalat->created_at));
+		} else if ($from == 'bahan') {
+			$addbahan = AddBahan::where('id', $id)->first();
+			$bahan = Bahan::where('id', $addbahan->bahan_id)->first();
+			$data['uraian'] = 'Pembelian bahan ('.$bahan->nama.')';
+			$data['nominal'] = $addbahan->total_harga;
+			$data['jenis'] = 'Kredit';
+			$data['tanggal'] = date('Y-m-d H:i:s', strtotime($addbahan->created_at));
+		}
+		Keuangan::create($data);
+	}
+
+	// KRITIK & SARAN 
+	public function getsKritiksaran(Request $request)
+	{
+		$result = KritikSaran::orderBy('id', 'desc')->get();
+
+		if (count($result) > 0) {
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result' => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found',
+			], 203);
+		}
+	}
+
+	public function getKritiksaran($id)
+	{
+		$data = KritikSaran::where('id', $id)->first();
+		if ($data) {
+			$result = $data;
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data not found'
+			], 404);
+		}
+	}
+	public function setKritiksaran(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'nama' => 'required',
+			'email' => 'required|email',
+			'pesan' => 'required'
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$data = $request->all();
+			$res = KritikSaran::create($data);
+
+			$this->notification('Kritiksaran', $res->id);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success add data'
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	public function deleteKritiksaran($id)
+	{
+		try {
+			$delete = KritikSaran::find($id);
+			if ($delete) {
+				$delete->delete();
+				return response()->json([
+					'success' => true,
+					'message' => 'Success delete data'
+				], 200);				
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'id not found'
+				], 401); 
+			}
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);	
+		}
+	}
+
+	// NOTIFIKASI
+	protected function notification($status, $pesanan_id) {
+		if ($status == 'New' || $status == 'new') {
+			$to = 'admin_device';
+			$title = 'Pesanan Baru';
+			$body = 'Pesanan baru masuk, mohon diperiksa';
+		} else if ($status == 'Accept' || $status == 'accept') {
+			$to = 'admin_device';
+			$title = 'Bukti Pembayaran';
+			$body = 'Pelanggan telah mengirimkan bukti pembayaran';
+		} else if ($status == 'Proccess' || $status == 'proccess') {
+			$to = 'kitchen_device';
+			$title = 'Pesanan Baru';
+			$body = 'Terdapat pesanan baru yang harus di proses';
+		} else if ($status == 'Delivery' || $status == 'delivery') {
+			$to = 'driver_device';
+			$title = 'Pesanan Siap Diantar';
+			$body = 'Terdapat pesanan yang harus di antar';
+		} else if ($status == 'Arrived' || $status == 'arrived') {
+			$to = 'admin_device';
+			$title = 'Pesanan Sampai';
+			$body = 'Pesanan telah sampai di tujuan';
+		} else if ($status == 'Taking' || $status == 'taking') {
+			$to = 'driver_device';
+			$title = 'Pesanan Selseai';
+			$body = 'Pesanan telah selesai dan siap di jemput kembali';
+		} else if ($status == 'Done' || $status == 'done') {
+			$to = 'admin_device';
+			$title = 'Pesanan Selesai';
+			$body = 'Satu pesanan telah selesai';
+		} else if ($status == 'Kritiksaran') {
+			$to = 'admin_device';
+			$title = 'Pesan Masuk';
+			$body = 'Kritik & Saran dari costumer, cek segera';
+		} else {
+			return;
+		}
+
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://kesiniku-default-rtdb.firebaseio.com/device_token/'.$to.'.json',
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_HTTPHEADER => ['Content-Type:application/json'],
+			CURLOPT_ENCODING => 'json',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_CUSTOMREQUEST => 'GET',
+		));
+
+		$response = json_decode(curl_exec($curl), true);
+		$firebaseToken = [];
+		foreach ($response as $key => $value) {
+			if (isset($value['token'])) {
+				$firebaseToken[] = $value['token'];
+			}
+		}
+
+		curl_close($curl);
+
+		$SERVER_API_KEY = 'AAAA0eQ6FxQ:APA91bH4GjxST2iA14lp29LpvtJafU9C_IDfvX7tmPQ5YmyoOsbZmDxtm9M2XJsJfpVANtUFUNdqx8y-_VMLsvv5BfUrapkNjL2LjnrPF8XnpPCNTQxFVdR3ZJH2pda71tzSLEZPeQLm';
+
+		$data = [
+			"registration_ids" => $firebaseToken,
+			"notification" => [
+				"title" => $title,
+				"body" => $body,  
+			],
+			"webpush" => [
+				"headers" => [
+					"Urgency" => "high"
+				]
+			],
+			"android" => [
+				"priority" => "high"
+			],
+			"data" => [
+				"needfood.technest.com.KEY_SYNC_REQUEST" => "sync",
+				'pesanan_id' => $pesanan_id
+			],
+			"priority" => 10
+		];
+		$dataString = json_encode($data);
+
+		$headers = [
+			'Authorization: key=' . $SERVER_API_KEY,
+			'Content-Type: application/json',
+		];
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+		$response = curl_exec($ch);
 	}
 }

@@ -33,8 +33,8 @@
     <div class="clearfix"></div>
     <div class="wrapper-page">
        <div class=" card-box">
-        <div class="panel-heading"> 
-            <h3 class="text-center"><strong class="text-custom text-warning">NEED</strong>Food</h3>
+        <div class="panel-heading text-center"> 
+            <img src="{{ asset('assets/images/logo.png') }}" height="70">
         </div> 
 
 
@@ -79,7 +79,7 @@
                 
                 <div class="form-group text-center m-t-20">
                     <div class="col-xs-12">
-                        <button class="btn btn-warning btn-block text-uppercase waves-effect waves-light" type="submit">Log In</button>
+                        <button class="btn btn-default btn-block text-uppercase waves-effect waves-light" type="submit">Log In</button>
                     </div>
                 </div>
             </form> 
