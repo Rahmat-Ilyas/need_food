@@ -4,7 +4,8 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-12">
-                <div class="box">
+                <div class="box paket_skelton"></div>
+                <div class="box paket_content">
                     <div class="row grid_order">
                         <div class="col-md-2">
                             <div class="box_menu_paket grid_box_paket">
@@ -14,23 +15,18 @@
 
                             <div class="box_toogle_menu"> <span class="text_toogle">Menu</span> <i class="icofont-caret-down"></i></div>
                             <ul class="item-toogle">
-                                <li class="value_toogle">YAKINIKU</li>
-                                <li class="value_toogle">YAKINIKU</li>
-                                <li class="value_toogle">YAKINIKU</li>
+                          
                             </ul>
-
                         </div>
                         <div class="col-lg-10">
                             @include('page.order.yakiniku')
                         </div>
                      </div>
-                        
-                    </div>
+                 </div>
                     
                 </div>
             </div>
         </div>
-    </div>
 </section>
 
 <section class="banner_order_additional">
@@ -38,6 +34,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="box">
+
+                    <div class="makeleton_additonal"></div>
+
                     <div class="container box-element">
                         <div class="row">
                             <div class="title-additional-order"> Tambahan Daging </div>
@@ -88,10 +87,19 @@
 
         </div>
         <div class="modal-footer" id="modal-footer">
-            <button class="tombol-lg-modal tombol-keranjang text-button"> Checkout Keranjang</button>
+            <button class="tombol-lg-modal tombol-keranjang text-button">Checkout Keranjang  <i class="icofont-arrow-right"></i></button>
           </div>
       </div>
     </div>
   </div>
-
 @endsection
+@push('skript')
+    <script>
+        $(document).ready(function () {
+            $('.paket_content').hide();
+            $('.box-element').hide();    
+            $('.paket_skelton').html(makeleton_paket());   
+            $('.makeleton_additonal').html(makeleton_additional());
+        });
+    </script>
+@endpush

@@ -351,6 +351,12 @@ header{
     margin-top: 156px;
 }
 
+button:focus {
+    outline: 0;
+    border: 1px solid rgba(239, 140, 23, 1);
+    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+}
+
 iframe{
     margin-top: 82px;
     width: 100%;

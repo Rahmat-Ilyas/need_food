@@ -116,6 +116,10 @@ nav a:hover {
     box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
 }
 
+.active{
+    box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
+}
+
 .rounded{
     margin-right: 15px;
 }
@@ -551,7 +555,7 @@ button:focus {
     text-align: center;
     font-family: 'Poppins', serif;
     font-style: normal;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 24px;
     letter-spacing: -0.01em;
     color: #ffffff;
@@ -988,6 +992,10 @@ button:focus {
     margin-top: 15px;
 }
 
+.group-text-keranjang-page{
+    margin-top: 15px;
+}
+
 .text-image-keranjang{
     font-family: 'Poppins',serif;
     font-style: normal;
@@ -1008,6 +1016,18 @@ button:focus {
     margin-left: 40px;
     margin-top: 5px;
 }
+
+.text-currency-keranjang-page{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: bold;
+    color: #FF9742;
+    margin-left: 43px;
+    margin-top: 5px;
+}
+
 
 #exampleModalCenter{
     background: rgba(0, 0, 0, 0.5);
@@ -1032,7 +1052,7 @@ button:focus {
 #modal-title{
     font-family: 'Poppins', serif;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 144%;
     text-align: center;
     letter-spacing: 0.1em;
@@ -1449,7 +1469,7 @@ footer {
 
     .checbox_image {
         position: absolute;
-        bottom: 285px;
+        bottom: 258px;
         right: 0px;
     }
 
@@ -1480,7 +1500,13 @@ footer {
 
     .group-text-keranjang{
         position: absolute;
-        left: 90px;
+        left: 95px;
+        bottom: 10px;
+    }
+
+    .group-text-keranjang-page{
+        position: absolute;
+        left: 95px;
         bottom: 30px;
     }
 
@@ -1489,6 +1515,12 @@ footer {
     }
 
     .text-currency-keranjang{
+        font-size: 14px;
+        position: relative;
+        bottom: 10px;
+    }
+
+    .text-currency-keranjang-page{
         font-size: 14px;
         position: relative;
         bottom: 10px;
@@ -1604,6 +1636,30 @@ footer {
 
     .grid_button_flag{
         left: 300px;
+    }
+
+    .grid-form-modal{
+        margin-top: 0;
+        position: absolute;
+        bottom: 30px;
+        left: 240px;
+    }
+
+    .tombol_keranjang_number{
+        padding: 0 5px 0 5px;
+    }
+
+    .icon-delete{
+        font-size: 18px;
+        margin-left: 10px;
+    }
+
+    .text-button{
+        font-size: 14px;
+    }
+
+    #modal-title{
+        font-size: 14px;
     }
 
 }

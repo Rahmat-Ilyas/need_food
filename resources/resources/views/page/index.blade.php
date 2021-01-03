@@ -217,10 +217,10 @@
   
 </section>
 
-<div class="flat_button grid_button_flag">
+{{-- <div class="flat_button grid_button_flag">
     <i class="icofont-shopping-cart" id="icon_flat"></i>
     <span class="badge badge-danger pill_number">3</span>
-</div>
+</div> --}}
 
 <div class="flat_button grid_button_faq">
    <div class="faq_text">FAQ</div>

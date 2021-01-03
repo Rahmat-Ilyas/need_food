@@ -19,6 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/icofont/icofont.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/css/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/placeholder-loading.min.css') }}">
 </head>
 
 <body>

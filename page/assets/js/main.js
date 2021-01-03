@@ -12,24 +12,94 @@ $(document).ready(function () {
         'X-CSRF-TOKEN'	: token
     }
 
+     makeleton_paket = () => {
+        var output = '';
+             output += '<div class="ph-item">';
+             output += '<div class="ph-col-2">';
+             output += '<div class="ph-row">';       
+             output += '<div class="ph-col-12 big"></div>';
+             output += '<div class="ph-col-12"></div>';
+             output += '<div class="ph-col-12"></div>'           
+             output += '<div class="ph-col-12"></div>';
+             output += '<div class="ph-col-12"></div>';
+             output += '</div>';
+             output += '</div>';  
+             output += '<div class="ph-col-8">';
+             output += '<div class="ph-picture"></div>';
+             output += '<div class="ph-row">';       
+             output += '<div class="ph-col-6"></div>';           
+             output += '</div>';           
+             output += '<div class="ph-row">';
+             output += '<div class="ph-col-6"></div>';               
+             output += '</div>';          
+             output += '</div>';             
+             output += '<div class="ph-col-2">';    
+             output += '<div class="ph-row">';
+             output += '<div class="ph-col-12 big"></div>';       
+             output += '<div class="ph-col-12"></div>';
+             output += '<div class="ph-col-12"></div>';           
+             output += '<div class="ph-col-12"></div>';           
+             output += '<div class="ph-col-12"></div>';  
+             output += '</div>';          
+             output += '</div>';  
+             output += '</div>';  
+             
+             return output;
+           
+    }
+
+    makeleton_additional = () => {
+        var output = '';
+        output += '<div class="ph-item"><div class="ph-col-4"><div class="ph-picture"></div> <div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div><div class="ph-col-4"><div class="ph-picture"></div><div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div></div><div class="ph-item"><div class="ph-col-4"><div class="ph-picture"></div> <div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div><div class="ph-col-4"><div class="ph-picture"></div><div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div></div>';
+
+        return output;
+
+    }
+
+    setTimeout(function(){
+        $('.paket_content').show();
+        $('.box-element').show();   
+        $('.paket_skelton').hide();
+        $('.makeleton_additonal').hide(); 
+      }, 3000);    
+
     $.ajax({
         url     : url+'/api/kelolamenu/getpaket',
         method  : "GET",
         headers	: headers,
         success : function(data) {
-            var datapaket = '';
-            if (data['success'] == true) {
-                $.each(data['result'], function (indexInArray, valueOfElement) { 
-                     datapaket += '<div class="list_menu_paket" data-id="'+valueOfElement.id+'">'+valueOfElement.nama+'</div>';
-                });
-                $('#item_paket').append(datapaket);
-            }
+                var datapaket = '';
+                var data_paket_xs = '';
+                if (data['success'] == true) {
+                    $.each(data['result'], function (indexInArray, valueOfElement) { 
+                         datapaket += '<div class="list_menu_paket" data-id="'+valueOfElement.id+'">'+valueOfElement.nama+'</div>';
+                         data_paket_xs += '<li class="value_toogle" data-id="'+valueOfElement.id+'">'+valueOfElement.nama+'</li>';
+                    });
+                    ajax_name_menu(1);
+                    if ($('list_menu_paket').data('id') == 1) {
+                        $(this).addClass('active');
+                    }
+                    $('#item_paket').append(datapaket);
+                    $('.item-toogle').append(data_paket_xs);
+                }
         }
     });
 
     $(document).on('click','.list_menu_paket', function () {
         var id = $(this).data('id');
+        $('#item_paket .list_menu_paket').removeClass('active');
+        $(this).addClass('active');
+            ajax_name_menu(id);
+    });
 
+    $(document).on('click','.value_toogle', function () {
+        var id = $(this).data('id');
+        $('.item-toogle .value_toogle').removeClass('active');
+        $(this).addClass('active');
+            ajax_name_menu(id);
+    });
+
+    ajax_name_menu = (id) =>{
         $.ajax({
             url     : url+'/api/kelolamenu/getpaket/'+id,
             method  : "GET",
@@ -39,13 +109,15 @@ $(document).ready(function () {
                 var value = data['result'];
                 if (data['success'] == true) {
                     $('.img-paket').html('<img src="'+path_asset+'/'+value.foto+'" class="imageproduct">');
+                    $('.ratings').html('<div class="label_rating">9.0</div><div class="row valuerating"><div class="star-rating"><input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars" class="star">&#9733;</label><input type="radio" id="4-stars" name="rating" value="4"/><label for="4-stars" class="star">&#9733;</label><input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars" class="star">&#9733;</label><input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars" class="star">&#9733;</label><input type="radio" id="1-star" name="rating" value="1" /><label for="1-star" class="star">&#9733;</label></div></div>');
                     $('.group_text_order').html('<p class="text-card-order">'+value.keterangan+'</p>');
                     $('.tampung_value').html('<input type="hidden" id="get_paket_id" value="'+value.id+'">');
                     $('#nominals').html('<span class="currency-general">'+value.harga+'</span><span class="sub-currency">/ Paket</span>');
+                    $('.form_qty').html('<div class="input-groups grid_calculate_order"><span class="input-group-btn"><button type="button" class="tombols btn-number" disabled="disabled" data-type="minus" data-field="quant[1]"><i class="icofont-minus icon-number"></i></button></span><input type="text" name="quant[1]" class="form-nedd input-number" value="1" min="1" id="get_qty_paket" max="1000"><span class="input-group-btn"><button type="button" class="tombols btn-number" data-type="plus" data-field="quant[1]"><i class="icofont-plus icon-number"></i></button></span></div>');
                 }
             }
         });
-    });
+    }
 
     $.ajax({
         url     : url+'/api/kelolamenu/getadditional',
@@ -264,7 +336,7 @@ $(".input-number").keydown(function (e) {
                    }
                 
                 content_cart_modal += '<div class="box-keranjang-modal mt-2">';
-                content_cart_modal += '<div class="row content-modal-cart">';
+                content_cart_modal += '<div class="row content-modal-cart row_index_'+key+'">';
                 content_cart_modal += '<div class="col-lg-8">';
                 content_cart_modal += '<div class="row">';
                 content_cart_modal += '<div class="col-lg-6">';
@@ -281,7 +353,7 @@ $(".input-number").keydown(function (e) {
                 content_cart_modal += '<button type="button" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';
                 content_cart_modal += '<input type="text" name="quant[1]" class="form-nedd-keranjang input-number" value="'+values.kuantitas+'" min="1" max="1000">';
                 content_cart_modal += '<button type="button" class="tombol_keranjang_number btn-number">   <i class="icofont-plus icon-number_additional"></i></button>';
-                content_cart_modal += '<div class="icon-delete"><i class="icofont-ui-delete"></i></div>';
+                content_cart_modal += '<div class="icon-delete"><i class="icofont-ui-delete delete_paket_modal" data-action="'+key+'"></i></div>';
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
@@ -291,6 +363,28 @@ $(".input-number").keydown(function (e) {
         }else{
             toastr_notice('error','keranjang Kosong');
         }
+    })
+
+    $('#modal-body-cart').on('click','.delete_paket_modal', function () {
+        var params_row = $(this).data('action');
+        console.log(params_row)
+        tampung.splice(params_row,1);
+        $(`.row_index_${params_row}`).remove();
+        $('.pill_number').html(tampung['length']+1);
+    })
+
+    $('.tombol-lg-modal').click(function () {
+        $.ajax({
+            url  : url+'/keranjang/paket_pesanan',
+            type : 'POST',
+            data : {
+                'tampung' : JSON.stringify(tampung),
+                '_token' : token
+            },
+            success: function (response) {
+               window.location.href = url+'/keranjang';
+            }
+        })
     })
 
     toastr_notice = (type,message) =>{
