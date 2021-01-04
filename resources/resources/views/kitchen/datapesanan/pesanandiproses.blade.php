@@ -103,11 +103,10 @@
 					if (xhr.status == 200) {
 						$.each(data.result, function(key, val) {
 							var dt = new Date(val.tanggal_antar);
-                            var month = dt.getMonth();
+                            var month = dt.getMonth()+1;
                             var date = dt.getDate();
-                            if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+                            if (month < 10) month = '0'+month;
                             if (dt.getDate() < 10) date = '0'+dt.getDate();
-                            if (dt.getMonth() == 0) month = '01';
 							dataTable.row.add([
 								val.kd_pemesanan,
 								val.nama,

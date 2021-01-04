@@ -217,10 +217,10 @@
             }
 
             Swal.fire({
-               title: 'Gagal Diproses',
-               text: error,
-               type: 'error'
-           });
+             title: 'Gagal Diproses',
+             text: error,
+             type: 'error'
+         });
         }
 
         getyear();
@@ -270,11 +270,10 @@
                         var no = 1;
                         $.each(data.result, function (key, vl) {
                             var dt = new Date(vl.tanggal);
-                            var month = dt.getMonth();
+                            var month = dt.getMonth()+1;
                             var date = dt.getDate();
-                            if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+                            if (month < 10) month = '0'+month;
                             if (dt.getDate() < 10) date = '0'+dt.getDate();
-                            if (dt.getMonth() == 0) month = '01';
                             tableDebitKredit.row.add([
                                 no,
                                 vl.uraian,
@@ -339,11 +338,10 @@
                 headers : headers,
                 success : function(data) {
                     var dt = new Date(data.result.tanggal);
-                    var month = dt.getMonth();
+                    var month = dt.getMonth()+1;
                     var date = dt.getDate();
-                    if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+                    if (month < 10) month = '0'+month;
                     if (dt.getDate() < 10) date = '0'+dt.getDate();
-                    if (dt.getMonth() == 0) month = '01';
                     data.result.tanggal = dt.getFullYear()+'-'+month+'-'+date;
                     $.each(data.result, function(key, val) {
                         $('#edt_'+key).val(val);

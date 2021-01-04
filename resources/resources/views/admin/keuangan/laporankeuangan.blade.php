@@ -132,11 +132,10 @@
                             var debit = 0;
                             var kredit = 0;
                             var dt = new Date(vl.tanggal);
-                            var month = dt.getMonth();
+                            var month = dt.getMonth()+1;
                             var date = dt.getDate();
-                            if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+                            if (month < 10) month = '0'+month;
                             if (dt.getDate() < 10) date = '0'+dt.getDate();
-                            if (dt.getMonth() == 0) month = '01';
 
                             if (vl.jenis == 'Debit') {
                                 debit = 'Rp. '+vl.nominal;

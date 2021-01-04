@@ -64,6 +64,47 @@ class AuthApiController extends Controller
 		}
 	}
 
+	public function update(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'id' => 'required|integer',
+			'nama' => 'required',
+			'username' => 'required',
+		]);
+
+		if ($request->password) {
+			$validator = Validator::make($request->all(), [
+				'password' => 'min:5',
+			]);
+		}
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		try {
+			$update = AuthLogin::find($request->id);
+			$update->nama = $request->nama;
+			$update->username = $request->username;
+			if ($request->password) $update->password = bcrypt($request->password);
+			$update->save();
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success update auth',
+				'result' => $update
+			], 200);
+		} catch(QueryException $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 500);			
+		}
+	}
+
 	public function getauth()
 	{
 		$auth = AuthLogin::all();

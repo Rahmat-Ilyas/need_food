@@ -92,10 +92,13 @@
                 </ul>
               </li>
               <li class="dropdown top-menu-item-xs">
-                <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('assets/images/logo-sm.png') }}" alt="user-img" class="img-circle"> </a>
+                <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
+                  <span style="font-size: 15px; margin-right: 2px;" class="namaView">{{ Auth::user()->nama }}</span>
+                  <img src="{{ asset('assets/images/logo-sm.png') }}" alt="user-img" class="img-circle"> 
+                </a>
                 <ul class="dropdown-menu">
-                  <li><a href="javascript:void(0)"><i class="ti-user m-r-10 text-custom"></i> Profile</a></li>
-                  <li class="divider"></li>
+                  <li><h4 style="margin-left: 20px;" class="namaView">{{ Auth::user()->nama }}</h4></li>
+                  <li><a href="#" data-toggle="modal" data-target="#editProfil"><i class="ti-user m-r-10 text-custom"></i> Account</a></li>
                   <li><a href="{{ route('kitchen.logout') }}"><i class="ti-power-off m-r-10 text-danger"></i> Logout</a></li>
                 </ul>
               </li>
@@ -141,6 +144,49 @@
           <div class="clearfix"></div>
         </div>
         <div class="clearfix"></div>
+      </div>
+    </div>
+
+    <!-- Modal Edit Profil -->
+    <div class="modal" role="dialog" id="editProfil" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title" id="myModalLabel">Update Akun Login</h4>
+          </div>
+          <form method="POST" action="" id="updateProfile">
+            <div class="modal-body" style="padding: 20px 50px 0 50px">
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Nama</label>
+                <div class="col-sm-9">
+                  <input type="hidden" name="id" value="{{ Auth::user()->id }}">
+                  <input type="text" class="form-control" id="nama" required="" placeholder="Nama..." name="nama" autocomplete="off" value="{{ Auth::user()->nama }}">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Username</label>
+                <div class="col-sm-9">
+                  <input type="username" class="form-control" id="username" required="" placeholder="Username..." name="username" autocomplete="off" value="{{ Auth::user()->username }}">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Password</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control m-b-5" id="password" placeholder="Ganti Password..." name="password" autocomplete="off" value="">
+                  <span class="text-info" style="font-size: 14px;">Note: Masukkan password baru untuk mengganti password</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer row">
+              <div class="col-sm-4"></div>
+              <div class="col-sm-8">
+                <button type="submit" class="btn btn-default mr-2">Update</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -281,32 +327,75 @@
 
 
     $(document).ready(function($) {
-        // NOTIF FIRBASE
-        const messaging = firebase.messaging();
+      // SET ERROR
+      function setError(data) {
+        var error = '';
+        result = data.responseJSON.message;
+        if (jQuery.type(result) == 'object') {
+          $.each(result, function (key, val) {
+            error = error + ' ' + val[0];
+          });
+        } else {
+          error = data.responseJSON.message;
+        }
 
-        messaging.onMessage((payload) => {
-          console.log('Notification ', payload);
-          notifCountView();
+        Swal.fire({
+          title: 'Gagal Diproses',
+          text: error,
+          type: 'error'
+        });
+      }
+
+      // UPDATE PROFILE
+      $('#updateProfile').submit(function(e) {
+        e.preventDefault();
+
+        var data = $(this).serialize();
+        $.ajax({
+          url     : host+"/api/updateauth",
+          method  : "POST",
+          headers : headers,
+          data    : data,
+          success : function(data) {
+            $('.namaView').text(data.result.nama);
+            $('#nama').val(data.result.nama);
+            $('#username').val(data.result.username);
+            $('#password').val('');
+            swal('Update Berhasil', 'Data akun login berhasil di update!', 'success');
+            $('.modal').modal('hide');
+          },
+          error: function (data) {
+            setError(data);
+          }
         });
       });
-    </script>
+      
+      // NOTIF FIRBASE
+      const messaging = firebase.messaging();
 
-    @yield('javascript')
+      messaging.onMessage((payload) => {
+        console.log('Notification ', payload);
+        notifCountView();
+      });
+    });
+  </script>
+
+  @yield('javascript')
 
 
-    <script type="text/javascript">
-      jQuery(document).ready(function($) {
-        $(".select2").select2();
-        $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
+  <script type="text/javascript">
+    jQuery(document).ready(function($) {
+      $(".select2").select2();
+      $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
 
-        $('.buttonText').text('Pilih Foto');
+      $('.buttonText').text('Pilih Foto');
 
-        $('.counter').counterUp({
-          delay: 100,
-          time: 1200
-        });
+      $('.counter').counterUp({
+        delay: 100,
+        time: 1200
+      });
 
-        $(".knob").knob();
+      $(".knob").knob();
 
       // DataTables
     });

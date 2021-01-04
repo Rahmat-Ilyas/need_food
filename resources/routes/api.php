@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 // LOGIN API
 Route::post('login', 'Auth\AuthApiController@login');
 Route::post('register', 'Auth\AuthApiController@register');
+Route::post('updateauth', 'Auth\AuthApiController@update');
 
 // LOGIN FOR MOBILE
 Route::post('login/mobile', 'Auth\AuthMobileController@loginMobile');
@@ -66,6 +67,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('editdriver/{id}', 'RestfullApiController@putDriver');
     Route::delete('deletedriver/{id}', 'RestfullApiController@deleteDriver');
     Route::post('driver/cekalat/{pesanan_id}', 'RestfullApiController@cekAlatDriver');
+    Route::post('driver/fotopesanan/{pesanan_id}', 'RestfullApiController@fotoPesanan');
 
     // PEMESANAN
     Route::get('datapesanan', 'RestfullApiController@getsPesanan');
@@ -73,11 +75,12 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('datapesanan/status/{status}', 'RestfullApiController@getStatusPesanan');
     Route::get('datapesanan/pesanan/today', 'RestfullApiController@getPesananToday');
     Route::get('datapesanan/driver/{driver_id}', 'RestfullApiController@getPesananDriver');
-    Route::post('datapesanan/store', 'RestfullApiController@setPesanan');
+    Route::get('datapesanan/getuser/old', 'RestfullApiController@getPesananUserold');
     Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
     Route::put('datapesanan/updatedriver/{id}', 'RestfullApiController@updateDriverPesanan');
     Route::put('datapesanan/uploadbuktipembayaran/{token}', 'RestfullApiController@uploadBuktiPembayaran');
     Route::put('datapesanan/updatetransaksi/{id}', 'RestfullApiController@updateTransaksiPesanan');
+    Route::post('datapesanan/store', 'RestfullApiController@setPesanan');
     Route::post('datapesanan/setalatpesanan', 'RestfullApiController@setAlatPesanan');
     Route::post('datapesanan/konfirmasi', 'RestfullApiController@konfirmasiPesanan');
 

@@ -343,10 +343,10 @@
 						$('#dtl_'+key).text(val);
 						if (key == 'tanggal_antar') {
 							var dt = new Date(val);
-							var month = dt.getMonth();
-							var date = dt.getDate();
-							if (dt.getMonth() < 10) month = '0'+dt.getMonth();
-							if (dt.getDate() < 10) date = '0'+dt.getDate();
+							var month = dt.getMonth()+1;
+                            var date = dt.getDate();
+                            if (month < 10) month = '0'+month;
+                            if (dt.getDate() < 10) date = '0'+dt.getDate();
 							var tanggal = date+'/'+month+'/'+dt.getFullYear();
 							$('#dtl_tanggal_antar').text(tanggal+' ('+data.result.waktu_antar+')');
 						}

@@ -130,7 +130,11 @@
 				headers	: headers,
 				success : function(data) {
 					var dt = new Date(data.result.tanggal_antar);
-					data.result.tanggal_antar = dt.getDate()+'/'+dt.getMonth()+'/'+dt.getFullYear();
+					var month = dt.getMonth()+1;
+					var date = dt.getDate();
+					if (month < 10) month = '0'+month;
+					if (dt.getDate() < 10) date = '0'+dt.getDate();
+					data.result.tanggal_antar = date+'/'+month+'/'+dt.getFullYear();
 					$.each(data.result, function(key, val) {
 						$('#'+key).text(val);
 					});
@@ -147,14 +151,14 @@
 					$.each(data_alat, function(index, val) {
 						$('#data-alat').append(`
 							<tr>
-								<td>`+nomor+`</td>
-								<td>`+val.kategori+`</td>
-								<td>`+val.nama_alat+`</td>
-								<td>`+val.jumlah+`</td>
-								<td></td>
-								<td></td>
+							<td>`+nomor+`</td>
+							<td>`+val.kategori+`</td>
+							<td>`+val.nama_alat+`</td>
+							<td>`+val.jumlah+`</td>
+							<td></td>
+							<td></td>
 							</tr>
-						`);
+							`);
 						nomor = nomor + 1;
 					});
 

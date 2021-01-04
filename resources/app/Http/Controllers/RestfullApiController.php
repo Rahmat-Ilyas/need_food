@@ -1031,6 +1031,8 @@ class RestfullApiController extends Controller
 			'email' => 'required',
 			'status' => 'required',
 			'username' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'password' => 'min:5'
 		]);
 
 
@@ -1132,13 +1134,15 @@ class RestfullApiController extends Controller
 			'nama' => 'required',
 			'no_telepon' => 'required',
 			'no_wa' => 'required',
-			'tanggal_antar' => 'required',
+			'tanggal_antar' => 'required|date',
 			'waktu_antar' => 'required',
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
 			'longitude' => 'required',
-			'paket_id' => 'required',
-			'jumlah_paket' => 'required',
+			'paket_id' => 'required|array',
+			'jumlah_paket' => 'required|array',
+			'additional_id' => 'array',
+			'jumlah_adt' => 'array',
 			'biaya_pengiriman' => 'required|integer',
 		]);
 
@@ -1208,6 +1212,8 @@ class RestfullApiController extends Controller
 			$transaksi['harga_lainnya'] = 0;
 			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
+
+			// Kirim WA Ke Pelanggan
 
 			return response()->json([
 				'success' => true,
@@ -1352,6 +1358,47 @@ class RestfullApiController extends Controller
 				'success' => false,
 				'message' => 'Data is empty'
 			], 404);
+		}
+	}
+
+	public function getPesananUserold(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'no_telepon' => 'required',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$user = Pemesanan::where('no_telepon', $request->no_telepon)->first();
+
+		if ($user) {
+			unset($user['id']);
+			unset($user['kd_pemesanan']);
+			unset($user['tanggal_antar']);
+			unset($user['waktu_antar']);
+			unset($user['catatan']);
+			unset($user['status']);
+			unset($user['pengantaran']);
+			unset($user['penjemputan']);
+			unset($user['bukti_pembayaran']);
+			unset($user['foto_pesanan']);
+			unset($user['created_at']);
+			unset($user['updated_at']);
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $user
+			], 200);
+		} else {
+			return response()->json([
+				'success' => true,
+				'message' => 'Nomor belum terdaftar sebelumnya'
+			], 200);
 		}
 	}
 
@@ -1730,6 +1777,45 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => true,
 				'message' => 'Success upload bukti pembayaran'
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'data not found'
+			], 401);   
+		}
+
+	}
+
+	public function fotoPesanan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$pesanan = Pemesanan::where('id', $id)->first();
+		if ($pesanan) {
+			$foto = $request->file('foto');
+			$nama_foto = 'img_pesanan_'.time().'.'.$foto->getClientOriginalExtension();
+
+			$pesanan->foto_pesanan = $nama_foto;
+			$pesanan->save();
+
+			$path = 'assets/images/pesanan';
+			$foto->move($path, $nama_foto);
+
+			// Kirim WA Ke Pelanggan
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success upload foto pesanan'
 			], 200);
 		} else {
 			return response()->json([
@@ -2239,11 +2325,11 @@ class RestfullApiController extends Controller
 		}
 
 		if ($request->jenis == 'All' || $request->jenis == 'all') {
-			$result = Keuangan::orderBy('id', $order)->get();
+			$result = Keuangan::orderBy('tanggal', $order)->get();
 		} else if ($request->jenis == 'Debit' || $request->jenis == 'debit') {
-			$result = Keuangan::where('jenis', 'Debit')->orderBy('id', $order)->get();
+			$result = Keuangan::where('jenis', 'Debit')->orderBy('tanggal', $order)->get();
 		} else if ($request->jenis == 'Kredit' || $request->jenis == 'kredit') {
-			$result = Keuangan::where('jenis', 'Kredit')->orderBy('id', $order)->get();
+			$result = Keuangan::where('jenis', 'Kredit')->orderBy('tanggal', $order)->get();
 		}
 
 		$data = [];

@@ -211,6 +211,7 @@
 		$('#tabelDataPesanan').DataTable({ "order": [] });
 		getPesanan('proccess');
 		function getPesanan(status) {
+			badgeCount();
 			var dataTable = $('#tabelDataPesanan').DataTable();
 			dataTable.clear().draw();
 			$.ajax({
@@ -220,11 +221,10 @@
 				success : function(data) {
 					$.each(data.result, function(key, val) {
 						var dt = new Date(val.tanggal_antar);
-						var month = dt.getMonth();
+						var month = dt.getMonth()+1;
 						var date = dt.getDate();
-						if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+						if (month < 10) month = '0'+month;
 						if (dt.getDate() < 10) date = '0'+dt.getDate();
-						if (dt.getMonth() == 0) month = '01';
 
 						dataTable.row.add([
 							val.kd_pemesanan,
@@ -238,7 +238,6 @@
 							</div>`,
 							]).draw(false);
 					});
-					badgeCount();
 				}
 			});
 		}
@@ -287,10 +286,10 @@
 						$('#dtl_'+key).text(val);
 						if (key == 'tanggal_antar') {
 							var dt = new Date(val);
-							var month = dt.getMonth();
-							var date = dt.getDate();
-							if (dt.getMonth() < 10) month = '0'+dt.getMonth();
-							if (dt.getDate() < 10) date = '0'+dt.getDate();
+							var month = dt.getMonth()+1;
+                            var date = dt.getDate();
+                            if (month < 10) month = '0'+month;
+                            if (dt.getDate() < 10) date = '0'+dt.getDate();
 							var tanggal = date+'/'+month+'/'+dt.getFullYear();
 							$('#dtl_tanggal_antar').text(tanggal+' ('+data.result.waktu_antar+')');
 						}
@@ -314,13 +313,13 @@
 		});
 
 		// NOTIF FIRBASE
-        const messaging = firebase.messaging();
+		const messaging = firebase.messaging();
 
-        messaging.onMessage((payload) => {
-            console.log('Notification ', payload);
-            getPesanan('proccess');
-            notifCountView();
-        });
+		messaging.onMessage((payload) => {
+			console.log('Notification ', payload);
+			getPesanan('proccess');
+			notifCountView();
+		});
 	});
 </script>
 @endsection
