@@ -1081,6 +1081,7 @@ table .table_detail_alat{
 
 .img-alat{
     width: 82px;
+    height: 82px;
 }
 
 .alat_item{
@@ -1096,7 +1097,7 @@ table .table_detail_alat{
     letter-spacing: 0.1em;
     color: #4F4F4F;
     margin-left: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .text_alat_jumlah{

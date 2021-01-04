@@ -5,11 +5,18 @@ $(document).ready(function () {
     var body = [];
     var url = $('meta[name="host_url"]').attr('content');
     var token = $('meta[name="csrf-token"]').attr('content');
-    var headers = {
-        "Accept"		: "application/json",
-        "Access-Control-Allow-Origin" : "*",
-        "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
-        'X-CSRF-TOKEN'	: token
+
+
+    headers = () => {
+        var headers = {
+            "Accept"		: "application/json",
+            "Access-Control-Allow-Origin" : "*",
+            "Authorization" : "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3YWE1Y2M3MDA1YTdjMDA2YzgwZWNjNjIxN2E4Y2VhOTUwMTEzMWNmM2MxOTVmMDk2YjJmZTAwY2I2MGI4ODAxNzE1ZGJmYjQ1YTYzMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMDdhYTVjYzcwMDVhN2MwMDZjODBlY2M2MjE3YThjZWE5NTAxMTMxY2YzYzE5NWYwOTZiMmZlMDBjYjYwYjg4MDE3MTVkYmZiNDVhNjMyYjAiLCJpYXQiOjE2MDA1MTI5NTEsIm5iZiI6MTYwMDUxMjk1MSwiZXhwIjoxNjMyMDQ4OTUwLCJzdWIiOiIxMyIsInNjb3BlcyI6W119.oHghL81Jc0xq-vvDVFde3QeqYs3s0Me6XukZtGy8G8HegV4LV2ImqKlpw_wdwxBOtKhBfodMFICi0YmNcPov7A",
+            'X-CSRF-TOKEN'	: token
+        }
+
+        return headers
+
     }
 
      makeleton_paket = () => {
@@ -66,7 +73,7 @@ $(document).ready(function () {
     $.ajax({
         url     : url+'/api/kelolamenu/getpaket',
         method  : "GET",
-        headers	: headers,
+        headers	: headers(),
         success : function(data) {
                 var datapaket = '';
                 var data_paket_xs = '';
@@ -103,7 +110,7 @@ $(document).ready(function () {
         $.ajax({
             url     : url+'/api/kelolamenu/getpaket/'+id,
             method  : "GET",
-            headers	: headers,
+            headers	: headers(),
             success : function(data) {
                 var path_asset = url+'/assets/images/paket';
                 var value = data['result'];
@@ -122,7 +129,7 @@ $(document).ready(function () {
     $.ajax({
         url     : url+'/api/kelolamenu/getadditional',
         method  : "GET",
-        headers	: headers,
+        headers	: headers(),
         success : function(data) {
             var additional = '';
             count_additional = data['result']['length'];
@@ -224,22 +231,6 @@ $(".input-number").keydown(function (e) {
         }
     });
 
-    show_modal_detail = (title,sub_url) => {
-        var host = $('meta[name="host_url"]').attr('content');
-        $('#modal-title').text(title);
-
-        $.ajax({
-            url : host+sub_url,
-            dataType : 'html',
-            success : function (response) {
-                $('#modal-body').html(response);
-            },error : function () {
-                alert("gagal tampilkan modal");
-            }
-        })
-        $('#exampleModalCenter').modal('show');
-    }
-
     $('.box_toogle_menu').click(function () {
         $('.item-toogle').toggleClass('active-toogle');
     })
@@ -254,9 +245,10 @@ $(".input-number").keydown(function (e) {
         $.ajax({
             url     : url+'/api/kelolamenu/getpaket/'+id_paket,
             method  : "GET",
-            headers	: headers,
+            headers	: headers(),
             success : function(data) {
                   params = {  
+                    'id' : data.result['id'],
                     'foto' : data.result['foto'],
                     'nama' : data.result['nama'],
                     'harga' : data.result['harga'], 
@@ -293,10 +285,11 @@ $(".input-number").keydown(function (e) {
                 $.ajax({
                     url     : url+'/api/kelolamenu/getadditional/'+value,
                     method  : "GET",
-                    headers : headers,
+                    headers : headers(),
                     success : function(data) {
                         get_id_addtional = [];
                           params_additional = {  
+                            'id' : data.result['id'],  
                             'foto' : data.result['foto'],
                             'nama' : data.result['nama_daging'],
                             'harga' : data.result['harga'], 

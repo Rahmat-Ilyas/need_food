@@ -13,14 +13,17 @@
 
                        <div class="row">
                            <div class="col-lg-8">
-                               <div class="container mt-3 content-keranjang-list">
+
+                            <form id="cek_paket_cart">
+                                @csrf
+                                <div class="container mt-3 content-keranjang-list">
                                 
-                               </div>
-                              
-                               <button class="tombol-custom tombol_pesanan_cart grid_button_cart">TAMBAH PESANAN</button>
+                                </div>
+                            </form>
+                               
                                <hr class="line_cart">
                                <div class="footer_box_cart">
-                                    <a href="javascript:;" onclick="show_modal_detail('Detail Alat','/keranjang/detail_alat')" class="link_alat_cart">Lihat alat <i class="icofont-long-arrow-right"></i></a>
+                                    <a href="javascript:;" onclick="show_modal_detail('Detail Alat','/keranjang/detail_alat')" class="link_alat_cart">Lihat alat  <i class="icofont-long-arrow-right"></i></a>
                                     <div class="text_keterangan_cart">* include alat jika Minimum 5 pcs yakiniku atau mix 4 yakiniku + 3 shabu</div>
                                 </div>
                            </div>
@@ -50,6 +53,8 @@
         var html = '';
         var total_harga = 0;
         var data_array_paket = '';
+        var paket_id = [], jumlah = [];
+        var token = $('meta[name="csrf-token"]').attr('content');
         $(document).ready(function () {
             $.ajax({
             url     : url+'/getpaket',
@@ -86,6 +91,8 @@
                     html += '</div>';
                     html += '</div>';
                    html += '</div>';
+                   html += '<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
+                   html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
 
                    total_harga+=parseInt(valueOfElement.harga);
 
@@ -100,9 +107,45 @@
             var params_row = $(this).data('action');
             data_array_paket.splice(params_row,1);
             $(`.row_index_cart_page_${params_row}`).remove();
-            
+            toastr_notice('info','Paket Berhasil di Hapus'); 
        })
 
+       show_modal_detail = (title,sub_url) => {
+        console.log(data_array_paket);
+        // $.each(data_array_paket, function (indexInArray, valueOfElement) { 
+        //      if (valueOfElement.type == 'paket') {
+        //          paket_id.push(valueOfElement.id);
+        //          jumlah.push(valueOfElement.kuantitas);
+        //      }
+        // });
+ 
+        $.ajax({
+            url  : url+'/api/getalatpaket',
+            type : 'POST',
+            headers : headers(),
+            data: $('#cek_paket_cart').serialize(),
+            // data : {
+            //     'paket_id' : paket_id,
+            //     'jumlah' : jumlah,
+            //     '_token' : token
+            // },
+            success: function (response) {
+            
+               var path_asset_image =  url+'/assets/images/kategori';
+                console.log(response);
+                $('#modal-title').text(title);
+                if (response.message == 'Success get data') {
+                    $('#modal-body').html('');
+                    $.each(response.result, function (index, val) { 
+                        $('#modal-body').append('<table class="table_detail_alat"><thead class="head_row"><tr><th style="width:350px">Item alat</th><th>Jumlah</th></tr></thead><tbody class="body_row"><tr><td><div class="row alat_item"><img src="'+path_asset_image+'/'+val.foto+'" class="img-alat"><div class="text_alat_list">'+val.kategori_alat+'</div></div></td><td><div class="text_alat_jumlah">'+val.jumlah_alat+'</div> </td></tr></tbody></table>');
+                    });
+                }else{
+                    $('modal-body').html('<div class="text_title_box_harga"> Alat Tidak Tersedia </div>');
+                }
+                $('#exampleModalCenter').modal('show');               
+            }
+        })
+    }
       
 
         });

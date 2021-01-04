@@ -15,23 +15,5 @@
            </td>
            <td>  <div class="text_alat_jumlah">3 pcs</div> </td>
         </tr>
-        <tr>
-            <td>
-                <div class="row alat_item">
-                     <img src="{{ asset('page/assets/images/alat/alat_2.png') }}" class="img-alat">
-                     <div class="text_alat_list">Piring bulat merah hitam</div>
-                </div>
-            </td>
-            <td>  <div class="text_alat_jumlah">3 pcs</div> </td>
-         </tr>
-         <tr>
-            <td>
-                <div class="row alat_item">
-                     <img src="{{ asset('page/assets/images/alat/alat_3.png') }}" class="img-alat">
-                     <div class="text_alat_list">Piring bulat merah hitam</div>
-                </div>
-            </td>
-            <td>  <div class="text_alat_jumlah">3 pcs</div> </td>
-         </tr>
     </tbody>
 </table>
