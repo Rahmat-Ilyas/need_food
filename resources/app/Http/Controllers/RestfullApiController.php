@@ -1099,6 +1099,51 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function changePassword(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'old_password' => 'required|min:5',
+			'new_password' => 'required|min:5'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$driver = Driver::find($id);
+
+		if ($driver) {
+			$credential = [
+				'username' => $driver->username,
+				'password' => $request->old_password,
+			];
+
+			if(Auth::guard('driver')->attempt($credential)) {
+				$driver->password = bcrypt($request->new_password);
+				$driver->save();
+				
+				return response()->json([
+					'success' => true,
+					'message' => 'Success update password',
+				], 200);
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'password lama tidak sesuai'
+				], 401);
+			}
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'id not found'
+			], 401);
+		}
+	}
+
 	public function deleteDriver($id)
 	{
 		try {

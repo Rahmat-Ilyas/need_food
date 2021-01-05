@@ -65,6 +65,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     // DRIVER
     Route::post('setdriver', 'RestfullApiController@setDriver');
     Route::post('editdriver/{id}', 'RestfullApiController@putDriver');
+    Route::put('driver/changepassword/{id}', 'RestfullApiController@changePassword');
     Route::delete('deletedriver/{id}', 'RestfullApiController@deleteDriver');
     Route::post('driver/cekalat/{pesanan_id}', 'RestfullApiController@cekAlatDriver');
     Route::post('driver/fotopesanan/{pesanan_id}', 'RestfullApiController@fotoPesanan');
