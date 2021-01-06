@@ -1135,7 +1135,7 @@ class RestfullApiController extends Controller
 				return response()->json([
 					'success' => false,
 					'message' => 'password lama tidak sesuai'
-				], 401);
+				], 200);
 			}
 		} else {
 			return response()->json([
