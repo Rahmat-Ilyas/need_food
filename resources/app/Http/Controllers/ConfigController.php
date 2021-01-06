@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DataRekening;
 use App\Model\PaketPesanan;
 use App\Model\KritikSaran;
 use App\Model\AdtPesanan;

@@ -41,6 +41,7 @@ return array(
     'App\\Model\\AlatPesanan' => $baseDir . '/app/Model/AlatPesanan.php',
     'App\\Model\\AuthLogin' => $baseDir . '/app/Model/AuthLogin.php',
     'App\\Model\\Bahan' => $baseDir . '/app/Model/Bahan.php',
+    'App\\Model\\DataRekening' => $baseDir . '/app/Model/DataRekening.php',
     'App\\Model\\Driver' => $baseDir . '/app/Model/Driver.php',
     'App\\Model\\ItemPaket' => $baseDir . '/app/Model/ItemPaket.php',
     'App\\Model\\Kategori' => $baseDir . '/app/Model/Kategori.php',

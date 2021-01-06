@@ -16,12 +16,15 @@ Route::get('/order','landingpagecontroller@orderindex')->name('page.order.index'
 Route::get('/keranjang','landingpagecontroller@keranjang_index')->name('page.keranjang');
 Route::get('/keranjang/detail_alat','landingpagecontroller@detail_alat')->name('page.detail_alat');
 Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.pengantaran');
+Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
+Route::get('/done/{token}', 'landingpagecontroller@pesananselesai');
+
+Route::get('/gettoken/{id}', 'landingpagecontroller@gettoken');
+Route::get('/trynotif', 'landingpagecontroller@trynotif');
+Route::get('/tryapiwa', 'landingpagecontroller@tryapiwa');
 Route::get('/trypemesanan', function() {
 	return view('welcome');
 });
-Route::get('/trynotif', 'landingpagecontroller@trynotif');
-Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
-Route::get('/gettoken/{id}', 'landingpagecontroller@gettoken');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {

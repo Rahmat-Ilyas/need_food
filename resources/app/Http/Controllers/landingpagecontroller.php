@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DataRekening;
+use App\Model\PaketPesanan;
+use App\Model\AdtPesanan;
 use App\Model\Pemesanan;
+use App\Model\Additional;
+use App\Model\Transaksi;
+use App\Model\Paket;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -45,6 +51,7 @@ class landingpagecontroller extends Controller
     }
 
     public function konfirmasi($token) {
+        $pemesanan_id = null;
         $data = Pemesanan::all();
         foreach ($data as $dta) {
             $crypt = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
@@ -53,8 +60,37 @@ class landingpagecontroller extends Controller
             $this_token = str_replace('?', 'M', $this_token);
             $this_token = str_replace('=', 'T', $this_token);
             if ($token == $this_token) {
-                echo $dta->id;
+                $pemesanan_id = $dta->id;
             }
+        }
+
+        $pesanan = Pemesanan::where('id', $pemesanan_id)->first();
+        if ($pesanan && $pesanan->status == 'New') {
+            return view('konfirmasi', compact('pesanan'));
+        } else {
+            abort('403');
+        }
+    }
+
+    public function pesananselesai($token) {
+        $pemesanan_id = null;
+        $data = Pemesanan::all();
+        foreach ($data as $dta) {
+            $crypt = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
+            $this_token = crypt($dta->id+14, $crypt);
+            $this_token = str_replace('/', 'R', $this_token);
+            $this_token = str_replace('?', 'M', $this_token);
+            $this_token = str_replace('=', 'T', $this_token);
+            if ($token == $this_token) {
+                $pemesanan_id = $dta->id;
+            }
+        }
+
+        $pesanan = Pemesanan::where('id', $pemesanan_id)->first();
+        if ($pesanan && $pesanan->status == 'Arrived') {
+            return view('pesananselesai', compact('pesanan'));
+        } else {
+            abort('403');
         }
     }
 
@@ -62,7 +98,143 @@ class landingpagecontroller extends Controller
         $this->notification('New', 2);
     }
 
-    protected function notification($status, $pesanan_id) {
+    public function tryapiwa() {
+        $this->sendMessageWhatsApp('order_refuse', 5);
+    }
+
+
+    protected function sendMessageWhatsApp($tipe, $id) 
+    {
+        $rek = DataRekening::first();
+        $pemesanan = Pemesanan::where('id', $id)->first();
+        $psn = $this->getDataPesanan($pemesanan, $id);
+
+        // Generet Token 
+        $crypt = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
+        $token = crypt($id+14, $crypt);
+        $token = str_replace('/', 'R', $token);
+        $token = str_replace('?', 'M', $token);
+        $token = str_replace('=', 'T', $token);
+
+        if ($tipe == 'order_detail') {
+            $paket = '';
+            $additional = '';
+            foreach ($psn->paket as $pkt) {
+                $paket .= '*'.$pkt['nama_paket'].' '.$pkt['jumlah'].' Pax\n';
+            }
+
+            foreach ($psn->additional as $adt) {
+                $additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].'\n';
+            }
+
+            $message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token;
+
+            $url='http://149.28.156.46:8000/demo/send_message';
+            $key_demo='db63f52c1a00d33cf143524083dd3ffd025d672e255cc688';
+            $data = array(
+                "phone_no"=> '+6285333341194',
+                "key"     => $key_demo,
+                "message" => $message
+            );
+        } else if ($tipe == 'order_accept') {
+            $message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+
+            $url='http://149.28.156.46:8000/demo/send_message';
+            $key_demo='db63f52c1a00d33cf143524083dd3ffd025d672e255cc688';
+            $data = array(
+                "phone_no"=> '+6285333341194',
+                "key"     => $key_demo,
+                "message" => $message
+            );
+        } else if ($tipe == 'order_refuse') {
+            $message = 'Hai, Kak *'.$psn->nama.'*\nMohon maaf, pesanan anda tidak dapat kami proses, silahkan kunjungi https://kesiniku.com untuk pemesanan ulang!';
+
+            $url='http://149.28.156.46:8000/demo/send_message';
+            $key_demo='db63f52c1a00d33cf143524083dd3ffd025d672e255cc688';
+            $data = array(
+                "phone_no"=> '+6285333341194',
+                "key"     => $key_demo,
+                "message" => $message
+            );
+        } else if ($tipe == 'order_done') {
+            $message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+
+            $url = 'http://116.203.191.58/api/send_image_url';
+            $img_url = 'https:/kesiniku.com/assets/images/pesanan/'.$psn->foto_pesanan;
+            $key_demo = '6f03ddf0ecf0e05dd422cfae215c40259737cbe07e3c8fe1';
+            $data = array(
+                "phone_no" => '+6285333341194',
+                "key"      => $key_demo,
+                "url"      => $img_url,
+                "message"  => $message
+            );
+        }
+
+        $data_string = json_encode($data);
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string),
+            'Authorization: Basic dXNtYW5ydWJpYW50b3JvcW9kcnFvZHJiZWV3b293YToyNjM3NmVkeXV3OWUwcmkzNDl1ZA=='
+        ]);
+        echo $res=curl_exec($ch);
+        curl_close($ch);
+    }
+    
+    protected function getDataPesanan($pemesanan, $id = null)
+    {
+        if ($pemesanan) {
+            // Data Paket Pesanan
+            $getPaket = PaketPesanan::where('pemesanan_id', $id)->get();
+            foreach ($getPaket as $i => $pkt) {
+                $getPkt = Paket::where('id', $pkt->paket_id)->first();
+                $paket[$i]['pemesanan_id'] = $pkt->pemesanan_id;
+                $paket[$i]['paket_id'] = $pkt->paket_id;
+                $paket[$i]['nama_paket'] = $getPkt ? $getPkt->nama : null;
+                $paket[$i]['harga'] = $getPkt ? $getPkt->harga : null;
+                $paket[$i]['jumlah'] = $pkt->jumlah;
+                $paket[$i]['total_harga'] = $pkt->total_harga;
+            }
+
+            // Data Additional Pesanan
+            $getAdditional = AdtPesanan::where('pemesanan_id', $id)->get();
+            $additional = [];
+            if ($getAdditional) {
+                foreach ($getAdditional as $i => $adt) {
+                    $getAdt = Additional::where('id', $adt->additional_id)->first();
+                    $additional[$i]['pemesanan_id'] = $adt->pemesanan_id;
+                    $additional[$i]['additional_id'] = $adt->additional_id;
+                    $additional[$i]['nama_daging'] = $getAdt->nama_daging;
+                    $additional[$i]['harga'] = $getAdt->harga;
+                    $additional[$i]['berat'] = $getAdt->berat;
+                    $additional[$i]['jumlah'] = $adt->jumlah;
+                    $additional[$i]['total_harga'] = $adt->total_harga;
+                }
+            }
+
+            // Data Transaksi Pesanan
+            $transaksi = Transaksi::where('pemesanan_id', $id)->first();
+            unset($transaksi['created_at']);
+            unset($transaksi['updated_at']);
+
+            $pemesanan['paket'] = $paket;
+            $pemesanan['additional'] = $additional;
+            $pemesanan['transaksi'] = $transaksi;
+        }
+        return $pemesanan;
+    }
+
+    protected function notification($status, $pesanan_id) 
+    {
         if ($status == 'New') {
             $to = 'admin_device';
             $title = 'Pesanan Baru';

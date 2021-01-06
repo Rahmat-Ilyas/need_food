@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DataRekening;
 use App\Model\PaketPesanan;
 use App\Model\KritikSaran;
 use App\Model\AlatPesanan;
@@ -1689,6 +1690,8 @@ class RestfullApiController extends Controller
 				$this->debitkredit($id, 'pesanan');
 			}
 
+			// Kirim Pesanan WA ke Pelanggan if status batal dan proccess
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success update data'
@@ -2696,7 +2699,8 @@ class RestfullApiController extends Controller
 	}
 
 	// NOTIFIKASI
-	protected function notification($status, $pesanan_id) {
+	protected function notification($status, $pesanan_id) 
+	{
 		if ($status == 'New' || $status == 'new') {
 			$to = 'admin_device';
 			$title = 'Pesanan Baru';
