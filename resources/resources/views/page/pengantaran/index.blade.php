@@ -7,6 +7,7 @@
             <div class="col-lg-8">
                 <div class="box">
                     <div class="row pengantaran-main">
+                        <form id="form_pengantaran">
                         <div class="col-lg-6">
                             <div class="title_pengantaran">
                                 Set Lokasi Pengantaran
@@ -17,7 +18,7 @@
 
                             <div class="form_lokasi">
                                 <button class="tombol-custom tombol_lokasi_pengantaran"><i class="icofont-location-pin"></i> Gunakan Lokasi Sekarang</button>
-                                <textarea id="text-area" placeholder="Deskripsi Alamat"></textarea>
+                                <textarea id="text-area" class="grid_deskripsi" placeholder="Deskripsi Alamat"></textarea>
                             </div>
 
                         </div>
@@ -46,9 +47,16 @@
                                         <input type="time" class="form-control" id="waktu">
                                       </div>
                                 </div>
+                                <div class="form-row">
+                                    <div class="form-group col-lg-12">
+                                        <label for="catatan">Catatan</label>
+                                        <textarea id="text-area" placeholder="Catatan"></textarea>
+                                    </div>
+                                </div>
                             </form>
                             <div class="text_small_detail_pesan">Pastikan anda memasukkan data dengan benar dan sesuai</div>
                         </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -84,7 +92,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="tombol-custom tombol-keranjang text-button">Checkout</button>
+                        <button id="submit_pengantaran" class="tombol-custom tombol-keranjang text-button">Checkout</button>
                         <hr class="line_cart_pemesanan">
                         <div class="ongkos_kirim">
                             <div class="title_ongkos">Tarif Ongkos Kirim</div>
@@ -111,3 +119,34 @@
     </div> 
 </section>          
  @endsection
+ @push('skript')
+     <script>
+          var url = $('meta[name="host_url"]').attr('content');
+         $(document).ready(function () {
+            $.ajax({
+            url     : url+'/getpaket_to_delivery',
+            method  : "GET",
+            success : function(data) {
+                
+            
+            }
+             });
+
+             $('#submit_pengantaran').on('click', function () {
+                $.ajax({
+                url     : url+"/api/datapesanan/store",
+                method  : "POST",
+                headers : headers(),
+                data    : $('#form_pengantaran').serialize(),
+                success : function(data) {
+                    console.log('success');
+                },
+                error: function (data) {
+                    setError(data);
+                }
+            });
+             })
+
+         });
+     </script>
+ @endpush

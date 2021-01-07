@@ -63,11 +63,28 @@ $(document).ready(function () {
 
     }
 
+    makeleton_cart = () => {
+        var output = '';
+        output += '<div class="ph-item"><div class="ph-col-2"><div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div><div class="ph-col-10"><div class="ph-picture"></div><div class="ph-row"><div class="ph-col-6"></div></div><div class="ph-row"><div class="ph-col-6"></div>       </div></div></div>';
+
+        return output;
+    }
+
+    makeleton_currency = () =>{
+        var output = '';
+        output += '<div class="ph-item"><div class="ph-col-12"><div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div></div>';
+        return output;
+    }
+
     setTimeout(function(){
         $('.paket_content').show();
         $('.box-element').show();   
+        $('.content-keranjang-list').show();
+        $('.konten_box_harga').show();
         $('.paket_skelton').hide();
-        $('.makeleton_additonal').hide(); 
+        $('.makeleton_additonal').hide();
+        $('.content-keranjang-first').hide(); 
+        $('.konten_first').hide();
       }, 3000);    
 
     $.ajax({
@@ -379,6 +396,20 @@ $(".input-number").keydown(function (e) {
             }
         })
     })
+
+    send_to_delivery = (data) => {
+        $.ajax({
+            url  : url+'/keranjang/paket_to_delivery',
+            type : 'POST',
+            data : {
+                'data' : JSON.stringify(data),
+                '_token' : token
+            },
+            success: function (response) {
+               window.location.href = url+'/pengantaran';
+            }
+        })
+    }
 
     toastr_notice = (type,message) =>{
         Command: toastr[`${type}`](`${message}`);

@@ -16,6 +16,9 @@
 
                             <form id="cek_paket_cart">
                                 @csrf
+                                <div class="content-keranjang-first">
+
+                                </div>
                                 <div class="container mt-3 content-keranjang-list">
                                 
                                 </div>
@@ -29,12 +32,13 @@
                            </div>
                            <div class="col-lg-4">
                                 <div class="box-harga">
+                                    <div class="konten_first"></div>
                                     <div class="konten_box_harga">
                                         <div class="text_title_box_harga">TOTAL HARGA</div>      
                                         <div class="box_total_keranjang"></div>
                                     </div> 
                                 </div>
-                                    <button class="tombol-custom tombol-keranjang text-button grid_button_cart">BUAT PESANAN</button>
+                                    <button class="tombol-custom tombol-keranjang text-button grid_button_cart" id="send_to_delivery">BUAT PESANAN</button>
                                     <div class="text_danger_info_cart">* Pesanan Minimum 2 pcs</div>
                            </div>
                        </div>
@@ -56,6 +60,12 @@
         var paket_id = [], jumlah = [];
         var token = $('meta[name="csrf-token"]').attr('content');
         $(document).ready(function () {
+
+            $('.content-keranjang-list').hide();
+            $('.konten_box_harga').hide();
+            $('.content-keranjang-first').html(makeleton_cart());   
+            $('.konten_first').html(makeleton_currency());           
+
             $.ajax({
             url     : url+'/getpaket',
             method  : "GET",
@@ -146,7 +156,12 @@
             }
         })
     }
-      
+
+
+      $('#send_to_delivery').on('click',function (e) {
+          e.preventDefault();
+          send_to_delivery(data_array_paket);
+      })
 
         });
     </script>
