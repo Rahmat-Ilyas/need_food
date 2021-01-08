@@ -2907,6 +2907,7 @@ class RestfullApiController extends Controller
 			'Content-Type: application/json',
 			'Content-Length: ' . strlen($data_string)
 		]);
+		$res=curl_exec($ch);
 		curl_close($ch);
 	} 
 }
