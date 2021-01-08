@@ -54,11 +54,8 @@ class landingpagecontroller extends Controller
         $pemesanan_id = null;
         $data = Pemesanan::all();
         foreach ($data as $dta) {
-            $crypt = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
-            $this_token = crypt($dta->id+14, $crypt);
-            $this_token = str_replace('/', 'R', $this_token);
-            $this_token = str_replace('?', 'M', $this_token);
-            $this_token = str_replace('=', 'T', $this_token);
+            $hash = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
+            $this_token = hash('crc32', $hash);
             if ($token == $this_token) {
                 $pemesanan_id = $dta->id;
             }
@@ -76,11 +73,8 @@ class landingpagecontroller extends Controller
         $pemesanan_id = null;
         $data = Pemesanan::all();
         foreach ($data as $dta) {
-            $crypt = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
-            $this_token = crypt($dta->id+14, $crypt);
-            $this_token = str_replace('/', 'R', $this_token);
-            $this_token = str_replace('?', 'M', $this_token);
-            $this_token = str_replace('=', 'T', $this_token);
+            $hash = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
+            $this_token = hash('crc32', $hash);
             if ($token == $this_token) {
                 $pemesanan_id = $dta->id;
             }
@@ -108,17 +102,14 @@ class landingpagecontroller extends Controller
         $rek = DataRekening::first();
         $pemesanan = Pemesanan::where('id', $id)->first();
         $psn = $this->getDataPesanan($pemesanan, $id);
-        
+
         $no_whatsapp = $psn->no_wa;
         $wa_admin = $rek->telepon;
         $key = '553709ba9cca8ff2d35acbbd3f4e7e07c77267da14eefb11';
 
         // Generet Token 
-        $crypt = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
-        $token = crypt($id+14, $crypt);
-        $token = str_replace('/', 'R', $token);
-        $token = str_replace('?', 'M', $token);
-        $token = str_replace('=', 'T', $token);
+        $hash = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
+        $token = hash('crc32', $hash);
 
         if ($tipe == 'order_detail') {
             $paket = '';

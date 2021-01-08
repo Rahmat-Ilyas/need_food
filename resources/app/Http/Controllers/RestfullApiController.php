@@ -2824,12 +2824,9 @@ class RestfullApiController extends Controller
 		$wa_admin = $rek->telepon;
 		$key = '553709ba9cca8ff2d35acbbd3f4e7e07c77267da14eefb11';
 
-        // Generet Token 
-		$crypt = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
-		$token = crypt($id+14, $crypt);
-		$token = str_replace('/', 'R', $token);
-		$token = str_replace('?', 'M', $token);
-		$token = str_replace('=', 'T', $token);
+        // Generet Token
+		$hash = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
+        $token = hash('crc32', $hash);
 
 		if ($tipe == 'order_detail') {
 			$paket = '';
