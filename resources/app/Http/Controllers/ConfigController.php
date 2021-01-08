@@ -1316,6 +1316,32 @@ class ConfigController extends Controller
 				$result['ticks'] = $ticks;
 				return response()->json($result);
 			}
+
+			// UPDATE REKENING 
+			if ($request->req == 'getRekening') {
+				$result = DataRekening::first();
+				return response()->json($result);
+			}
+
+			// UPDATE REKENING 
+			if ($request->req == 'updateRekening') {
+				$rek = DataRekening::first();
+				$rek->nama = $request->nama;
+				$rek->nama_bank = $request->nama_bank;
+				$rek->no_rekening = $request->no_rekening;
+				$rek->save();
+
+				return response()->json($rek);
+			}
+
+			// UPDATE TELEPON 
+			if ($request->req == 'updateTelepon') {
+				$rek = DataRekening::first();
+				$rek->telepon = $request->telepon;
+				$rek->save();
+
+				return response()->json($rek);
+			}
 		}
 	}
 

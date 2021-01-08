@@ -99,7 +99,7 @@ class landingpagecontroller extends Controller
     }
 
     public function tryapiwa() {
-        $this->sendMessageWhatsApp('order_refuse', 5);
+        $this->sendMessageWhatsApp('order_detail', 2);
     }
 
 
@@ -108,6 +108,10 @@ class landingpagecontroller extends Controller
         $rek = DataRekening::first();
         $pemesanan = Pemesanan::where('id', $id)->first();
         $psn = $this->getDataPesanan($pemesanan, $id);
+        
+        $no_whatsapp = $psn->no_wa;
+        $wa_admin = $rek->telepon;
+        $key = '553709ba9cca8ff2d35acbbd3f4e7e07c77267da14eefb11';
 
         // Generet Token 
         $crypt = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
@@ -127,44 +131,51 @@ class landingpagecontroller extends Controller
                 $additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].'\n';
             }
 
-            $message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token;
+            $message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';
 
-            $url='http://149.28.156.46:8000/demo/send_message';
-            $key_demo='db63f52c1a00d33cf143524083dd3ffd025d672e255cc688';
+            $url = 'http://116.203.191.58/api/send_message';
             $data = array(
-                "phone_no"=> '+6285333341194',
-                "key"     => $key_demo,
+                "phone_no"=> $no_whatsapp,
+                "key"     => $key,
                 "message" => $message
             );
         } else if ($tipe == 'order_accept') {
             $message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
 
-            $url='http://149.28.156.46:8000/demo/send_message';
-            $key_demo='db63f52c1a00d33cf143524083dd3ffd025d672e255cc688';
+            $url = 'http://116.203.191.58/api/send_message';
             $data = array(
-                "phone_no"=> '+6285333341194',
-                "key"     => $key_demo,
+                "phone_no"=> $no_whatsapp,
+                "key"     => $key,
                 "message" => $message
             );
         } else if ($tipe == 'order_refuse') {
             $message = 'Hai, Kak *'.$psn->nama.'*\nMohon maaf, pesanan anda tidak dapat kami proses, silahkan kunjungi https://kesiniku.com untuk pemesanan ulang!';
 
-            $url='http://149.28.156.46:8000/demo/send_message';
-            $key_demo='db63f52c1a00d33cf143524083dd3ffd025d672e255cc688';
+            $url = 'http://116.203.191.58/api/send_message';
             $data = array(
-                "phone_no"=> '+6285333341194',
-                "key"     => $key_demo,
+                "phone_no"=> $no_whatsapp,
+                "key"     => $key,
                 "message" => $message
             );
         } else if ($tipe == 'order_done') {
             $message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
 
             $url = 'http://116.203.191.58/api/send_image_url';
-            $img_url = 'https:/kesiniku.com/assets/images/pesanan/'.$psn->foto_pesanan;
-            $key_demo = '6f03ddf0ecf0e05dd422cfae215c40259737cbe07e3c8fe1';
+            $img_url = 'https://kesiniku.com/assets/images/pesanan/'.$psn->foto_pesanan;
             $data = array(
-                "phone_no" => '+6285333341194',
-                "key"      => $key_demo,
+                "phone_no" => $no_whatsapp,
+                "key"      => $key,
+                "url"      => $img_url,
+                "message"  => $message
+            );
+        } else if ($tipe == 'upload_payment') {
+            $message = 'Bukti pembayaran telah di uplaod\n\nKode Pesanan: '.$psn->kd_pemesanan.'\nNama: '.$psn->nama.'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nSilahkan buka aplikasi mobile Kesiniku atau Website Admin Panel Kesiniku untuk mengkonfirmasi pesanan.';
+
+            $url = 'http://116.203.191.58/api/send_image_url';
+            $img_url = 'https://kesiniku.com/assets/images/konfirmasi/'.$psn->bukti_pembayaran;
+            $data = array(
+                "phone_no" => $wa_admin,
+                "key"      => $key,
                 "url"      => $img_url,
                 "message"  => $message
             );
@@ -183,8 +194,7 @@ class landingpagecontroller extends Controller
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
-            'Content-Length: ' . strlen($data_string),
-            'Authorization: Basic dXNtYW5ydWJpYW50b3JvcW9kcnFvZHJiZWV3b293YToyNjM3NmVkeXV3OWUwcmkzNDl1ZA=='
+            'Content-Length: ' . strlen($data_string)
         ]);
         echo $res=curl_exec($ch);
         curl_close($ch);
