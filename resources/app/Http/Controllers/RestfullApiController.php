@@ -1260,7 +1260,6 @@ class RestfullApiController extends Controller
 			Transaksi::create($transaksi);
 
 			// Kirim WA Ke Pelanggan
-			$this->sendMessageWhatsApp('order_detail', 2);
 			$this->sendMessageWhatsApp('order_detail', $pmsn->id);
 
 			return response()->json([
