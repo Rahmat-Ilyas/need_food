@@ -274,6 +274,9 @@
                         <div class="tab-pane p-20" id="rekening"> 
                             <h4 class="m-b-20" style="margin-top: -25px;">Update Info Rekening</h4>
                             <hr>
+                            <div class="alert alert-info">
+                                <strong>Info:</strong> Data rekening akan di kirim customer yang memesan untuk melakukan transfer ke rekening yang diatur di bawah.
+                           </div>
                             <form method="POST" action="" id="updateRekening" style="margin-bottom: -20px;">
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Nama Bank</label>

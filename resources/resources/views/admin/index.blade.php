@@ -121,7 +121,7 @@
                 </div>
             </div>
 
-             <div class="col-lg-6">
+            <div class="col-lg-6">
                 <div class="portlet"><!-- /primary heading -->
                     <div class="portlet-heading">
                         <h3 class="portlet-title text-dark">
@@ -401,6 +401,8 @@
                     height : 2
                 },
                 yaxis : {
+                    min: 0,
+                    tickDecimals: 0,
                     tickColor : '#f5f5f5',
                     font : {
                         color : '#bdbdbd'

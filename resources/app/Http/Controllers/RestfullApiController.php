@@ -1592,6 +1592,7 @@ class RestfullApiController extends Controller
 							'alat_id' => $alpes->alat_id,
 							'nama_alat' => $get_alat ? $get_alat->nama : null,
 							'jumlah' => $alpes->jumlah.' pcs',
+							'status' => $alpes->status,
 						];
 					}
 					
@@ -1978,7 +1979,7 @@ class RestfullApiController extends Controller
 
 	}
 
-	public function cekAlatDriver(Request $request, $id)
+	public function cekAlatsDriver(Request $request, $id)
 	{
 		$validator = Validator::make($request->all(), [
 			'alat_id' => 'required|array',
@@ -2049,6 +2050,90 @@ class RestfullApiController extends Controller
 
 				$i = $i + 1;
 			}
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Pengecekan alat selesai'
+		], 200);
+	}
+
+	public function cekAlatDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'alat_id' => 'required|integer',
+			'jumlah' => 'required|integer'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$pemesanan = Pemesanan::where('id', $id)->first();
+		$result = $this->getDataPesanan($pemesanan, $id);
+
+		$alat_id = NULL;
+		$jumlah = 0;
+		foreach ($result->alat as $kat) {
+			foreach ($kat['alat_dipilih'] as $alt) {
+				if ($alt['alat_id'] == $request->alat_id) {
+					$alat_id = $alt['alat_id'];
+					$jumlah = $alt['jumlah'];
+				}
+			}
+		}
+
+		if ($alat_id != NULL) {
+			$alat_pesanan = AlatPesanan::where('pemesanan_id', $id)->where('alat_id', $alat_id)->first();
+			if ($alat_pesanan && $alat_pesanan->status == 'used') {
+				$jumlah_keluar = filter_var($jumlah, FILTER_SANITIZE_NUMBER_INT);
+				if ($request->jumlah < $jumlah_keluar) {
+					// Alat Hilang
+					$jumlah_hilang = $jumlah_keluar - $request->jumlah;
+					$alat_id = $request->alat_id;
+					$alat_hlg = Alat::where('id', $request->alat_id)->first();
+					$jumlah_alat = $alat_hlg->jumlah_alat - $jumlah_hilang;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat_hlg->jumlah_alat = $jumlah_alat;
+					$alat_hlg->save();
+
+					$data = [];
+					$data['pemesanan_id'] = $id;
+					$data['alat_id'] = $alat_id;
+					$data['jumlah_hilang'] = $jumlah_hilang;
+					AlatHilang::create($data);
+				} else if ($request->jumlah > $jumlah_keluar) {
+					return response()->json([
+						'success' => false,
+						'message' => 'jumlah yang di input melebihi ketentuan'
+					], 401);
+				}
+
+				// Alat Kembali
+				$alat = Alat::where('id', $alt['alat_id'])->first();
+				$alat_keluar = $alat->alat_keluar;
+				$update_alat = $alat_keluar - $jumlah_keluar;
+				if ($update_alat <= 0) $update_alat = NULL;
+				$alat->alat_keluar = $update_alat;
+				$alat->save();
+
+				$alat_pesanan->status = 'done';
+				$alat_pesanan->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'alat sudah diatur'
+				], 201);
+			}
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'alat_id tidak sesuai dengan paakaet'
+			], 401);
 		}
 
 		return response()->json([
@@ -2826,7 +2911,7 @@ class RestfullApiController extends Controller
 
         // Generet Token
 		$hash = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
-        $token = hash('crc32', $hash);
+		$token = hash('crc32', $hash);
 
 		if ($tipe == 'order_detail') {
 			$paket = '';

@@ -163,7 +163,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Pilih Lokasi Pengantaran</label>
-                                <div id="mapView" class="gmaps" style="height: 200px;"></div>
+                                <div id="mapView" class="gmaps m-b-5" style="height: 200px;"></div>
+                                <span class="text-info"><i>* Klik maps untuk memilih lokasi</i></span>
                                 <input type="hidden" name="latitude" value="-5.146512141348986" id="setLatitude">
                                 <input type="hidden" name="longitude" value="119.43296873064695" id="setLongitude">
                                 <input type="hidden" id="biaya_pengiriman" name="biaya_pengiriman" value="10000">
@@ -233,11 +234,11 @@
         <div class="card-box">
             <div class="card-body">
                 <input class="check" id="checkbox" name="paket_id[]" type="checkbox" style="position: absolute; right: 10px; margin-top: 5px; transform: scale(2);">
-                <div class="media" style="margin: -15px;">
-                    <div class="media-left">
-                        <img class="media-object" id="foto" src="{{ asset('assets/images/paket/img_paket_1607960859.jpg') }}" alt="Card image cap" height="150">
+                <div class="row" style="margin: -15px;">
+                    <div class="col-md-5">
+                        <img class="img-rounded" id="foto" style="margin-left: -10px;" src="{{ asset('assets/images/paket/img_paket_1607960859.jpg') }}" alt="Card image cap" height="150">
                     </div>
-                    <div class="media-body">
+                    <div class="col-md-7">
                         <h3><b id="nama"></b> <span id="harga"></span></h3>
                         <span id="keterangan"></span>
                         <ul id="item_paket">
