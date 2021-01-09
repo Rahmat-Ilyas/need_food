@@ -119,7 +119,7 @@ class landingpagecontroller extends Controller
             }
 
             foreach ($psn->additional as $adt) {
-                $additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].'\n';
+                $additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].' x '.$adt['jumlah'].' Pcs\n';
             }
 
             $message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';

@@ -21,6 +21,99 @@
 
     <script src="{{ asset('assets/js/modernizr.min.js') }}"></script>
 
+    <style type="text/css">
+        #loading {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color:rgba(255,255,255,0.5);
+        }
+
+        /*-- css spin --*/
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /*-- css loader --*/
+        .no-js #loader { display: none; }
+        .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+
+        .loader {
+            border: 10px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 10px solid #3498db;
+            border-bottom: 10px solid #FFC107;
+            width: 100px;
+            height: 100px;
+            left: 45.6%;
+            top: 38%;
+            -webkit-animation: spin 2s linear infinite;
+            position: fixed;
+            animation: spin 2s linear infinite;
+        }
+
+        .textLoader{
+            position: fixed;
+            top: 56%;
+            left: 45.6%;
+            color: #34495e;
+        }
+
+        /*-- responsive --*/
+        @media screen and (max-width: 1034px){
+            .textLoader{
+                left: 46.2%;
+            }
+        }
+
+        @media screen and (max-width: 824px){
+            .textLoader {
+                left: 47.2%;
+            }
+        }
+
+        @media screen and (max-width: 732px){
+            .textLoader {
+                left: 48.2%;
+            }
+        }
+
+        @media screen and (max-width: 500px){
+            .loader{
+                left: 36.5%;;
+            }
+            .textLoader {
+                left: 40.5%;
+            }
+        }
+
+        @media screen and (max-height: 432px){
+            .textLoader {
+                top: 65%;
+            }
+        }
+
+        @media screen and (max-height: 350px){
+            .textLoader {
+                top: 75%;
+            }
+        }
+
+        @media screen and (max-height: 312px){
+            .textLoader {
+                display: none;
+            }
+        }
+    </style>
+
 </head>
 <body>
 
@@ -163,7 +256,7 @@
     </div>
 
     <div id="html-adt" hidden="">
-       <div class="col-md-4">
+     <div class="col-md-4">
         <input class="check" id="adt_checkbox" name="additional_id[]" type="checkbox" style="position: absolute; right: 20px; margin-top: 10px; transform: scale(1.8);">
         <div class="thumbnail">
             <img id="adt_foto" src="assets/images/big/img3.jpg" class="img-responsive" style="max-height: 180px; min-height: 180px; width: 100%;">
@@ -175,6 +268,15 @@
                 </p>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="loading" hidden="">
+    <span class="loader" hidden=""></span>
+    <div class="textLoader">
+        <center>
+            <b>Please Wait ... </b>
+        </center>
     </div>
 </div>
 
@@ -323,13 +425,23 @@
                 method  : "POST",
                 headers : headers,
                 data    : data,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (evt) {
+                        if (evt.lengthComputable) {
+                            $("#loading, .loader").removeAttr('hidden');
+                        }
+                    }, false);
+                    return xhr;
+                },
                 success : function(data) {
+                    $("#loading, .loader").attr('hidden', '');
                     Swal.fire({
-                       title: 'Berhasil Diproses',
-                       text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
-                       type: 'success',
-                       onClose: () => { location.href = 'trypemesanan'; }
-                   });
+                     title: 'Berhasil Diproses',
+                     text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
+                     type: 'success',
+                     onClose: () => { location.href = 'trypemesanan'; }
+                 });
                 },
                 error: function (data) {
                     setError(data);
@@ -342,21 +454,21 @@
           var error = '';
           result = data.responseJSON.message;
           if (jQuery.type(result) == 'object') {
-             $.each(result, function (key, val) {
-                error = error + ' ' + val[0];
-            });
-         } else {
-             error = data.responseJSON.message;
-         }
+           $.each(result, function (key, val) {
+            error = error + ' ' + val[0];
+        });
+       } else {
+           error = data.responseJSON.message;
+       }
 
-         Swal.fire({
-             title: 'Gagal Diproses',
-             text: error,
-             type: 'error'
-         });
-     }
+       Swal.fire({
+           title: 'Gagal Diproses',
+           text: error,
+           type: 'error'
+       });
+   }
 
- });
+});
 </script>
 
 <script>
