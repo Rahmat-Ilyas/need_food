@@ -17,7 +17,7 @@ Route::get('/keranjang','landingpagecontroller@keranjang_index')->name('page.ker
 // SESSION
 Route::get('/getpaket','landingpagecontroller@paket_get')->name('page.paket');
 Route::get('/getpaket_to_delivery','landingpagecontroller@paket_get_delivery')->name('page.paket_delivery');
-// 
+// FRONT
 Route::post('/keranjang/paket_pesanan','landingpagecontroller@paket_pesanan')->name('page.pesanan');
 Route::post('/keranjang/paket_to_delivery','landingpagecontroller@paket_delivery')->name('page.paketDelivery');
 Route::get('/keranjang/detail_alat','landingpagecontroller@detail_alat')->name('page.detail_alat');
