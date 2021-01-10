@@ -25,9 +25,6 @@ Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.penga
 Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
 Route::get('/done/{token}', 'landingpagecontroller@pesananselesai');
 
-Route::get('/gettoken/{id}', 'landingpagecontroller@gettoken');
-Route::get('/trynotif', 'landingpagecontroller@trynotif');
-Route::get('/tryapiwa', 'landingpagecontroller@tryapiwa');
 Route::get('/trypemesanan', function() {
 	return view('welcome');
 });
