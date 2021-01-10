@@ -14,6 +14,12 @@
 Route::get('/','landingpagecontroller@index')->name('page.index');
 Route::get('/order','landingpagecontroller@orderindex')->name('page.order.index');
 Route::get('/keranjang','landingpagecontroller@keranjang_index')->name('page.keranjang');
+// SESSION
+Route::get('/getpaket','landingpagecontroller@paket_get')->name('page.paket');
+Route::get('/getpaket_to_delivery','landingpagecontroller@paket_get_delivery')->name('page.paket_delivery');
+// 
+Route::post('/keranjang/paket_pesanan','landingpagecontroller@paket_pesanan')->name('page.pesanan');
+Route::post('/keranjang/paket_to_delivery','landingpagecontroller@paket_delivery')->name('page.paketDelivery');
 Route::get('/keranjang/detail_alat','landingpagecontroller@detail_alat')->name('page.detail_alat');
 Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.pengantaran');
 Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');

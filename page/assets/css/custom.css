@@ -116,6 +116,10 @@ nav a:hover {
     box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
 }
 
+.active{
+    box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
+}
+
 .rounded{
     margin-right: 15px;
 }
@@ -353,7 +357,6 @@ label{
 }
 
 #text-area{
-    margin-top: 20px;
     width: 100%;
     height: 80px;
     padding: 10px 0 0 30px;
@@ -364,6 +367,10 @@ label{
     line-height: 21px;
     letter-spacing: -0.01em;
     color: #8A8A8A;
+}
+
+.grid_deskripsi{
+    margin-top: 20px;
 }
 
 .tombol {
@@ -528,11 +535,30 @@ button:focus {
     border: 1px solid transparent;
 }
 
+.tombol-lg-modal {
+    padding: 5px;
+    width: 200px;
+    margin-bottom: 0;
+    display: inline-block;
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+}
+
 .text-button{
     text-align: center;
     font-family: 'Poppins', serif;
     font-style: normal;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 24px;
     letter-spacing: -0.01em;
     color: #ffffff;
@@ -969,6 +995,10 @@ button:focus {
     margin-top: 15px;
 }
 
+.group-text-keranjang-page{
+    margin-top: 15px;
+}
+
 .text-image-keranjang{
     font-family: 'Poppins',serif;
     font-style: normal;
@@ -990,8 +1020,32 @@ button:focus {
     margin-top: 5px;
 }
 
+.text-currency-keranjang-page{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: bold;
+    color: #FF9742;
+    margin-left: 43px;
+    margin-top: 5px;
+}
+
+
 #exampleModalCenter{
     background: rgba(0, 0, 0, 0.5);
+}
+
+#cartmodal{
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#modal-body-cart{
+    background: #ffffff;
+}
+
+#modal-footer{
+    background: #ffffff;
 }
 
 #modal-header{
@@ -1001,7 +1055,7 @@ button:focus {
 #modal-title{
     font-family: 'Poppins', serif;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 144%;
     text-align: center;
     letter-spacing: 0.1em;
@@ -1030,6 +1084,7 @@ table .table_detail_alat{
 
 .img-alat{
     width: 82px;
+    height: 82px;
 }
 
 .alat_item{
@@ -1045,7 +1100,7 @@ table .table_detail_alat{
     letter-spacing: 0.1em;
     color: #4F4F4F;
     margin-left: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .text_alat_jumlah{
@@ -1136,7 +1191,68 @@ footer {
     display: none;
 }
 
+.flat_button{
+    width: 68px;
+    height: 48px;
+    border: 1px solid #FF9742;
+    box-sizing: border-box;
+    border-radius: 9px 0px 0px 9px;
+    cursor: pointer;
+}
 
+.grid_button_flag{
+    position: fixed;
+    bottom: -4px;
+    right: 12px;
+    top: 320px;
+}
+
+.icofont-shopping-cart{
+    font-size: 30px;
+    color: #FF9742;
+    position: relative;
+    left: 20px;
+    top: 7px;
+}
+
+.icofont-cart{
+    font-size: 30px;
+    color: #fff;
+}
+
+.pill_number{
+    position: absolute;
+    right: 8px;
+    top: 2px;
+}
+
+.img-keranjang-modal{
+    width: 80px;
+    height: 80px;
+}
+
+.text-image-keranjang-modal{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #8A8A8A;
+}
+
+.grid-form-modal{
+    margin-top: 30px;
+}
+
+.text-currency-keranjang{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: bold;
+    color: #FF9742;
+    margin-left: 0px;
+    margin-top: 5px;
+}
 
 @media only screen and (max-width:576px) {
 
@@ -1357,7 +1473,7 @@ footer {
 
     .checbox_image {
         position: absolute;
-        bottom: 285px;
+        bottom: 258px;
         right: 0px;
     }
 
@@ -1388,7 +1504,13 @@ footer {
 
     .group-text-keranjang{
         position: absolute;
-        left: 90px;
+        left: 95px;
+        bottom: 10px;
+    }
+
+    .group-text-keranjang-page{
+        position: absolute;
+        left: 95px;
         bottom: 30px;
     }
 
@@ -1397,6 +1519,12 @@ footer {
     }
 
     .text-currency-keranjang{
+        font-size: 14px;
+        position: relative;
+        bottom: 10px;
+    }
+
+    .text-currency-keranjang-page{
         font-size: 14px;
         position: relative;
         bottom: 10px;
@@ -1508,6 +1636,34 @@ footer {
 
     .value_toogle:hover{
         box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.25);
+    }
+
+    .grid_button_flag{
+        left: 300px;
+    }
+
+    .grid-form-modal{
+        margin-top: 0;
+        position: absolute;
+        bottom: 30px;
+        left: 240px;
+    }
+
+    .tombol_keranjang_number{
+        padding: 0 5px 0 5px;
+    }
+
+    .icon-delete{
+        font-size: 18px;
+        margin-left: 10px;
+    }
+
+    .text-button{
+        font-size: 14px;
+    }
+
+    #modal-title{
+        font-size: 14px;
     }
 
 }

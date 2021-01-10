@@ -18,6 +18,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/icofont/icofont.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/placeholder-loading.min.css') }}">
+    {{-- owl courosel --}}
+    {{-- <link rel="stylesheet" href="{{ asset('page/assets/css/owl/docs.theme.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/owl/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/owl/owl.theme.default.min.css') }}"> --}}
 </head>
 
 <body>
@@ -103,6 +109,9 @@
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/main.js') }}"></script>
+<script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
+{{-- <script src="{{ asset('page/assets/js/owl/owl.carousel.js') }}"></script>
+<script src="{{ asset('page/assets/js/highlight.js') }}"></script> --}}
 @stack('skript')
 
 </html>
