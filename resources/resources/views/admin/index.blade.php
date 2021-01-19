@@ -243,6 +243,8 @@
                     height : 2
                 },
                 yaxis : {
+                    min: 0,
+                    tickDecimals: 0,
                     tickColor : '#f5f5f5',
                     font : {
                         color : '#bdbdbd'
