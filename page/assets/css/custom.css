@@ -61,7 +61,7 @@ nav a:hover {
 
 .box_menu_paket{
     width: 224px;
-    border: 1px solid #EF8C17;
+    border: 1px solid #EB5757;
     box-sizing: border-box;
     box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
@@ -80,7 +80,7 @@ nav a:hover {
 .box_title_paket{
     width: 224px;
     height: 50px;
-    background: #FF9742;
+    background: #EB5757;
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
     border-radius: 5px 5px 0px 0px;
     font-family: 'Poppins', serif;
@@ -100,7 +100,7 @@ nav a:hover {
     font-weight: 300;
     font-size: 20px;
     line-height: 30px;
-    color: #EF8C17;
+    color: #EB5757;
     text-align: center;
     width: 221px;
     margin-top: 10px;
@@ -205,7 +205,7 @@ nav a:hover {
     height: 5px;
     bottom: 0;
     z-index: 0;
-    background: #EF8C17;
+    background: #EB5757;
     border-radius: 8px;
     transition: all .5s ease 0s;
 }
@@ -266,22 +266,36 @@ nav a:hover {
 }
 
 input[type=text]:focus {
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
 }
 
 input[type=time]:focus {
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
+    outline: none;
+    border-radius: 2px;
+}
+
+input[type=number]:focus {
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
 }
 
 input[type=date]:focus {
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
+    outline: none;
+    border-radius: 2px;
+}
+
+select:focus{
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
 }
@@ -334,13 +348,13 @@ input[type=date]:focus {
     font-weight: bold;
     font-size: 18px;
     line-height: 21px;
-    color: #EF8C17;
+    color: #EB5757;
     margin-left: 30px;
 }
 
 textarea[id=text-area]:focus{
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
     text-align: left;
@@ -494,7 +508,7 @@ label{
 
 .icon-number_additional {
     font-size: 12px;
-    color: #EF8C17;
+    color: #EB5757;
 }
 
 .btn-number {
@@ -506,13 +520,13 @@ label{
 
 .icon-number {
     font-size: 15px;
-    color: #EF8C17;
+    color: #EB5757;
 }
 
 button:focus {
     outline: 0;
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
 }
 
 .tombol-lg {
@@ -588,12 +602,12 @@ button:focus {
 }
 
 .tombol-keranjang {
-    background-color: #EF8C17;
-    border-color: #EF8C17;
+    background-color: #EB5757;
+    border-color: #EB5757;
 }
 
 .tombol_pesanan_cart{
-    color: #EF8C17;
+    color: #EB5757;
     font-family: 'Poppins', serif;
     font-weight: 500;
     font-size: 16px;
@@ -601,7 +615,7 @@ button:focus {
     letter-spacing: -0.01em;
     transition: 0.3s;
     background-color: #ffffff;
-    border-color: #EF8C17;
+    border-color: #EB5757;
 }
 
 .tombol_lokasi_pengantaran{
@@ -620,12 +634,12 @@ button:focus {
 }
 
 .icofont-location-pin{
-    color: #EF8C17;
+    color: #EB5757;
     font-size: 18px;
 }
 
 .tombol_pesanan_cart:hover{
-    background-color: #EF8C17;
+    background-color: #EB5757;
     color: #ffffff;
 }
 
@@ -651,7 +665,7 @@ button:focus {
     font-size: 16px;
     line-height: 24px;
     letter-spacing: -0.01em;
-    color: #EF8C17;
+    color: #EB5757;
     margin-bottom: 10px;
 }
 
@@ -692,12 +706,12 @@ button:focus {
     font-size: 16px;
     line-height: 24px;
     letter-spacing: -0.01em;
-    color:#EF8C17;
+    color:#EB5757;
 }
 
 .link_alat_cart:hover{
     text-decoration: none;
-    color: #FF9742;
+    color: #EB5757;
 }
 
 .text_keterangan_cart{
@@ -728,7 +742,7 @@ button:focus {
     font-size: 24px;
     font-weight: bold;
     line-height: 36px;
-    color: #EF8C17;
+    color: #EB5757;
 }
 
 .sub-currency {
@@ -785,7 +799,7 @@ button:focus {
 
 .star-rating label:hover,
 .star-rating label:hover~label {
-    color: #EF8C17;
+    color: #EB5757;
 }
 
 .text-card-order {
@@ -877,7 +891,7 @@ button:focus {
     font-weight: bold;
     font-size: 18px;
     line-height: 27px;
-    color: #FF9742;
+    color: #EB5757;
 }
 
 .box_total_keranjang{
@@ -886,7 +900,7 @@ button:focus {
     font-weight: 700;
     font-size: 37px;
     line-height: 55px;
-    color: #EF8C17;
+    color: #EB5757;
     text-align: center;
 }
 
@@ -1015,7 +1029,7 @@ button:focus {
     font-size: 16px;
     line-height: 24px;
     font-weight: bold;
-    color: #FF9742;
+    color: #EB5757;
     margin-left: 40px;
     margin-top: 5px;
 }
@@ -1026,7 +1040,7 @@ button:focus {
     font-size: 16px;
     line-height: 24px;
     font-weight: bold;
-    color: #FF9742;
+    color: #EB5757;
     margin-left: 43px;
     margin-top: 5px;
 }
@@ -1049,7 +1063,7 @@ button:focus {
 }
 
 #modal-header{
-    background: #EF8C17;
+    background: #EB5757;
 }
 
 #modal-title{
@@ -1134,7 +1148,10 @@ table .table_detail_alat{
 }
 
 
-#maps_area{
+.maps_area{
+    height: 300px;
+    background: #eeeeee;
+    border-radius: 3px;
     margin-top: 15px;
 }
 
@@ -1151,7 +1168,7 @@ footer {
     font-style: normal;
     line-height: 32px;
     letter-spacing: 0.08em;
-    color: #FF9742;
+    color: #EB5757;
 }
 
 .list-footer {
@@ -1194,7 +1211,7 @@ footer {
 .flat_button{
     width: 68px;
     height: 48px;
-    border: 1px solid #FF9742;
+    border: 1px solid #EB5757;
     box-sizing: border-box;
     border-radius: 9px 0px 0px 9px;
     cursor: pointer;
@@ -1209,7 +1226,7 @@ footer {
 
 .icofont-shopping-cart{
     font-size: 30px;
-    color: #FF9742;
+    color: #EB5757;
     position: relative;
     left: 20px;
     top: 7px;
@@ -1249,10 +1266,85 @@ footer {
     font-size: 16px;
     line-height: 24px;
     font-weight: bold;
-    color: #FF9742;
+    color: #EB5757;
     margin-left: 0px;
     margin-top: 5px;
 }
+
+.alert {
+    padding: 20px;
+    background-color: #f44336;
+    color: white;
+    font-family: 'Poppins',serif;
+    font-size: 12px;
+  }
+
+  .closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .closebtn:hover {
+    color: black;
+  }
+
+  .title_upload{
+    font-family: 'Poppins',serif;
+      text-align: center;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 24px;
+      line-height: 170%;
+      text-align: center;
+      letter-spacing: 0.1em;
+      color: #000000;
+      margin-top: 35px;
+  }
+
+  .sub_box{
+    width: 750px;
+    height: 180px;
+    background: #FFFFFF;
+    border: 3px dashed #C4C4C4;
+    box-sizing: border-box;
+    margin-left: 150px;
+    margin-top: 42px;
+  }
+
+  .notes_upload_title{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 151%;    
+    letter-spacing: 0.1em;
+    color: #4F4F4F;
+    margin-left: 150px;
+    margin-top: 35px;
+  }
+  .notes_upload_text{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 151%;    
+    letter-spacing: 0.1em;
+    color: #4F4F4F;
+    margin-left: 140px;
+    margin-top: 10px;
+  }
+
+  .grid_upload{
+      margin-top: 32px;
+    margin-left: 280px;
+    margin-bottom: 62px;
+  }
 
 @media only screen and (max-width:576px) {
 
@@ -1347,7 +1439,7 @@ footer {
         height: 5px;
         bottom: 0;
         z-index: 0;
-        background: #EF8C17;
+        background: #EB5757;
         border-radius: 8px;
         transition: all .5s ease 0s;
     }
@@ -1573,7 +1665,7 @@ footer {
     .box_toogle_menu{
         width: 100%;
         height: 48px;
-        background: #FF9742;
+        background: #EB5757;
         box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
         border-radius: 0px;
         display: block;
@@ -1608,7 +1700,7 @@ footer {
         list-style: none;
         width: 100%;
         background: #FFFFFF;
-        border: 1px solid #EF8C17;
+        border: 1px solid #EB5757;
         box-sizing: border-box;
         box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
         border-radius: 0px 0px 5px 5px;
@@ -1630,7 +1722,7 @@ footer {
         font-weight: 300;
         font-size: 20px;
         line-height: 30px;
-        color: #EF8C17;
+        color: #EB5757;
         margin-top: 5px;
     }
 
@@ -1664,6 +1756,36 @@ footer {
 
     #modal-title{
         font-size: 14px;
+    }
+
+    .title_upload{
+        font-size: 18px;
+        line-height: 27px;
+    }
+
+    .sub_box{
+    width: 100%;
+    height: 180px;
+    background: #FFFFFF;
+    border: 3px dashed #C4C4C4;
+    box-sizing: border-box;
+    margin-left: 0px;
+    margin-top: 25px;
+    }   
+
+    .notes_upload_title{
+        font-size: 14px;
+        margin-left: 0px;
+      }
+    .notes_upload_text{
+    font-size: 14px;
+    margin-left: -10px;
+    }
+
+    .grid_upload{
+        margin-top: 32px;
+        margin-left: 0px;
+        margin-bottom: 62px;
     }
 
 }

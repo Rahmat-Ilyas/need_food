@@ -14,7 +14,8 @@ class landingpagecontroller extends Controller
         return view('page.index');
     }
 
-    public function orderindex(){
+    public function orderindex(Request $request){
+        $request->session()->forget('paket_to_delivery');  
         return view('page.order.index');
     }
 
@@ -63,6 +64,10 @@ class landingpagecontroller extends Controller
         }else{
             return 'None';
         }
+    }
+
+    public function upload_struk_view(){
+        return view('page.upload.index');
     }
 
     public function gettoken($id) {
