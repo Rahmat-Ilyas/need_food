@@ -202,9 +202,9 @@
                         $('#dtl_'+key).text(val);
                         if (key == 'created_at') {
                             var dt = new Date(val);
-                            var month = dt.getMonth();
+                            var month = dt.getMonth()+1;
                             var date = dt.getDate();
-                            if (dt.getMonth() < 10) month = '0'+dt.getMonth();
+                            if (month < 10) month = '0'+month;
                             if (dt.getDate() < 10) date = '0'+dt.getDate();
                             var tanggal = date+'/'+month+'/'+dt.getFullYear();
                             $('#dtl_tanggal').text(tanggal);

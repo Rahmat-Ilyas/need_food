@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DataRekening;
 use App\Model\PaketPesanan;
 use App\Model\KritikSaran;
 use App\Model\AdtPesanan;
@@ -1048,48 +1049,48 @@ class ConfigController extends Controller
 					if ($ntf['jenis'] == 'accept') {
 						$notf_view .= '
 						<a href="'.url('admin/datapesanan/pesananbaru').'" class="list-group-item">
-	                        <div class="media">
-	                            <div class="pull-left p-r-10">
-	                                <em class="fa fa-credit-card noti-success"></em>
-	                            </div>
-	                            <div class="media-body">
-	                                <h5 class="media-heading">Bukti Pembayaran ('.$ntf['keterangan'].')</h5>
-	                                <p class="m-0">
-	                                    <small>Pelanggan telah mengirimkan bukti pembayaran</small>
-	                                </p>
-	                            </div>
-	                        </div>
-	                    </a>';
+						<div class="media">
+						<div class="pull-left p-r-10">
+						<em class="fa fa-credit-card noti-success"></em>
+						</div>
+						<div class="media-body">
+						<h5 class="media-heading">Bukti Pembayaran ('.$ntf['keterangan'].')</h5>
+						<p class="m-0">
+						<small>Pelanggan telah mengirimkan bukti pembayaran</small>
+						</p>
+						</div>
+						</div>
+						</a>';
 					} else if ($ntf['jenis'] == 'order') {
 						$notf_view .= '
 						<a href="'.url('admin/datapesanan/pesananbaru').'" class="list-group-item">
-	                        <div class="media">
-	                            <div class="pull-left p-r-10">
-	                                <em class="fa fa-ticket noti-primary"></em>
-	                            </div>
-	                            <div class="media-body">
-	                                <h5 class="media-heading">Pesanan Baru ('.$ntf['keterangan'].')</h5>
-	                                <p class="m-0">
-	                                    <small>Pesanan baru masuk, mohon diperiksa</small>
-	                                </p>
-	                            </div>
-	                        </div>
-	                    </a>';
+						<div class="media">
+						<div class="pull-left p-r-10">
+						<em class="md md-add-shopping-cart noti-primary"></em>
+						</div>
+						<div class="media-body">
+						<h5 class="media-heading">Pesanan Baru ('.$ntf['keterangan'].')</h5>
+						<p class="m-0">
+						<small>Pesanan baru masuk, mohon diperiksa</small>
+						</p>
+						</div>
+						</div>
+						</a>';
 					} else if ($ntf['jenis'] == 'krisar') {
 						$notf_view .= '
 						<a href="'.url('admin/kritiksaran').'" class="list-group-item">
-                            <div class="media">
-                                <div class="pull-left p-r-10">
-                                    <em class="fa fa-envelope-o noti-warning"></em>
-                                </div>
-                                <div class="media-body">
-                                    <h5 class="media-heading">Pesan Masuk ('.$ntf['keterangan'].')</h5>
-                                    <p class="m-0">
-                                        <small>Kritik & Saran dari costumer, cek segera</small>
-                                    </p>
-                                </div>
-                            </div>
-                        </a>';
+						<div class="media">
+						<div class="pull-left p-r-10">
+						<em class="fa fa-envelope-o noti-warning"></em>
+						</div>
+						<div class="media-body">
+						<h5 class="media-heading">Pesan Masuk ('.$ntf['keterangan'].')</h5>
+						<p class="m-0">
+						<small>Kritik & Saran dari costumer, cek segera</small>
+						</p>
+						</div>
+						</div>
+						</a>';
 					}
 				}
 
@@ -1119,19 +1120,19 @@ class ConfigController extends Controller
 				$psnProccess = Pemesanan::where('status', 'Proccess')->orderBy('updated_at', 'desc')->get();
 				foreach ($psnProccess as $psn) {
 					$notf_view .= '
-					<a href="javascript:void(0);" class="list-group-item">
-						<div class="media">
-                        	<div class="pull-left p-r-10">
-                         		<em class="fa fa-cutlery noti-purple"></em>
-                        	</div>
-	                        <div class="media-body">
-	                          	<h5 class="media-heading">Pesanan Baru ('.$psn->kd_pemesanan.')</h5>
-	                          	<p class="m-0">
-	                            	<small>Terdapat pesanan baru yang harus di proses</small>
-	                          	</p>
-	                        </div>
-                      	</div>
-                    </a>';
+					<a href="'.url('kitchen/datapesanan/pesanandiproses').'" class="list-group-item">
+					<div class="media">
+					<div class="pull-left p-r-10">
+					<em class="fa fa-cutlery noti-purple"></em>
+					</div>
+					<div class="media-body">
+					<h5 class="media-heading">Pesanan Baru ('.$psn->kd_pemesanan.')</h5>
+					<p class="m-0">
+					<small>Terdapat pesanan baru yang harus di proses</small>
+					</p>
+					</div>
+					</div>
+					</a>';
 					
 					$notf_view_count = $notf_view_count + 1;
 				}
@@ -1148,6 +1149,198 @@ class ConfigController extends Controller
 				$result['pesanan_proses'] = $pesanan_proses;
 				$result['selesai_proses'] = $selesai_proses;
 				return response()->json($result);
+			}
+
+			// GET DATA DASHBOARD
+			if ($request->req == 'getDataDashboard') {
+				$total_debit = 0;
+				$total_kredit = 0;
+				$total_order = 0;
+				$alat_keluar = 0;
+
+				$keuangan = Keuangan::all();
+				foreach ($keuangan as $dta) {
+					if (date('dmy') == date('dmy', strtotime($dta->tanggal))) {
+						if ($dta->jenis == 'Debit') $total_debit = $total_debit + $dta->nominal;
+						else if ($dta->jenis == 'Kredit') $total_kredit = $total_kredit + $dta->nominal;
+					}
+				}
+
+				$order = Pemesanan::all();
+				foreach ($order as $dta) {
+					if (date('dmy') == date('dmy', strtotime($dta->created_at))) {
+						$total_order = $total_order + 1;
+					}
+				}
+
+				$alat = Alat::all();
+				foreach ($alat as $dta) {
+					$alat_keluar = $alat_keluar + $dta->alat_keluar;
+				}
+
+				$total_debit = number_format($total_debit);
+				$total_kredit = number_format($total_kredit);
+
+				$result['total_debit'] = $total_debit;
+				$result['total_kredit'] = $total_kredit;
+				$result['total_order'] = $total_order;
+				$result['alat_keluar'] = $alat_keluar;
+				return response()->json($result);
+			}
+
+			// CART KEUANGAN 
+			if ($request->req == 'cartKeuangan') {
+				$debit = [];
+				$kredit = [];
+				$uang_kas = [];
+				$ticks = [];
+
+				for ($i=1; $i <= 7; $i++) { 
+					$set_kas = 0;
+					$set_debit = 0;
+					$set_kredit = 0;
+					$cek_ticks = 0;
+					$tanggal_get = strtotime(date('Y-m-d')) - (86400 * (7 - $i));
+					$keuangan = Keuangan::orderBy('id', 'asc')->get();
+					foreach ($keuangan as $dta) {
+						if (date('dmy', $tanggal_get) == date('dmy', strtotime($dta->tanggal))) {
+							if ($dta->jenis == 'Debit') {
+								$set_debit = $set_debit + $dta->nominal;
+								$set_kas = $set_kas + $dta->nominal;
+							}
+							else if ($dta->jenis == 'Kredit') {
+								$set_kredit = $set_kredit + $dta->nominal;
+								$set_kas = $set_kas - $dta->nominal;
+							}
+							$set_ticks = date('d/m/Y', strtotime($dta->tanggal));
+							$cek_ticks = 1;
+						}
+					}
+
+					if ($cek_ticks == 0) $set_ticks = date('d/m/Y', $tanggal_get);
+					if ($set_kas <= 0) $set_kas = 0;
+
+					$debit[] = [$i, $set_debit];
+					$kredit[] = [$i, $set_kredit];
+					$uang_kas[] = [$i, $set_kas];
+					$ticks[] = [$i, $set_ticks];
+				}
+
+				$result['debit'] = $debit;
+				$result['kredit'] = $kredit;
+				$result['uang_kas'] = $uang_kas;
+				$result['ticks'] = $ticks;
+				return response()->json($result);
+			}
+
+			// CART PAKET TERJUAL 
+			if ($request->req == 'cartPaketTerjual') {
+				$data = [];
+				$color = [];
+				$i = 1;
+
+				$get_paket = Paket::all();
+				foreach ($get_paket as $pkt) {
+					$jumlah_paket = 0;
+					$paket_pesanan = PaketPesanan::all();
+					foreach ($paket_pesanan as $dta) {
+						$psn = Pemesanan::where('id', $dta->pemesanan_id)->first();
+						if ($psn) {
+							if ($psn->status != 'New' && $psn->status != 'Cancel' && $psn->status != 'Refuse') {
+								if ($dta->paket_id == $pkt->id) {
+									if (date('Y') == date('Y', strtotime($dta->created_at))) {
+										$jumlah_paket = $jumlah_paket + $dta->jumlah;
+									}
+								}
+							}
+						}
+					}
+
+					$data[] = [
+						'label' => $pkt->nama,
+						'data' => $jumlah_paket
+					];
+
+					$rand = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+					$rand_color = '#'.$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)].$rand[rand(0,15)];
+					$color[] = $rand_color;
+
+					$i = $i + 1;
+				}	
+
+				$result['data'] = $data;
+				$result['color'] = $color;
+				return response()->json($result);
+			}
+
+			// CART DATA PESANAN
+			if ($request->req == 'cartDataPesanan') {
+				$pesanan_masuk = [];
+				$pesanan_konfir = [];
+				$pesanan_tolak = [];
+				$pesanan_batal = [];
+				$ticks = [];
+
+				for ($i=1; $i <= 7; $i++) { 
+					$psn_masuk = 0;
+					$psn_konfir = 0;
+					$psn_tolak = 0;
+					$psn_batal = 0;
+					$cek_ticks = 0;
+					$tanggal_get = strtotime(date('Y-m-d')) - (86400 * (7 - $i));
+					$pesanan = Pemesanan::orderBy('id', 'asc')->get();
+					foreach ($pesanan as $dta) {
+						if (date('dmy', $tanggal_get) == date('dmy', strtotime($dta->created_at))) {
+							$psn_masuk = $psn_masuk + 1;
+							if ($dta->status != 'New' && $dta->status != 'Cancel' && $dta->status != 'Refuse') $psn_konfir = $psn_konfir + 1;
+							else if ($dta->status == 'Refuse') $psn_tolak = $psn_tolak + 1;
+							else if ($dta->status == 'Cancel') $psn_batal = $psn_batal + 1;
+							$set_ticks = date('d/m/Y', strtotime($dta->created_at));
+							$cek_ticks = 1;
+						}
+					}
+
+					if ($cek_ticks == 0) $set_ticks = date('d/m/y', $tanggal_get);
+
+					$pesanan_masuk[] = [$i, $psn_masuk];
+					$pesanan_konfir[] = [$i, $psn_konfir];
+					$pesanan_tolak[] = [$i, $psn_tolak];
+					$pesanan_batal[] = [$i, $psn_batal];
+					$ticks[] = [$i, $set_ticks];
+				}
+
+				$result['pesanan_masuk'] = $pesanan_masuk;
+				$result['pesanan_konfir'] = $pesanan_konfir;
+				$result['pesanan_tolak'] = $pesanan_tolak;
+				$result['pesanan_batal'] = $pesanan_batal;
+				$result['ticks'] = $ticks;
+				return response()->json($result);
+			}
+
+			// UPDATE REKENING 
+			if ($request->req == 'getRekening') {
+				$result = DataRekening::first();
+				return response()->json($result);
+			}
+
+			// UPDATE REKENING 
+			if ($request->req == 'updateRekening') {
+				$rek = DataRekening::first();
+				$rek->nama = $request->nama;
+				$rek->nama_bank = $request->nama_bank;
+				$rek->no_rekening = $request->no_rekening;
+				$rek->save();
+
+				return response()->json($rek);
+			}
+
+			// UPDATE TELEPON 
+			if ($request->req == 'updateTelepon') {
+				$rek = DataRekening::first();
+				$rek->telepon = $request->telepon;
+				$rek->save();
+
+				return response()->json($rek);
 			}
 		}
 	}

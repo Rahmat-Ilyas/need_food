@@ -17,18 +17,18 @@ Route::get('/keranjang','landingpagecontroller@keranjang_index')->name('page.ker
 // SESSION
 Route::get('/getpaket','landingpagecontroller@paket_get')->name('page.paket');
 Route::get('/getpaket_to_delivery','landingpagecontroller@paket_get_delivery')->name('page.paket_delivery');
-// 
+// FRONT
 Route::post('/keranjang/paket_pesanan','landingpagecontroller@paket_pesanan')->name('page.pesanan');
 Route::post('/keranjang/paket_to_delivery','landingpagecontroller@paket_delivery')->name('page.paketDelivery');
 Route::get('/keranjang/detail_alat','landingpagecontroller@detail_alat')->name('page.detail_alat');
 Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.pengantaran');
 Route::get('/upload_bukti_pembayaran','landingpagecontroller@upload_struk_view')->name('page.upload');
+Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
+Route::get('/done/{token}', 'landingpagecontroller@pesananselesai');
+
 Route::get('/trypemesanan', function() {
 	return view('welcome');
 });
-Route::get('/trynotif', 'landingpagecontroller@trynotif');
-Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
-Route::get('/gettoken/{id}', 'landingpagecontroller@gettoken');
 
 // Admin
 Route::group(['prefix' => 'admin'], function () {

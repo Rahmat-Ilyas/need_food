@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DataRekening;
+use App\Model\PaketPesanan;
+use App\Model\AdtPesanan;
 use App\Model\Pemesanan;
+use App\Model\Additional;
+use App\Model\Transaksi;
+use App\Model\Paket;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -86,118 +92,40 @@ class landingpagecontroller extends Controller
     }
 
     public function konfirmasi($token) {
+        $pemesanan_id = null;
         $data = Pemesanan::all();
         foreach ($data as $dta) {
-            $crypt = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
-            $this_token = crypt($dta->id+14, $crypt);
-            $this_token = str_replace('/', 'R', $this_token);
-            $this_token = str_replace('?', 'M', $this_token);
-            $this_token = str_replace('=', 'T', $this_token);
+            $hash = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
+            $this_token = hash('crc32', $hash);
             if ($token == $this_token) {
-                echo $dta->id;
+                $pemesanan_id = $dta->id;
             }
         }
-    }
 
-    public function trynotif() {
-        $this->notification('New', 2);
-    }
-
-    protected function notification($status, $pesanan_id) {
-        if ($status == 'New') {
-            $to = 'admin_device';
-            $title = 'Pesanan Baru';
-            $body = 'Pesanan baru masuk, mohon diperiksa';
-        } else if ($status == 'Accept') {
-            $to = 'admin_device';
-            $title = 'Bukti Pembayaran';
-            $body = 'Pelanggan telah mengirimkan bukti pembayaran';
-        } else if ($status == 'Proccess') {
-            $to = 'kitchen_device';
-            $title = 'Pesanan Baru';
-            $body = 'Terdapat pesanan baru yang harus di proses';
-        } else if ($status == 'Delivery') {
-            $to = 'driver_device';
-            $title = 'Pesanan Siap Diantar';
-            $body = 'Terdapat pesanan yang harus di antar';
-        } else if ($status == 'Arrived') {
-            $to = 'admin_device';
-            $title = 'Pesanan Sampai';
-            $body = 'Pesanan telah sampai di tujuan';
-        } else if ($status == 'Taking') {
-            $to = 'driver_device';
-            $title = 'Pesanan Selseai';
-            $body = 'Pesanan telah selesai dan siap di jemput kembali';
-        } else if ($status == 'Done') {
-            $to = 'admin_device';
-            $title = 'Pesanan Selesai';
-            $body = 'Satu pesanan telah selesai';
+        $pesanan = Pemesanan::where('id', $pemesanan_id)->first();
+        if ($pesanan && $pesanan->status == 'New') {
+            return view('konfirmasi', compact('pesanan'));
         } else {
-            return;
+            abort('403');
         }
+    }
 
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://kesiniku-default-rtdb.firebaseio.com/device_token/'.$to.'.json',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => ['Content-Type:application/json'],
-            CURLOPT_ENCODING => 'json',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-        ));
-
-        $response = json_decode(curl_exec($curl), true);
-        $firebaseToken = [];
-        foreach ($response as $key => $value) {
-            if (isset($value['token'])) {
-                $firebaseToken[] = $value['token'];
+    public function pesananselesai($token) {
+        $pemesanan_id = null;
+        $data = Pemesanan::all();
+        foreach ($data as $dta) {
+            $hash = '17'.$dta->id.'-'.$dta->no_wa.'_'.$dta->kd_pemesanan;
+            $this_token = hash('crc32', $hash);
+            if ($token == $this_token) {
+                $pemesanan_id = $dta->id;
             }
         }
 
-        curl_close($curl);
-
-        $SERVER_API_KEY = 'AAAA0eQ6FxQ:APA91bH4GjxST2iA14lp29LpvtJafU9C_IDfvX7tmPQ5YmyoOsbZmDxtm9M2XJsJfpVANtUFUNdqx8y-_VMLsvv5BfUrapkNjL2LjnrPF8XnpPCNTQxFVdR3ZJH2pda71tzSLEZPeQLm';
-
-        $data = [
-            "registration_ids" => $firebaseToken,
-            "notification" => [
-                "title" => $title,
-                "body" => $body,  
-            ],
-            "webpush" => [
-                "headers" => [
-                    "Urgency" => "high"
-                ]
-            ],
-            "android" => [
-                "priority" => "high"
-            ],
-            "data" => [
-                "needfood.technest.com.KEY_SYNC_REQUEST" => "sync",
-                'pesanan_id' => $pesanan_id
-            ],
-            "priority" => 10
-        ];
-        $dataString = json_encode($data);
-
-        $headers = [
-            'Authorization: key=' . $SERVER_API_KEY,
-            'Content-Type: application/json',
-        ];
-
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-
-        $response = curl_exec($ch);
-
-        dd($response);
+        $pesanan = Pemesanan::where('id', $pemesanan_id)->first();
+        if ($pesanan && $pesanan->status == 'Arrived') {
+            return view('pesananselesai', compact('pesanan'));
+        } else {
+            abort('403');
+        }
     }
 }

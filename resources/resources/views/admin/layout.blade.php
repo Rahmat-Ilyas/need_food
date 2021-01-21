@@ -88,10 +88,15 @@
                         </ul>
                     </li>
                     <li class="dropdown top-menu-item-xs">
-                        <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true"><img src="{{ asset('assets/images/logo-sm.png') }}" alt="user-img" class="img-circle"> </a>
+                        <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
+                            <span style="font-size: 15px; margin-right: 2px;" class="namaView">{{ Auth::user()->nama }}</span>
+                            <img src="{{ asset('assets/images/logo-sm.png') }}" alt="user-img" class="img-circle">
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a href="javascript:void(0)"><i class="ti-user m-r-10 text-custom"></i> Profile</a></li>
+                            <li><h4 style="margin-left: 20px;" class="namaView">{{ Auth::user()->nama }}</h4></li>
                             <li class="divider"></li>
+                            <li><a href="#" data-toggle="modal" data-target="#editProfil"><i class="ti-user m-r-10 text-custom"></i> Account</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#pengaturan"><i class="ti-settings m-r-10 text-custom"></i> Pengaturan</a></li>
                             <li><a href="{{ route('admin.logout') }}"><i class="ti-power-off m-r-10 text-danger"></i> Logout</a></li>
                         </ul>
                     </li>
@@ -170,6 +175,167 @@
     </div>
 </div>
 
+<!-- Modal Profil -->
+<div class="modal" role="dialog" id="editProfil" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Account</h4>
+            </div>
+            <div class="modal-body row" style="padding: 20px 50px 0 50px">
+                <div class="col-md-4">
+                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="user-img" class="img-circle" style="border: 1px solid; height: 100px;">
+                </div>
+                <div class="col-md-8">
+                    <h4>Info Akun</h4>
+                    <p><b>Nama: </b><span class="namaView">{{ Auth::user()->nama }}</span></p>
+                    <p><b>Uesrname: </b><span class="usernameView">{{ Auth::user()->username }}</span></p>
+                    <p><b>Telepon: </b><span class="telepon"></span></p>
+                    <hr>
+                    <h4>Rekening Bank</h4>
+                    <p><b>Nama Bank: </b><span class="nama_bank"></span></p>
+                    <p><b>No. Rekening: </b><span class="no_rekening"></span></p>
+                    <p><b>Atas Nama: </b><span class="atas_nama"></span></p>
+                </div>
+            </div>
+            <div class="modal-footer row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-8">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pengaturan -->
+<div class="modal" role="dialog" id="pengaturan" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog bg-primary">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Pengaturan</h4>
+            </div>
+            <div class="modal-body row">
+                <div class="col-lg-12"> 
+                    <ul class="nav nav-tabs" style="margin-bottom: -19px;"> 
+                        <li class="active"> 
+                            <a href="#updtProfile" data-toggle="tab" aria-expanded="false"> 
+                                <span class="hidden-sm"><i class="fa fa-user"></i> Profil</span> 
+                            </a> 
+                        </li> 
+                        <li class=""> 
+                            <a href="#rekening" data-toggle="tab" aria-expanded="false">
+                                <span class="hidden-sm"><i class="fa fa-credit-card"></i> Rekening</span>
+                            </a>  
+                        </li> 
+                        <li class=""> 
+                            <a href="#nofifWa" data-toggle="tab" aria-expanded="true"> 
+                                <span class="visible-sm"><i class="fa fa-envelope-o"></i></span> 
+                                <span class="hidden-sm"><i class="fa fa-bell-o"></i> Notif Transaksi</span> 
+                            </a>
+                        </li> 
+                    </ul> 
+                    <hr>
+                    <div class="tab-content"> 
+                        <div class="tab-pane p-20 active" id="updtProfile"> 
+                            <h4 class="m-b-20" style="margin-top: -25px;">Update Profile</h4>
+                            <hr>
+                            <form method="POST" action="" id="updateProfile" style="margin-bottom: -20px;">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Nama</label>
+                                    <div class="col-sm-9">
+                                        <input type="hidden" name="id" value="{{ Auth::user()->id }}">
+                                        <input type="text" class="form-control" id="nama" required="" placeholder="Nama..." name="nama" autocomplete="off" value="{{ Auth::user()->nama }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Username</label>
+                                    <div class="col-sm-9">
+                                        <input type="username" class="form-control" id="username" required="" placeholder="Username..." name="username" autocomplete="off" value="{{ Auth::user()->username }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Password</label>
+                                    <div class="col-sm-9">
+                                        <input type="password" class="form-control m-b-5" id="password" placeholder="Ganti Password..." name="password" autocomplete="off" value="">
+                                        <span class="text-info" style="font-size: 14px;">Note: Masukkan password baru untuk mengganti password</span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"></label>
+                                    <div class="col-sm-9">
+                                        <button type="submit" class="btn btn-default mr-2">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div> 
+                        <div class="tab-pane p-20" id="rekening"> 
+                            <h4 class="m-b-20" style="margin-top: -25px;">Update Info Rekening</h4>
+                            <hr>
+                            <div class="alert alert-info">
+                                <strong>Info:</strong> Data rekening akan di kirim customer yang memesan untuk melakukan transfer ke rekening yang diatur di bawah.
+                           </div>
+                            <form method="POST" action="" id="updateRekening" style="margin-bottom: -20px;">
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Nama Bank</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="nama_bank" required="" placeholder="Nama Bank..." name="nama_bank" autocomplete="off" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">No. Rekening</label>
+                                    <div class="col-sm-9">
+                                        <input type="username" class="form-control" id="no_rekening" required="" placeholder="No. Rekening..." name="no_rekening" autocomplete="off" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Atas Nama</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control m-b-5" id="atas_nama" placeholder="Atas Nama..." name="nama" autocomplete="off" value="">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label"></label>
+                                    <div class="col-sm-9">
+                                        <button type="submit" class="btn btn-default mr-2">Update</button>
+                                    </div>
+                                </div>
+                            </form> 
+                        </div> 
+                        <div class="tab-pane  p-20" id="nofifWa"> 
+                            <h4 class="m-b-20" style="margin-top: -25px;">Notifikasi Transaksi</h4>
+                            <hr>
+                            <div class="alert alert-info">
+                                <strong>Info:</strong> Semua notifikasi pembayaran customer akan di teruskan ke nomor yang ditetapkan dibawah (via WhatsApp).
+                           </div>
+                           <form method="POST" action="" id="updateTelepon" style="margin-bottom: -20px;">
+                            <div class="form-group row">
+                                <div class="col-sm-8">
+                                    <label class="col-form-label">Atur Nomor WhatsApp</label>
+                                    <input type="number" class="form-control" id="telepon" required="" placeholder="Nomor WhatsApp..." name="telepon" autocomplete="off" value="">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <button type="submit" class="btn btn-default mr-2">Update</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div> 
+            </div> 
+        </div>
+        <div class="modal-footer row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-8">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 <div class="content-page">
 
   @yield('content')
@@ -231,16 +397,10 @@
 
 <!-- jQuery  -->
 <script src="{{ asset('assets/plugins/waypoints/lib/jquery.waypoints.js') }}"></script>
-<script src="{{ asset('assets/plugins/counterup/jquery.counterup.min.js') }}"></script>
 
-
-
-<script src="{{ asset('assets/plugins/morris/morris.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/raphael/raphael-min.js') }}"></script>
 
 <script src="{{ asset('assets/plugins/jquery-knob/jquery.knob.js') }}"></script>
-
-<script src="{{ asset('assets/pages/jquery.dashboard.js') }}"></script>
 
 <script src="{{ asset('assets/plugins/isotope/js/isotope.pkgd.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/magnific-popup/js/jquery.magnific-popup.min.js') }}"></script>
@@ -308,6 +468,24 @@
 
 
     $(document).ready(function($) {
+        // SET ERROR
+        function setError(data) {
+            var error = '';
+            result = data.responseJSON.message;
+            if (jQuery.type(result) == 'object') {
+                $.each(result, function (key, val) {
+                    error = error + ' ' + val[0];
+                });
+            } else {
+                error = data.responseJSON.message;
+            }
+
+            Swal.fire({
+                title: 'Gagal Diproses',
+                text: error,
+                type: 'error'
+            });
+        }
 
         // UPDATE STATUS KRITIK SARAN
         $.ajax({
@@ -316,6 +494,95 @@
             headers: headers,
             data: { req: 'updateKrisar', status: 'old' },
         });
+
+        // UPDATE PROFILE
+        $('#updateProfile').submit(function(e) {
+            e.preventDefault();
+
+            var data = $(this).serialize();
+            $.ajax({
+                url     : host+"/api/updateauth",
+                method  : "POST",
+                headers : headers,
+                data    : data,
+                success : function(data) {
+                    $('.namaView').text(data.result.nama);
+                    $('.usernameView').text(data.result.username);
+                    $('#nama').val(data.result.nama);
+                    $('#username').val(data.result.username);
+                    $('#password').val('');
+                    swal('Update Berhasil', 'Data akun login berhasil di update!', 'success');
+                    $('.modal').modal('hide');
+                },
+                error: function (data) {
+                    setError(data);
+                }
+            });
+        });
+
+        // GET DATA REKENING
+        getRek();
+        function getRek() {
+            $.ajax({
+                url     : host+"/configuration",
+                method  : "POST",
+                headers : headers,
+                data    : { req: 'getRekening' },
+                success : function(data) {
+                    $('#nama_bank').val(data.nama_bank);
+                    $('#atas_nama').val(data.nama);
+                    $('#no_rekening').val(data.no_rekening);
+                    $('#telepon').val(data.telepon);
+                    $('.nama_bank').text(data.nama_bank);
+                    $('.atas_nama').text(data.nama);
+                    $('.no_rekening').text(data.no_rekening);
+                    $('.telepon').text(data.telepon);
+                }
+            });
+        }
+
+        // UPDATE REKENING
+        $('#updateRekening').submit(function(e) {
+            e.preventDefault();
+
+            var data = $(this).serialize();
+            $.ajax({
+                url     : host+"/configuration",
+                method  : "POST",
+                headers : headers,
+                data    : data+'&req=updateRekening',
+                success : function(data) {
+                    getRek();
+                    swal('Update Berhasil', 'Data rekening berhasil di update!', 'success');
+                    $('.modal').modal('hide');
+                },
+                error: function (data) {
+                    setError(data);
+                }
+            });
+        });
+
+        // UPDATE TELEPON
+        $('#updateTelepon').submit(function(e) {
+            e.preventDefault();
+
+            var data = $(this).serialize();
+            $.ajax({
+                url     : host+"/configuration",
+                method  : "POST",
+                headers : headers,
+                data    : data+'&req=updateTelepon',
+                success : function(data) {
+                    getRek();
+                    swal('Update Berhasil', 'Nomor WhatsApp berhasil di update!', 'success');
+                    $('.modal').modal('hide');
+                },
+                error: function (data) {
+                    setError(data);
+                }
+            });
+        });
+
 
         // NOTIF FIRBASE
         const messaging = firebase.messaging();
@@ -336,11 +603,6 @@
         $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
 
         $('.buttonText').text('Pilih Foto');
-
-        $('.counter').counterUp({
-            delay: 100,
-            time: 1200
-        });
 
         $(".knob").knob();
 

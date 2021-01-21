@@ -558,6 +558,7 @@ class ComposerStaticInit1eb6de3fb089a948caaf4813729ea531
         'App\\Model\\AlatPesanan' => __DIR__ . '/../..' . '/app/Model/AlatPesanan.php',
         'App\\Model\\AuthLogin' => __DIR__ . '/../..' . '/app/Model/AuthLogin.php',
         'App\\Model\\Bahan' => __DIR__ . '/../..' . '/app/Model/Bahan.php',
+        'App\\Model\\DataRekening' => __DIR__ . '/../..' . '/app/Model/DataRekening.php',
         'App\\Model\\Driver' => __DIR__ . '/../..' . '/app/Model/Driver.php',
         'App\\Model\\ItemPaket' => __DIR__ . '/../..' . '/app/Model/ItemPaket.php',
         'App\\Model\\Kategori' => __DIR__ . '/../..' . '/app/Model/Kategori.php',

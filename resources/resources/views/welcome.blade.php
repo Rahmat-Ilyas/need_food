@@ -21,115 +21,212 @@
 
     <script src="{{ asset('assets/js/modernizr.min.js') }}"></script>
 
+    <style type="text/css">
+        #loading {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background-color:rgba(255,255,255,0.5);
+        }
+
+        /*-- css spin --*/
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /*-- css loader --*/
+        .no-js #loader { display: none; }
+        .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+
+        .loader {
+            border: 10px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 10px solid #3498db;
+            border-bottom: 10px solid #FFC107;
+            width: 100px;
+            height: 100px;
+            left: 45.6%;
+            top: 38%;
+            -webkit-animation: spin 2s linear infinite;
+            position: fixed;
+            animation: spin 2s linear infinite;
+        }
+
+        .textLoader{
+            position: fixed;
+            top: 56%;
+            left: 45.6%;
+            color: #34495e;
+        }
+
+        /*-- responsive --*/
+        @media screen and (max-width: 1034px){
+            .textLoader{
+                left: 46.2%;
+            }
+        }
+
+        @media screen and (max-width: 824px){
+            .textLoader {
+                left: 47.2%;
+            }
+        }
+
+        @media screen and (max-width: 732px){
+            .textLoader {
+                left: 48.2%;
+            }
+        }
+
+        @media screen and (max-width: 500px){
+            .loader{
+                left: 36.5%;;
+            }
+            .textLoader {
+                left: 40.5%;
+            }
+        }
+
+        @media screen and (max-height: 432px){
+            .textLoader {
+                top: 65%;
+            }
+        }
+
+        @media screen and (max-height: 350px){
+            .textLoader {
+                top: 75%;
+            }
+        }
+
+        @media screen and (max-height: 312px){
+            .textLoader {
+                display: none;
+            }
+        }
+    </style>
+
 </head>
 <body>
 
     <!-- <div class="account-pages"></div> -->
     <!-- <div class="clearfix"></div> -->
-    <div class="wrapper-page" style="width: 1000px; margin-top: 20px;">
-        <div class=" card-box">
-            <div class="panel-heading" style="margin-bottom: -20px;">
-                <h3 class="text-center">Pemesanan <strong class="text-custom">KESINIKU</strong> </h3>
+    <div class="wrapper-page row" style="width: 100%; margin-top: 20px;">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class=" card-box">
+                <div class="panel-heading" style="margin-bottom: -20px;">
+                    <h3 class="text-center">Pemesanan <strong class="text-custom">KESINIKU</strong> </h3>
+                </div>
+                <hr>
+
+                <form id="formInput">
+                    <div class="panel-body row">
+                        <div class="col-md-6" style="border-right: solid 1px;">
+                            <div class="form-group">
+                                <label>Nama Lengkap</label>
+                                <input type="text" name="nama" required="" placeholder="Nama Lengkap..." class="form-control" required="">
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor Telepon</label>
+                                <input type="number" name="no_telepon" required="" placeholder="Nomor Telepon..." class="form-control" required="">
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor WhatsApp</label>
+                                <input type="number" name="no_wa" required="" placeholder="Nomor WhatsApp..." class="form-control" required="">
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Antar</label>
+                                <input type="date" name="tanggal_antar" required="" placeholder="Tanggal Antar..." class="form-control" required="">
+                            </div>
+                            <div class="form-group">
+                                <label>Waktu Antar</label>
+                                <select class="form-control" name="waktu_antar" required="">
+                                    <option value="">-- Waktu Antar --</option>
+                                    <option value="pagi">Pagi</option>
+                                    <option value="malam">Malam</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Catatan Pesanan</label>
+                                <textarea class="form-control" name="catatan" rows="3" placeholder="Catatan Pesanan..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Pilih Lokasi Pengantaran</label>
+                                <div id="mapView" class="gmaps m-b-5" style="height: 200px;"></div>
+                                <span class="text-info"><i>* Klik maps untuk memilih lokasi</i></span>
+                                <input type="hidden" name="latitude" value="-5.146512141348986" id="setLatitude">
+                                <input type="hidden" name="longitude" value="119.43296873064695" id="setLongitude">
+                                <input type="hidden" id="biaya_pengiriman" name="biaya_pengiriman" value="10000">
+                            </div>
+                            <div class="form-group">
+                                <label>Deskripsi Lokasi</label>
+                                <textarea class="form-control" rows="3" name="deskripsi_lokasi" placeholder="Deskripsi Lokasi..." required=""></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Pilih Paket Menu</label>
+                                <a href="#" class="btn btn-link btn-sm" data-toggle="modal" data-target=".paket-menu">Pilih Paket Disini..</a>
+                            </div>
+                            <div class="form-group">
+                                <label>Pilih Additional Daging</label>
+                                <a href="#" class="btn btn-link btn-sm" data-toggle="modal" data-target=".md-adt">Pilih Additional Disini..</a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- MODAL PAKET -->
+                    <div class="modal paket-menu" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title" id="myModalLabel">Pilih Paket Pesanan</h4>
+                                </div>
+                                <div class="modal-body" id="this-paket">
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Selesai</button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+
+                    <!-- MODAL ADDITIONAL -->
+                    <div class="modal md-adt" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title" id="myModalLabel">Pilih Additional Daging</h4>
+                                </div>
+                                <div class="modal-body row" id="this-adt">
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Selesai</button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+                    <div class="form-group text-right m-b-0">
+                        <button class="btn btn-default btn-block btn-lg waves-effect waves-light" type="submit">
+                            Pesan Sekarang
+                        </button>
+                    </div>
+                </form>
             </div>
-            <hr>
-
-            <form id="formInput">
-                <div class="panel-body row">
-                    <div class="col-md-6" style="border-right: solid 1px;">
-                        <div class="form-group">
-                            <label>Nama Lengkap</label>
-                            <input type="text" name="nama" required="" placeholder="Nama Lengkap..." class="form-control" required="">
-                        </div>
-                        <div class="form-group">
-                            <label>Nomor Telepon</label>
-                            <input type="number" name="no_telepon" required="" placeholder="Nomor Telepon..." class="form-control" required="">
-                        </div>
-                        <div class="form-group">
-                            <label>Nomor WhatsApp</label>
-                            <input type="number" name="no_wa" required="" placeholder="Nomor WhatsApp..." class="form-control" required="">
-                        </div>
-                        <div class="form-group">
-                            <label>Tanggal Antar</label>
-                            <input type="date" name="tanggal_antar" required="" placeholder="Tanggal Antar..." class="form-control" required="">
-                        </div>
-                        <div class="form-group">
-                            <label>Waktu Antar</label>
-                            <select class="form-control" name="waktu_antar" required="">
-                                <option value="">-- Waktu Antar --</option>
-                                <option value="pagi">Pagi</option>
-                                <option value="malam">Malam</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Catatan Pesanan</label>
-                            <textarea class="form-control" name="catatan" rows="3" placeholder="Catatan Pesanan..."></textarea>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Pilih Lokasi Pengantaran</label>
-                            <div id="mapView" class="gmaps" style="height: 200px;"></div>
-                            <input type="hidden" name="latitude" value="-5.146512141348986" id="setLatitude">
-                            <input type="hidden" name="longitude" value="119.43296873064695" id="setLongitude">
-                            <input type="hidden" id="biaya_pengiriman" name="biaya_pengiriman" value="10000">
-                        </div>
-                        <div class="form-group">
-                            <label>Deskripsi Lokasi</label>
-                            <textarea class="form-control" rows="3" name="deskripsi_lokasi" placeholder="Deskripsi Lokasi..." required=""></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Pilih Paket Menu</label>
-                            <a href="#" class="btn btn-link btn-sm" data-toggle="modal" data-target=".paket-menu">Pilih Paket Disini..</a>
-                        </div>
-                        <div class="form-group">
-                            <label>Pilih Additional Daging</label>
-                            <a href="#" class="btn btn-link btn-sm" data-toggle="modal" data-target=".md-adt">Pilih Additional Disini..</a>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- MODAL PAKET -->
-                <div class="modal paket-menu" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h4 class="modal-title" id="myModalLabel">Pilih Paket Pesanan</h4>
-                            </div>
-                            <div class="modal-body" id="this-paket">
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Selesai</button>
-                            </div>
-                        </div><!-- /.modal-content -->
-                    </div><!-- /.modal-dialog -->
-                </div>
-
-                <!-- MODAL ADDITIONAL -->
-                <div class="modal md-adt" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h4 class="modal-title" id="myModalLabel">Pilih Additional Daging</h4>
-                            </div>
-                            <div class="modal-body row" id="this-adt">
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Selesai</button>
-                            </div>
-                        </div><!-- /.modal-content -->
-                    </div><!-- /.modal-dialog -->
-                </div>
-                <div class="form-group text-right m-b-0">
-                    <button class="btn btn-default btn-block btn-lg waves-effect waves-light" type="submit">
-                        Pesan Sekarang
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -137,11 +234,11 @@
         <div class="card-box">
             <div class="card-body">
                 <input class="check" id="checkbox" name="paket_id[]" type="checkbox" style="position: absolute; right: 10px; margin-top: 5px; transform: scale(2);">
-                <div class="media" style="margin: -15px;">
-                    <div class="media-left">
-                        <img class="media-object" id="foto" src="{{ asset('assets/images/paket/img_paket_1607960859.jpg') }}" alt="Card image cap" height="150">
+                <div class="row" style="margin: -15px;">
+                    <div class="col-md-5">
+                        <img class="img-rounded" id="foto" style="margin-left: -10px;" src="{{ asset('assets/images/paket/img_paket_1607960859.jpg') }}" alt="Card image cap" height="150">
                     </div>
-                    <div class="media-body">
+                    <div class="col-md-7">
                         <h3><b id="nama"></b> <span id="harga"></span></h3>
                         <span id="keterangan"></span>
                         <ul id="item_paket">
@@ -150,17 +247,17 @@
                         <div class="form-group row">
                             <label class="col-md-3">Jumlah:</label>
                             <div class="col-md-7">
-                               <input class="demo3" type="number" value="0" name="jumlah_paket[]" autocomplete="off" disabled="">
-                           </div>
-                       </div>
-                   </div>
-               </div>
-           </div>
-       </div>
-   </div>
+                                <input class="demo3" type="number" value="0" name="jumlah_paket[]" autocomplete="off" disabled="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-   <div id="html-adt" hidden="">
-       <div class="col-md-4">
+    <div id="html-adt" hidden="">
+     <div class="col-md-4">
         <input class="check" id="adt_checkbox" name="additional_id[]" type="checkbox" style="position: absolute; right: 20px; margin-top: 10px; transform: scale(1.8);">
         <div class="thumbnail">
             <img id="adt_foto" src="assets/images/big/img3.jpg" class="img-responsive" style="max-height: 180px; min-height: 180px; width: 100%;">
@@ -172,6 +269,15 @@
                 </p>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="loading" hidden="">
+    <span class="loader" hidden=""></span>
+    <div class="textLoader">
+        <center>
+            <b>Please Wait ... </b>
+        </center>
     </div>
 </div>
 
@@ -320,13 +426,23 @@
                 method  : "POST",
                 headers : headers,
                 data    : data,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function (evt) {
+                        if (evt.lengthComputable) {
+                            $("#loading, .loader").removeAttr('hidden');
+                        }
+                    }, false);
+                    return xhr;
+                },
                 success : function(data) {
+                    $("#loading, .loader").attr('hidden', '');
                     Swal.fire({
-                       title: 'Berhasil Diproses',
-                       text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
-                       type: 'success',
-                       onClose: () => { location.href = 'trypemesanan'; }
-                   });
+                     title: 'Berhasil Diproses',
+                     text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
+                     type: 'success',
+                     onClose: () => { location.href = 'trypemesanan'; }
+                 });
                 },
                 error: function (data) {
                     setError(data);
@@ -339,21 +455,21 @@
           var error = '';
           result = data.responseJSON.message;
           if (jQuery.type(result) == 'object') {
-             $.each(result, function (key, val) {
-                error = error + ' ' + val[0];
-            });
-         } else {
-             error = data.responseJSON.message;
-         }
+           $.each(result, function (key, val) {
+            error = error + ' ' + val[0];
+        });
+       } else {
+           error = data.responseJSON.message;
+       }
 
-         Swal.fire({
-             title: 'Gagal Diproses',
-             text: error,
-             type: 'error'
-         });
-     }
+       Swal.fire({
+           title: 'Gagal Diproses',
+           text: error,
+           type: 'error'
+       });
+   }
 
- });
+});
 </script>
 
 <script>

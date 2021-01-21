@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\DataRekening;
 use App\Model\PaketPesanan;
 use App\Model\KritikSaran;
 use App\Model\AlatPesanan;
@@ -1031,6 +1032,8 @@ class RestfullApiController extends Controller
 			'email' => 'required',
 			'status' => 'required',
 			'username' => 'required',
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+			'password' => 'min:5'
 		]);
 
 
@@ -1097,6 +1100,51 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function changePassword(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'old_password' => 'required|min:5',
+			'new_password' => 'required|min:5'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$driver = Driver::find($id);
+
+		if ($driver) {
+			$credential = [
+				'username' => $driver->username,
+				'password' => $request->old_password,
+			];
+
+			if(Auth::guard('driver')->attempt($credential)) {
+				$driver->password = bcrypt($request->new_password);
+				$driver->save();
+				
+				return response()->json([
+					'success' => true,
+					'message' => 'Success update password',
+				], 200);
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'password lama tidak sesuai'
+				], 200);
+			}
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'id not found'
+			], 401);
+		}
+	}
+
 	public function deleteDriver($id)
 	{
 		try {
@@ -1133,13 +1181,15 @@ class RestfullApiController extends Controller
 			'nama' => 'required',
 			'no_telepon' => 'required',
 			'no_wa' => 'required',
-			'tanggal_antar' => 'required',
+			'tanggal_antar' => 'required|date',
 			'waktu_antar' => 'required',
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
 			'longitude' => 'required',
-			'paket_id' => 'required',
-			'jumlah_paket' => 'required',
+			'paket_id' => 'required|array',
+			'jumlah_paket' => 'required|array',
+			'additional_id' => 'array',
+			'jumlah_adt' => 'array',
 			'biaya_pengiriman' => 'required|integer',
 		]);
 
@@ -1153,12 +1203,12 @@ class RestfullApiController extends Controller
 		try {
 			// set kode
 			$getId = Pemesanan::orderBy('id', 'desc')->first();
-			$date = date('dmY');
+			$date = date('dmy');
 			if ($getId) {
-				$findId = sprintf('%02s', $getId->id+1);
+				$findId = sprintf('%04s', $getId->id+1);
 				$kd_pemesanan = 'KSN-'.$findId.$date;
 			}
-			else $kd_pemesanan = 'KSN-01'.$date;
+			else $kd_pemesanan = 'KSN-0001'.$date;
 
 			// set data
 			$pemesanan = $request->all();
@@ -1209,7 +1259,10 @@ class RestfullApiController extends Controller
 			$transaksi['harga_lainnya'] = 0;
 			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
-			$request->session()->forget('paket_to_delivery');  
+
+			// Kirim WA Ke Pelanggan
+			$this->sendMessageWhatsApp('order_detail', $pmsn->id);
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success add data'
@@ -1356,6 +1409,47 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function getPesananUserold(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'no_telepon' => 'required',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$user = Pemesanan::where('no_telepon', $request->no_telepon)->first();
+
+		if ($user) {
+			unset($user['id']);
+			unset($user['kd_pemesanan']);
+			unset($user['tanggal_antar']);
+			unset($user['waktu_antar']);
+			unset($user['catatan']);
+			unset($user['status']);
+			unset($user['pengantaran']);
+			unset($user['penjemputan']);
+			unset($user['bukti_pembayaran']);
+			unset($user['foto_pesanan']);
+			unset($user['created_at']);
+			unset($user['updated_at']);
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $user
+			], 200);
+		} else {
+			return response()->json([
+				'success' => true,
+				'message' => 'Nomor belum terdaftar sebelumnya'
+			], 200);
+		}
+	}
+
 	protected function getDataPesanan($pemesanan, $id = null)
 	{
 		if ($pemesanan) {
@@ -1499,6 +1593,7 @@ class RestfullApiController extends Controller
 							'alat_id' => $alpes->alat_id,
 							'nama_alat' => $get_alat ? $get_alat->nama : null,
 							'jumlah' => $alpes->jumlah.' pcs',
+							'status' => $alpes->status,
 						];
 					}
 					
@@ -1596,6 +1691,13 @@ class RestfullApiController extends Controller
 
 			if ($request->status == 'Proccess' || $request->status == 'proccess') {
 				$this->debitkredit($id, 'pesanan');
+			}
+
+			// Kirim Pesanan WA ke Pelanggan if status batal dan proccess
+			if ($request->status == 'Proccess' || $request->status == 'proccess') {
+				$this->sendMessageWhatsApp('order_accept', $id);
+			} else if ($request->status == 'Refuse' || $request->status == 'refuse') {
+				$this->sendMessageWhatsApp('order_refuse', $id);
 			}
 
 			return response()->json([
@@ -1728,9 +1830,52 @@ class RestfullApiController extends Controller
 
 			$this->notification('Accept', $pesanan->id);
 
+			// Kirim WA Ke Admin
+			$this->sendMessageWhatsApp('upload_payment', $request->pemesanan_id);
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Success upload bukti pembayaran'
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'data not found'
+			], 401);   
+		}
+
+	}
+
+	public function fotoPesanan(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$pesanan = Pemesanan::where('id', $id)->first();
+		if ($pesanan) {
+			$foto = $request->file('foto');
+			$nama_foto = 'img_pesanan_'.time().'.'.$foto->getClientOriginalExtension();
+
+			$pesanan->foto_pesanan = $nama_foto;
+			$pesanan->save();
+
+			$path = 'assets/images/pesanan';
+			$foto->move($path, $nama_foto);
+
+			// Kirim WA Ke Pelanggan
+			$this->sendMessageWhatsApp('order_done', $id);
+
+			return response()->json([
+				'success' => true,
+				'message' => 'Success upload foto pesanan'
 			], 200);
 		} else {
 			return response()->json([
@@ -1835,7 +1980,7 @@ class RestfullApiController extends Controller
 
 	}
 
-	public function cekAlatDriver(Request $request, $id)
+	public function cekAlatsDriver(Request $request, $id)
 	{
 		$validator = Validator::make($request->all(), [
 			'alat_id' => 'required|array',
@@ -1906,6 +2051,90 @@ class RestfullApiController extends Controller
 
 				$i = $i + 1;
 			}
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Pengecekan alat selesai'
+		], 200);
+	}
+
+	public function cekAlatDriver(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'alat_id' => 'required|integer',
+			'jumlah' => 'required|integer'
+		]);
+
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$pemesanan = Pemesanan::where('id', $id)->first();
+		$result = $this->getDataPesanan($pemesanan, $id);
+
+		$alat_id = NULL;
+		$jumlah = 0;
+		foreach ($result->alat as $kat) {
+			foreach ($kat['alat_dipilih'] as $alt) {
+				if ($alt['alat_id'] == $request->alat_id) {
+					$alat_id = $alt['alat_id'];
+					$jumlah = $alt['jumlah'];
+				}
+			}
+		}
+
+		if ($alat_id != NULL) {
+			$alat_pesanan = AlatPesanan::where('pemesanan_id', $id)->where('alat_id', $alat_id)->first();
+			if ($alat_pesanan && $alat_pesanan->status == 'used') {
+				$jumlah_keluar = filter_var($jumlah, FILTER_SANITIZE_NUMBER_INT);
+				if ($request->jumlah < $jumlah_keluar) {
+					// Alat Hilang
+					$jumlah_hilang = $jumlah_keluar - $request->jumlah;
+					$alat_id = $request->alat_id;
+					$alat_hlg = Alat::where('id', $request->alat_id)->first();
+					$jumlah_alat = $alat_hlg->jumlah_alat - $jumlah_hilang;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat_hlg->jumlah_alat = $jumlah_alat;
+					$alat_hlg->save();
+
+					$data = [];
+					$data['pemesanan_id'] = $id;
+					$data['alat_id'] = $alat_id;
+					$data['jumlah_hilang'] = $jumlah_hilang;
+					AlatHilang::create($data);
+				} else if ($request->jumlah > $jumlah_keluar) {
+					return response()->json([
+						'success' => false,
+						'message' => 'jumlah yang di input melebihi ketentuan'
+					], 401);
+				}
+
+				// Alat Kembali
+				$alat = Alat::where('id', $alt['alat_id'])->first();
+				$alat_keluar = $alat->alat_keluar;
+				$update_alat = $alat_keluar - $jumlah_keluar;
+				if ($update_alat <= 0) $update_alat = NULL;
+				$alat->alat_keluar = $update_alat;
+				$alat->save();
+
+				$alat_pesanan->status = 'done';
+				$alat_pesanan->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'alat sudah diatur'
+				], 201);
+			}
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'alat_id tidak sesuai dengan paakaet'
+			], 401);
 		}
 
 		return response()->json([
@@ -2240,11 +2469,11 @@ class RestfullApiController extends Controller
 		}
 
 		if ($request->jenis == 'All' || $request->jenis == 'all') {
-			$result = Keuangan::orderBy('id', $order)->get();
+			$result = Keuangan::orderBy('tanggal', $order)->get();
 		} else if ($request->jenis == 'Debit' || $request->jenis == 'debit') {
-			$result = Keuangan::where('jenis', 'Debit')->orderBy('id', $order)->get();
+			$result = Keuangan::where('jenis', 'Debit')->orderBy('tanggal', $order)->get();
 		} else if ($request->jenis == 'Kredit' || $request->jenis == 'kredit') {
-			$result = Keuangan::where('jenis', 'Kredit')->orderBy('id', $order)->get();
+			$result = Keuangan::where('jenis', 'Kredit')->orderBy('tanggal', $order)->get();
 		}
 
 		$data = [];
@@ -2319,6 +2548,9 @@ class RestfullApiController extends Controller
 	{
 		$data = Keuangan::where('id', $id)->first();
 		if ($data) {
+			$get_kd = substr($data->uraian, strlen($data->uraian)-15, 14);
+			$pesanan = Pemesanan::where('kd_pemesanan', $get_kd)->first();
+			$data['pemesanan_id'] = $pesanan ? $pesanan->id : null;
 			$result = $data;
 
 			return response()->json([
@@ -2566,7 +2798,8 @@ class RestfullApiController extends Controller
 	}
 
 	// NOTIFIKASI
-	protected function notification($status, $pesanan_id) {
+	protected function notification($status, $pesanan_id) 
+	{
 		if ($status == 'New' || $status == 'new') {
 			$to = 'admin_device';
 			$title = 'Pesanan Baru';
@@ -2665,4 +2898,99 @@ class RestfullApiController extends Controller
 
 		$response = curl_exec($ch);
 	}
+
+	// SEND MESSAGE WHATSAPP
+	protected function sendMessageWhatsApp($tipe, $id) 
+	{
+		$rek = DataRekening::first();
+		$pemesanan = Pemesanan::where('id', $id)->first();
+		$psn = $this->getDataPesanan($pemesanan, $id);
+
+		$no_whatsapp = $psn->no_wa;
+		$wa_admin = $rek->telepon;
+		$key = '553709ba9cca8ff2d35acbbd3f4e7e07c77267da14eefb11';
+
+        // Generet Token
+		$hash = '17'.$id.'-'.$psn->no_wa.'_'.$psn->kd_pemesanan;
+		$token = hash('crc32', $hash);
+
+		if ($tipe == 'order_detail') {
+			$paket = '';
+			$additional = '';
+			foreach ($psn->paket as $pkt) {
+				$paket .= '*'.$pkt['nama_paket'].' '.$pkt['jumlah'].' Pax\n';
+			}
+
+			foreach ($psn->additional as $adt) {
+				$additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].' x '.$adt['jumlah'].' Pcs\n';
+			}
+
+			$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';
+
+			$url = 'http://116.203.191.58/api/send_message';
+			$data = array(
+				"phone_no"=> $no_whatsapp,
+				"key"     => $key,
+				"message" => $message
+			);
+		} else if ($tipe == 'order_accept') {
+			$message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+
+			$url = 'http://116.203.191.58/api/send_message';
+			$data = array(
+				"phone_no"=> $no_whatsapp,
+				"key"     => $key,
+				"message" => $message
+			);
+		} else if ($tipe == 'order_refuse') {
+			$message = 'Hai, Kak *'.$psn->nama.'*\nMohon maaf, pesanan anda tidak dapat kami proses, silahkan kunjungi https://kesiniku.com untuk pemesanan ulang!';
+
+			$url = 'http://116.203.191.58/api/send_message';
+			$data = array(
+				"phone_no"=> $no_whatsapp,
+				"key"     => $key,
+				"message" => $message
+			);
+		} else if ($tipe == 'order_done') {
+			$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+
+			$url = 'http://116.203.191.58/api/send_image_url';
+			$img_url = 'https://kesiniku.com/assets/images/pesanan/'.$psn->foto_pesanan;
+			$data = array(
+				"phone_no" => $no_whatsapp,
+				"key"      => $key,
+				"url"      => $img_url,
+				"message"  => $message
+			);
+		} else if ($tipe == 'upload_payment') {
+			$message = 'Bukti pembayaran telah di uplaod\n\nKode Pesanan: '.$psn->kd_pemesanan.'\nNama: '.$psn->nama.'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nSilahkan buka aplikasi mobile Kesiniku atau Website Admin Panel Kesiniku untuk mengkonfirmasi pesanan.';
+
+			$url = 'http://116.203.191.58/api/send_image_url';
+			$img_url = 'https://kesiniku.com/assets/images/konfirmasi/'.$psn->bukti_pembayaran;
+			$data = array(
+				"phone_no" => $wa_admin,
+				"key"      => $key,
+				"url"      => $img_url,
+				"message"  => $message
+			);
+		}
+
+		$data_string = json_encode($data);
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_VERBOSE, 0);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 360);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json',
+			'Content-Length: ' . strlen($data_string)
+		]);
+		$res=curl_exec($ch);
+		curl_close($ch);
+	} 
 }
