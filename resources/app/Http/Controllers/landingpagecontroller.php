@@ -20,7 +20,8 @@ class landingpagecontroller extends Controller
         return view('page.index');
     }
 
-    public function orderindex(){
+    public function orderindex(Request $request){
+        $request->session()->forget('paket_to_delivery');  
         return view('page.order.index');
     }
 
@@ -71,6 +72,30 @@ class landingpagecontroller extends Controller
         }
     }
 
+    public function upload_struk_view(){
+        return view('page.upload.index');
+    }
+
+    public function upload_dropzone(Request $request){
+        dd($request->file('file'));
+    }
+
+
+    public function gettoken($id) {
+        $data = Pemesanan::where('id', $id)->first();
+        if ($data) {
+            $crypt = '17'.$id.'-'.$data->no_wa.'_'.$data->kd_pemesanan;
+            $token = crypt($id+14, $crypt);
+            $token = str_replace('/', 'R', $token);
+            $token = str_replace('?', 'M', $token);
+            $token = str_replace('=', 'T', $token);
+
+            dd($token);
+        } else {
+            echo "id not found";
+        }
+    }
+
     public function konfirmasi($token) {
         $pemesanan_id = null;
         $data = Pemesanan::all();
@@ -84,7 +109,7 @@ class landingpagecontroller extends Controller
 
         $pesanan = Pemesanan::where('id', $pemesanan_id)->first();
         if ($pesanan && $pesanan->status == 'New') {
-            return view('konfirmasi', compact('pesanan'));
+            return view('page.upload.index', compact('pesanan'));
         } else {
             abort('403');
         }

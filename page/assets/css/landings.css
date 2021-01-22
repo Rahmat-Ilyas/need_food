@@ -98,7 +98,7 @@ nav a:hover {
     transform: translate(-50%, -50%);
     font-size: 20px;
     font-family: 'Poppins', serif;
-    color: #FF9742;
+    color: #EB5757;
     letter-spacing: .5px;
     font-style: italic;
     text-transform: uppercase;
@@ -195,8 +195,8 @@ header{
 
 .tombol-order_header {
     color: #ffffff;
-    background-color: #FF9742;
-    border-color: #FF9742;
+    background-color: #EB5757;
+    border-color: #EB5757;
 }
 
 .tombol_submit{
@@ -226,12 +226,12 @@ header{
 }
 
 .tombol_submit:hover{
-    border: 1px solid rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
     outline: none;
 }
 
 .tombol_submit:focus{
-    border: 1px solid rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
     outline: none;
 }
 
@@ -344,7 +344,7 @@ header{
     font-size: 20px;
     line-height: 37px;
     letter-spacing: 0.025em;
-    color: #FF9742;
+    color: #EB5757;
 }
 
 .content-first {
@@ -353,8 +353,8 @@ header{
 
 button:focus {
     outline: 0;
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
 }
 
 iframe{
@@ -387,7 +387,7 @@ iframe{
 }
 
 .tombol_tentang {
-    color: #EF8C17;
+    color: #EB5757;
     font-family: 'Poppins', serif;
     font-weight: 500;
     font-size: 16px;
@@ -395,11 +395,11 @@ iframe{
     letter-spacing: -0.01em;
     transition: 0.3s;
     background-color: #ffffff;
-    border-color: #EF8C17;
+    border-color: #EB5757;
 }
 
 .tombol_menu{
-    color: #EF8C17;
+    color: #EB5757;
     font-family: 'Poppins', serif;
     font-weight: 500;
     font-size: 16px;
@@ -407,11 +407,11 @@ iframe{
     letter-spacing: -0.01em;
     transition: 0.3s;
     background-color: #F5F0EC;
-    border-color: #EF8C17;
+    border-color: #EB5757;
 }
 
 .tombol_menu:hover {
-    background-color: #EF8C17;
+    background-color: #EB5757;
     color: #ffffff;
 }
 
@@ -421,7 +421,7 @@ iframe{
 }
 
 .tombol_tentang:hover {
-    background-color: #EF8C17;
+    background-color: #EB5757;
     color: #ffffff;
 }
 
@@ -437,7 +437,7 @@ iframe{
     font-size: 40px;
     line-height: 60px;
     text-transform: uppercase;
-    color: #FF9742;
+    color: #EB5757;
     text-align: center;
 }
 
@@ -606,7 +606,7 @@ iframe{
     font-weight: 300;
     font-size: 20px;
     line-height: 158.85%;
-    color: #FF9742;
+    color: #EB5757;
 }
 
 .box_kontak{
@@ -631,28 +631,28 @@ iframe{
     line-height: 21px;
     color: #7D7B7B;
     border-radius: 2px;
-    border: 1px solid #FF9742;
+    border: 1px solid #EB5757;
     padding: 10px;
     margin-top: 10px;
 }
 
 input[type=text]:focus {
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
 }
 
 input[type=email]:focus {
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
 }
 
 #textarea{
     height: 199px;
-    border: 1px solid #FF9742;
+    border: 1px solid #EB5757;
     width: 100%;
     font-size: 18px;
     font-family: 'Roboto', sans-serif;
@@ -664,8 +664,8 @@ input[type=email]:focus {
 }
 
 #textarea:focus{
-    border: 1px solid rgba(239, 140, 23, 1);
-    box-shadow: 0 0 5px rgba(239, 140, 23, 1);
+    border: 1px solid rgba(235, 87, 87, 1);
+    box-shadow: 0 0 5px rgba(235, 87, 87, 1);
     outline: none;
     border-radius: 2px;
     font-size: 18px;
@@ -697,7 +697,7 @@ footer {
     font-style: normal;
     line-height: 32px;
     letter-spacing: 0.08em;
-    color: #FF9742;
+    color: #EB5757;
 }
 
 .list-footer {
@@ -736,7 +736,7 @@ footer {
 .flat_button{
     width: 68px;
     height: 48px;
-    border: 1px solid #FF9742;
+    border: 1px solid #EB5757;
     box-sizing: border-box;
     border-radius: 9px 0px 0px 9px;
 }
@@ -757,7 +757,7 @@ footer {
 
 .faq_text{
     font-family: 'Playfair Display', serif;  
-    color: #FF9742;
+    color: #EB5757;
     font-size: 20px;
     font-weight: bold;
     position: relative;
@@ -767,7 +767,7 @@ footer {
 
 .icofont-shopping-cart{
     font-size: 30px;
-    color: #FF9742;
+    color: #EB5757;
     position: relative;
     left: 20px;
     top: 7px;
@@ -810,6 +810,12 @@ footer {
         margin: 6px 0;
         background-color: #ffffff;
         display: block;
+    }
+
+    .navbar-collapse{
+        background: #ffffff;
+        border-radius: 5px;
+        padding : 10px;
     }
 
     .navbar .navbar-nav li a {

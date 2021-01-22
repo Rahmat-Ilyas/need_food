@@ -20,10 +20,14 @@
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/icofont/icofont.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/css/placeholder-loading.min.css') }}">
-    {{-- owl courosel --}}
-    {{-- <link rel="stylesheet" href="{{ asset('page/assets/css/owl/docs.theme.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('page/assets/css/owl/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('page/assets/css/owl/owl.theme.default.min.css') }}"> --}}
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/owl-courosel/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/bootstrap-select/dist/css/bootstrap-select.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/js/sweetalert2/sweetalert2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/min/basic.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/min/dropzone.min.css') }}">
+
+
 </head>
 
 <body>
@@ -108,10 +112,68 @@
 <script src="{{ asset('page/assets/js/jquery-3.5.1.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('page/assets/vendor/bootstrap-select/dist/js/bootstrap-select.js') }}"></script>
+<script src="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/main.js') }}"></script>
 <script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
-{{-- <script src="{{ asset('page/assets/js/owl/owl.carousel.js') }}"></script>
-<script src="{{ asset('page/assets/js/highlight.js') }}"></script> --}}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5g4U_FtOK7LX789QyNyJe90DmnastiI8&callback=initMap&libraries=&v=weekly" defer></script>
+<script>
+ var marker;
+
+function initMap() {
+    const center = { lat: -5.146512141348986, lng: 119.43296873064695 };
+
+    const map = new google.maps.Map(document.getElementById("mapView"), {
+        zoom: 14,
+        center: center,
+    });
+
+    marker = new google.maps.Marker({
+        position: center,
+        map,
+    });
+
+    google.maps.event.addListener(map, 'click', function(event) {
+        setMarker(this, event.latLng);
+    });
+
+}
+
+function setMarker(map, markerPosition) {
+    if( marker ){
+        marker.setPosition(markerPosition);
+    } else {
+        marker = new google.maps.Marker({
+            position: markerPosition,
+            map: map
+        });
+    }
+    map.setZoom(16);
+    map.setCenter(markerPosition);
+
+        // isi nilai koordinat ke form
+        document.getElementById("setLongitude").value = markerPosition.lng();
+        document.getElementById("setLatitude").value = markerPosition.lat();
+
+        // Get Lokasi
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({'latLng': markerPosition}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                    infowindow.setContent(results[1].formatted_address);
+                    infowindow.open(map, marker);
+                }
+            } else {
+                console.log("Geocoder failed due to: " + status);
+            }
+        });
+    }
+
+</script>  
+<script src="{{ asset('page/assets/js/highlight.js') }}"></script>
+<script src="{{ asset('page/assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
+<script src="{{ asset('assets/js/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('page/assets/js/action.js') }}"></script>
 @stack('skript')
 
 </html>

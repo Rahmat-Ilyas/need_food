@@ -1175,6 +1175,7 @@ class RestfullApiController extends Controller
 	// PEMESANAN
 	public function setPesanan(Request $request)
 	{
+		
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'no_telepon' => 'required',
@@ -1258,6 +1259,7 @@ class RestfullApiController extends Controller
 			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
 
+		
 			// Kirim WA Ke Pelanggan
 			$this->sendMessageWhatsApp('order_detail', $pmsn->id);
 

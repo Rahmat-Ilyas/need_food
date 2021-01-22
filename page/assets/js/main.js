@@ -76,15 +76,30 @@ $(document).ready(function () {
         return output;
     }
 
+    makeleton_form = () => {
+        var output = '';
+        output += '<div class="ph-item"><div class="ph-col-6"><div class="ph-picture"></div><div class="ph-row"> <div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12 big"></div></div></div><div class="ph-col-6"><div class="ph-row"><div class="ph-col-12 big"></div><div class="ph-row"></div><div class="ph-row"></div><div class="ph-row"></div><div class="ph-col-12 big"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12 big"></div></div></div></div>';
+        return output;
+    }
+
+    makeleton_list_price = () => {
+        var output = '';
+        output += '<div class="ph-item"><div class="ph-col-12"><div class="ph-picture"></div><div class="ph-row"><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div><div class="ph-col-12"></div></div></div></div>';
+        return output;
+    }
+
     setTimeout(function(){
         $('.paket_content').show();
         $('.box-element').show();   
         $('.content-keranjang-list').show();
         $('.konten_box_harga').show();
+        $('.pengantaran-main').show();
         $('.paket_skelton').hide();
         $('.makeleton_additonal').hide();
         $('.content-keranjang-first').hide(); 
         $('.konten_first').hide();
+        $('.form_first').hide();
+        $('.list_currency_first').hide();   
       }, 3000);    
 
     $.ajax({
@@ -137,7 +152,7 @@ $(document).ready(function () {
                     $('.group_text_order').html('<p class="text-card-order">'+value.keterangan+'</p>');
                     $('.tampung_value').html('<input type="hidden" id="get_paket_id" value="'+value.id+'">');
                     $('#nominals').html('<span class="currency-general">'+value.harga+'</span><span class="sub-currency">/ Paket</span>');
-                    $('.form_qty').html('<div class="input-groups grid_calculate_order"><span class="input-group-btn"><button type="button" class="tombols btn-number" disabled="disabled" data-type="minus" data-field="quant[1]"><i class="icofont-minus icon-number"></i></button></span><input type="text" name="quant[1]" class="form-nedd input-number" value="1" min="1" id="get_qty_paket" max="1000"><span class="input-group-btn"><button type="button" class="tombols btn-number" data-type="plus" data-field="quant[1]"><i class="icofont-plus icon-number"></i></button></span></div>');
+                    $('.form_qty').html("<div class='input-groups grid_calculate_order'><span class='input-group-btn'><button type='button' class='tombols btn-number' onclick='number(`paket_input`,`mines`)' data-type='minus' data-field='quant[1]'><i class='icofont-minus icon-number'></i></button></span><input type='text' name='quant[1]' class='form-nedd input-number' id='paket_input' value='6' min='1' max='1000'><span class='input-group-btn'><button type='button' class='tombols btn-number' data-type='plus' onclick='number(`paket_input`,`add`)' data-field='quant[1]'><i class='icofont-plus icon-number'></i></button></span></div>");
                 }
             }
         });
@@ -163,7 +178,7 @@ $(document).ready(function () {
                      additional += '<div class="row form_card_additonal_product">';
                      additional += '<div class="col-sm-12">';
                      additional += '<div class="card_additional_text">Rp. '+valueOfElement.harga+'</div>';
-                     additional += '<div class="input-group"><span class="input-group-btn"><button type="button" class="tombol_additional btn-number'+index+'" disabled="disabled" data-type="minus" data-field="quant['+index+']"><i class="icofont-minus icon-number_additional"></i></button></span><input type="text" name="quant['+index+']" class="form-nedd_additional input-number" value="1" min="1" max="1000"><span class="input-group-btn"><button type="button" class="tombol_additional btn-number'+index+'" data-type="plus" data-field="quant['+index+']"><i class="icofont-plus icon-number_additional"></i></button></span></div>';
+                     additional += "<div class='input-group'><span class='input-group-btn'><button type='button' class='tombol_additional btn-number'+index+'' data-type='minus' onclick='number(`additional_input"+valueOfElement.id+"`,`mines`)' data-field='quant['+index+']'><i class='icofont-minus icon-number_additional'></i></button></span><input type='text' name='quant['+index+']' class='form-nedd_additional input-number' id='additional_input"+valueOfElement.id+"' value='1' min='1' max='1000'><span class='input-group-btn'><button type='button' class='tombol_additional btn-number'+index+'' data-type='plus' onclick='number(`additional_input"+valueOfElement.id+"`,`add`)' data-field='quant['+index+']'><i class='icofont-plus icon-number_additional'></i></button></span></div>";
                      additional += '</div>';
                      additional += '</div>';
                      additional += '</div>';
@@ -255,8 +270,8 @@ $(".input-number").keydown(function (e) {
     $('#send_to_card_paket').on('click',function () {
         var id_paket = $('#get_paket_id').val();
         var type = 'paket';
-        var get_qty_paket = $('#get_qty_paket').val();
-        $('#get_qty_paket').val(1);
+        var get_qty_paket = $('#paket_input').val();
+        $('#paket_input').val(1);
         var params = '';
         
         $.ajax({
@@ -286,10 +301,21 @@ $(".input-number").keydown(function (e) {
         event.preventDefault();
         var get_id_addtional = [];
         var params_additional = '';
-        var id_additional_var = '';  
+        var id_additional_var = '';
+        var value_x_checked = '';  
         $('input:checkbox[name=id_additional]:checked').each(function () {
-            get_id_addtional.push($(this).val());
+            var val_this = $(this).val();
+
+            value_x_checked = {
+                'id_daging' : val_this,
+                'kuantitas' : $(`#additional_input${val_this}`).val()
+            }
+
+            get_id_addtional.push(value_x_checked)
+
         });
+
+        console.log(get_id_addtional);
         
         if (get_id_addtional.length > 0) {
             if ($(this).data('info') == undefined) {
@@ -297,10 +323,10 @@ $(".input-number").keydown(function (e) {
             }else{
                 id_additional_var  = [get_id_addtional[get_id_addtional.length - 1]];
             }
-            console.log(id_additional_var);
+        
             $.each(id_additional_var,function(index,value){
                 $.ajax({
-                    url     : url+'/api/kelolamenu/getadditional/'+value,
+                    url     : url+'/api/kelolamenu/getadditional/'+value.id_daging,
                     method  : "GET",
                     headers : headers(),
                     success : function(data) {
@@ -310,11 +336,11 @@ $(".input-number").keydown(function (e) {
                             'foto' : data.result['foto'],
                             'nama' : data.result['nama_daging'],
                             'harga' : data.result['harga'], 
-                            'kuantitas':5,
+                            'kuantitas':value.kuantitas,
                             'type' : 'additional', 
                           };      
-                          grouop_value(params_additional);
-                          toastr_notice('success','Berhasil Masukkan Ke Keranjang');                   
+                          grouop_value(params_additional);      
+                          toastr_notice('success','Berhasil Masukkan Ke Keranjang');             
                         }
                 });
             });
@@ -322,19 +348,18 @@ $(".input-number").keydown(function (e) {
             toastr_notice('warning','Anda belum memilih paket daging')
         }
 
+        
         $(this).attr('data-info','222');
-        $('.pill_number').html(tampung['length']+1);
+        $('.pill_number').html(tampung['length']+id_additional_var.length);
     })
 
     grouop_value = (params) =>{
         tampung.push(params);
-        console.log(tampung);
     }
 
     $('.grid_button_flag').click(function () {
         var content_cart_modal = '';
         var path_asset_image = '';
-        console.log(tampung);
         if (tampung.length != 0) {
                $('.box-keranjang-modal').remove();
                $.each(tampung, function (key, values) {
@@ -354,7 +379,7 @@ $(".input-number").keydown(function (e) {
                 content_cart_modal += '</div>';
                 content_cart_modal += '<div class="col-lg-6 group-text-keranjang">';
                 content_cart_modal += '<div class="text-image-keranjang-modal">'+values.nama+'</div>';
-                content_cart_modal += '<div class="text-currency-keranjang">'+values.harga+'</div>';
+                content_cart_modal += '<div class="text-currency-keranjang">Rp.'+values.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'</div>';
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
@@ -409,6 +434,17 @@ $(".input-number").keydown(function (e) {
                window.location.href = url+'/pengantaran';
             }
         })
+    }
+
+    number = (elemen,type) => {
+        var val = $(`#${elemen}`).val();
+        if (type == 'add') {
+            val++;
+            $(`#${elemen}`).val(val);
+        }else{
+            val--;
+            $(`#${elemen}`).val(val);
+        }
     }
 
     toastr_notice = (type,message) =>{
