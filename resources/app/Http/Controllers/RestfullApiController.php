@@ -1260,6 +1260,7 @@ class RestfullApiController extends Controller
 			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
 
+		
 			// Kirim WA Ke Pelanggan
 			$this->sendMessageWhatsApp('order_detail', $pmsn->id);
 

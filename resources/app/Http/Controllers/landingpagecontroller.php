@@ -76,6 +76,11 @@ class landingpagecontroller extends Controller
         return view('page.upload.index');
     }
 
+    public function upload_dropzone(Request $request){
+        dd($request->file('file'));
+    }
+
+
     public function gettoken($id) {
         $data = Pemesanan::where('id', $id)->first();
         if ($data) {
@@ -104,7 +109,7 @@ class landingpagecontroller extends Controller
 
         $pesanan = Pemesanan::where('id', $pemesanan_id)->first();
         if ($pesanan && $pesanan->status == 'New') {
-            return view('konfirmasi', compact('pesanan'));
+            return view('page.upload.index', compact('pesanan'));
         } else {
             abort('403');
         }

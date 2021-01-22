@@ -23,7 +23,10 @@
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/owl-courosel/owl.theme.default.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/bootstrap-select/dist/css/bootstrap-select.css') }}">
-<link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/dropzone.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/js/sweetalert2/sweetalert2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/min/basic.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/min/dropzone.min.css') }}">
+
 
 </head>
 
@@ -168,7 +171,9 @@ function setMarker(map, markerPosition) {
 
 </script>  
 <script src="{{ asset('page/assets/js/highlight.js') }}"></script>
-<script src="{{ asset('page/assets/vendor/dropzone/dropzone.js') }}"></script>
+<script src="{{ asset('page/assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
+<script src="{{ asset('assets/js/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('page/assets/js/action.js') }}"></script>
 @stack('skript')
 
 </html>

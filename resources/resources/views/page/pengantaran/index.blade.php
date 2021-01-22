@@ -161,6 +161,15 @@
 </section>   
 </form>       
 
+<div id="loading" hidden="">
+    <span class="loader" hidden=""></span>
+    <div class="textLoader">
+        <center>
+            <b>Please Wait ... </b>
+        </center>
+    </div>
+</div>
+
  @endsection
  @push('skript')
      <script>
@@ -204,11 +213,27 @@
                     method  : "POST",
                     headers : headers(),
                     data    :$('.form_pengantaran').serialize(),
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', function (evt) {
+                            if (evt.lengthComputable) {
+                                $("#loading, .loader").removeAttr('hidden');
+                            }
+                        }, false);
+                        return xhr;
+                    },
                     success : function(data) {
-                        console.log('success');
+                        $("#loading, .loader").attr('hidden', '');
+                        Swal.fire({
+                     title: 'Berhasil Diproses',
+                     text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
+                     type: 'success',
+                     onClose: () => { location.href = url; }
+                 });
                     },
                     error: function (res) {
                         var text = '';
+                        $("#loading, .loader").attr('hidden', '');
                         $('.validation_error').css('display','block');
                         $('html, body').animate({
                             scrollTop: $(".validation_error").offset().top

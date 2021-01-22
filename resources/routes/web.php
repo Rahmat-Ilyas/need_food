@@ -25,6 +25,7 @@ Route::get('/pengantaran','landingpagecontroller@pengantaran')->name('page.penga
 Route::get('/upload_bukti_pembayaran','landingpagecontroller@upload_struk_view')->name('page.upload');
 Route::get('/konfirmasi/{token}', 'landingpagecontroller@konfirmasi');
 Route::get('/done/{token}', 'landingpagecontroller@pesananselesai');
+Route::post('/upload_dropzone','landingpagecontroller@upload_dropzone');
 
 Route::get('/trypemesanan', function() {
 	return view('welcome');
