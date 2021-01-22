@@ -80,22 +80,6 @@ class landingpagecontroller extends Controller
         dd($request->file('file'));
     }
 
-
-    public function gettoken($id) {
-        $data = Pemesanan::where('id', $id)->first();
-        if ($data) {
-            $crypt = '17'.$id.'-'.$data->no_wa.'_'.$data->kd_pemesanan;
-            $token = crypt($id+14, $crypt);
-            $token = str_replace('/', 'R', $token);
-            $token = str_replace('?', 'M', $token);
-            $token = str_replace('=', 'T', $token);
-
-            dd($token);
-        } else {
-            echo "id not found";
-        }
-    }
-
     public function konfirmasi($token) {
         $pemesanan_id = null;
         $data = Pemesanan::all();
