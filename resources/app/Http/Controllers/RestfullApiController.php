@@ -1032,8 +1032,7 @@ class RestfullApiController extends Controller
 			'email' => 'required',
 			'status' => 'required',
 			'username' => 'required',
-			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240',
-			'password' => 'min:5'
+			'foto' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240'
 		]);
 
 

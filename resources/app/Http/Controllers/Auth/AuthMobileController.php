@@ -35,7 +35,7 @@ class AuthMobileController extends Controller
 				return response()->json([
 					'success' => false,
 					'message' => 'Account is suspended',
-				], 401);
+				], 201);
 			}
 		}
 
