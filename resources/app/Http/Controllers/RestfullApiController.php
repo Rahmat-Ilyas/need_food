@@ -1259,7 +1259,7 @@ class RestfullApiController extends Controller
 			$transaksi['total_harga'] = $harga_paket + $harga_additional + $request->biaya_pengiriman;
 			Transaksi::create($transaksi);
 
-		
+
 			// Kirim WA Ke Pelanggan
 			$this->sendMessageWhatsApp('order_detail', $pmsn->id);
 
@@ -2564,6 +2564,47 @@ class RestfullApiController extends Controller
 				'message' => 'Data not found'
 			], 404);
 		}
+	}
+
+	public function getDatathisWeek() 
+	{
+		$debit = [];
+		$kredit = [];
+		$uang_kas = [];
+
+		for ($i=1; $i <= 7; $i++) { 
+			$set_kas = 0;
+			$set_debit = 0;
+			$set_kredit = 0;
+			$tanggal_get = strtotime(date('Y-m-d')) - (86400 * (7 - $i));
+			$keuangan = Keuangan::orderBy('id', 'asc')->get();
+			foreach ($keuangan as $dta) {
+				if (date('dmy', $tanggal_get) == date('dmy', strtotime($dta->tanggal))) {
+					if ($dta->jenis == 'Debit') {
+						$set_debit = $set_debit + $dta->nominal;
+						$set_kas = $set_kas + $dta->nominal;
+					}
+					else if ($dta->jenis == 'Kredit') {
+						$set_kredit = $set_kredit + $dta->nominal;
+						$set_kas = $set_kas - $dta->nominal;
+					}
+				}
+			}
+
+			if ($set_kas <= 0) $set_kas = 0;
+			$tanggal = date('Y-m-d', $tanggal_get);
+
+			$result[date('D', $tanggal_get)]['debit'] = $set_debit;
+			$result[date('D', $tanggal_get)]['kredit'] = $set_kredit;
+			$result[date('D', $tanggal_get)]['uang_kas'] = $set_kas;
+			$result[date('D', $tanggal_get)]['tanggal'] = $tanggal;
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Success get data',
+			'result'  => $result
+		], 200);
 	}
 
 	public function setKeuangan(Request $request)

@@ -102,6 +102,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('keuangan/create', 'RestfullApiController@setKeuangan');
     Route::get('keuangan/getdata', 'RestfullApiController@getsKeuangan');
     Route::get('keuangan/getdata/{id}', 'RestfullApiController@getKeuangan');
+    Route::get('keuangan/datathisweek', 'RestfullApiController@getDatathisWeek');
     Route::put('keuangan/edit/{id}', 'RestfullApiController@putKeuangan');
     Route::delete('keuangan/delete/{id}', 'RestfullApiController@deleteKeuangan');
 

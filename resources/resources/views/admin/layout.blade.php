@@ -275,7 +275,7 @@
                             <h4 class="m-b-20" style="margin-top: -25px;">Update Info Rekening</h4>
                             <hr>
                             <div class="alert alert-info">
-                                <strong>Info:</strong> Data rekening akan di kirim customer yang memesan untuk melakukan transfer ke rekening yang diatur di bawah.
+                                <strong>Info:</strong> Data rekening akan di kirim ke customer yang memesan untuk melakukan transfer ke rekening yang diatur di bawah.
                            </div>
                             <form method="POST" action="" id="updateRekening" style="margin-bottom: -20px;">
                                 <div class="form-group row">
