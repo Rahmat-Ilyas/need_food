@@ -47,7 +47,7 @@
 						<div style="width: 40%; float: left;">
 							<p><b>Kode Pesanan:</b> <span id="kd_pemesanan"></span></p>
 							<p><b>Tanggal Pesan:</b> <span id="tanggal_antar"></span></p>
-							<p><b>Nama Pemesan:</b> <span id="nama"></span></p>
+							<p><b>Nama Pemesan:</b> <span id="nama_pemesan"></span></p>
 						</div>
 						<div style="width: 60%; float: left;">
 							<p><b>Telepon:</b> <span id="no_telepon"></span></p>
@@ -100,21 +100,23 @@
 				url     : host+"/configuration",
 				method  : "POST",
 				headers	: headers,
-				data	: { req: 'pesananbaru' },
+				data	: { req: 'getviewprint' },
 				success : function(data, textStatus, xhr) {
 					dataTable.clear().draw();
 					if (xhr.status == 200) {
 						$.each(data.result, function(key, val) {
-							dataTable.row.add([
-								val.kd_pemesanan,
-								val.nama,
-								val.no_telepon+ '/' +val.no_wa,
-								val.jadwal_antar,
-								val.deskripsi_lokasi,
-								`<div class="text-center">
-								<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="print-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Print Alat Pesanan"><i class="fa fa-print"></i> Print Alat Pesanan</a>
-								</div>`,
-								]).draw(false);
+							if (val.status != 'New') {
+								dataTable.row.add([
+									val.kd_pemesanan,
+									val.nama,
+									val.no_telepon+ '/' +val.no_wa,
+									val.jadwal_antar,
+									val.deskripsi_lokasi,
+									`<div class="text-center">
+									<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="print-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Print Alat Pesanan"><i class="fa fa-print"></i> Print Alat Pesanan</a>
+									</div>`,
+									]).draw(false);
+							}
 						});
 					}
 				}
@@ -137,6 +139,7 @@
 					data.result.tanggal_antar = date+'/'+month+'/'+dt.getFullYear();
 					$.each(data.result, function(key, val) {
 						$('#'+key).text(val);
+						if (key == 'nama') $('#nama_pemesan').text(val);
 					});
 
 					$.each(data.result.alat, function(key, val) {

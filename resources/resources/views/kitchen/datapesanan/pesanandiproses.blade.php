@@ -94,19 +94,19 @@
 		getPesanan();
 		function getPesanan() {
 			var dataTable = $('#tabelPesananbaru').DataTable();
+			dataTable.clear().draw();
 			$.ajax({
 				url     : host+"/api/datapesanan/status/proccess",
 				method  : "GET",
 				headers	: headers,
 				success : function(data, textStatus, xhr) {
-					dataTable.clear().draw();
 					if (xhr.status == 200) {
 						$.each(data.result, function(key, val) {
 							var dt = new Date(val.tanggal_antar);
-                            var month = dt.getMonth()+1;
-                            var date = dt.getDate();
-                            if (month < 10) month = '0'+month;
-                            if (dt.getDate() < 10) date = '0'+dt.getDate();
+							var month = dt.getMonth()+1;
+							var date = dt.getDate();
+							if (month < 10) month = '0'+month;
+							if (dt.getDate() < 10) date = '0'+dt.getDate();
 							dataTable.row.add([
 								val.kd_pemesanan,
 								val.nama,
@@ -138,21 +138,21 @@
 				success : function(data) {
 					var data = data.result.alat;
 					$.ajax({
-	                    url: host + "/configuration",
-	                    method: "POST",
-	                    headers: headers,
-	                    data: { data: data, req: 'setAlatPilih' },
-	                    success: function(result) {
-	                        $('#kategori-alat').html(result);
+						url: host + "/configuration",
+						method: "POST",
+						headers: headers,
+						data: { data: data, req: 'setAlatPilih' },
+						success: function(result) {
+							$('#kategori-alat').html(result);
 							$('.select2').select2({
 								placeholder: "Pilih Alat"
 							});
 
 							$.each(data, function(index, val) {
-								 cekAlatExits(val.kategori_alat_id)
+								cekAlatExits(val.kategori_alat_id)
 							});
-	                    }
-	                });
+						}
+					});
 				}
 			});
 		});
@@ -163,15 +163,15 @@
 			var alat_dipilih = $(this).val();
 
 			$.ajax({
-                url: host + "/configuration",
-                method: "POST",
-                headers: headers,
-                data: { kategori_id: ktgr_id, alat_id: alat_dipilih, req: 'alatSelected' },
-                success: function(data) {
-                    $('#pilih-alat'+ktgr_id).append(data);
+				url: host + "/configuration",
+				method: "POST",
+				headers: headers,
+				data: { kategori_id: ktgr_id, alat_id: alat_dipilih, req: 'alatSelected' },
+				success: function(data) {
+					$('#pilih-alat'+ktgr_id).append(data);
 					cekAlatExits(ktgr_id);
-                }
-            });
+				}
+			});
 		});
 
 		$(document).on('click', '#hapus-item', function(event) {
@@ -183,14 +183,14 @@
 		function cekAlatExits(ktgr_id) {
 			var data = $('#formPilihAlat').serialize();
 			$.ajax({
-                url: host + "/configuration",
-                method: "POST",
-                headers: headers,
-                data: data+'&ktgr_id='+ktgr_id+'&req=cekAlatExits',
-                success: function(data) {
-                    $('#alat-dipilih'+ktgr_id).html(data);
-                }
-            });
+				url: host + "/configuration",
+				method: "POST",
+				headers: headers,
+				data: data+'&ktgr_id='+ktgr_id+'&req=cekAlatExits',
+				success: function(data) {
+					$('#alat-dipilih'+ktgr_id).html(data);
+				}
+			});
 		}
 
 		$(document).on('click', '#selesai-packing', function(event) {
@@ -205,15 +205,15 @@
 				success : function(data) {
 					var data = data.result.alat;
 					$.each(data, function(index, val) {
-						 if (val.alat_dipilih.length == 0) unset = true;
+						if (val.alat_dipilih.length == 0) unset = true;
 					});
 
 					if (unset) {
 						Swal.fire({
-			               title: 'Alat Belum Diatur',
-			               text: 'Pastikan anda telah mengatur alat yang akan dikirim sebelum melakukan proses ini!',
-			               type: 'warning'
-			            });
+							title: 'Alat Belum Diatur',
+							text: 'Pastikan anda telah mengatur alat yang akan dikirim sebelum melakukan proses ini!',
+							type: 'warning'
+						});
 					} else {
 						$.ajax({
 							url     : host+"/api/datapesanan/updatestatus/"+id,
@@ -223,17 +223,17 @@
 							success : function(data) {
 								getPesanan();
 								Swal.fire({
-					               title: 'Berhasil Diproses',
-					               text: 'Pesanan telah diselesaikan, pemberitahuan akan di kirim ke Driver',
-					               type: 'success'
-					            });
+									title: 'Berhasil Diproses',
+									text: 'Pesanan telah diselesaikan, pemberitahuan akan di kirim ke Driver',
+									type: 'success'
+								});
 							}, error: function (data) {
-					            Swal.fire({
-					               title: 'Gagal Diproses',
-					               text: data.message,
-					               type: 'error'
-					            });
-					        }
+								Swal.fire({
+									title: 'Gagal Diproses',
+									text: data.message,
+									type: 'error'
+								});
+							}
 						});
 					}
 				}
@@ -241,13 +241,13 @@
 		});
 
 		// NOTIF FIRBASE
-        const messaging = firebase.messaging();
+		const messaging = firebase.messaging();
 
-        messaging.onMessage((payload) => {
-            console.log('Notification ', payload);
-            getPesanan();
-            notifCountView();
-        });
+		messaging.onMessage((payload) => {
+			console.log('Notification ', payload);
+			getPesanan();
+			notifCountView();
+		});
 	});
 </script>
 @endsection

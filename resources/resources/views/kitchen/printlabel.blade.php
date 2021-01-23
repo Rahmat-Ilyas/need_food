@@ -75,29 +75,31 @@
 				url     : host+"/configuration",
 				method  : "POST",
 				headers	: headers,
-				data	: { req: 'pesananbaru' },
+				data	: { req: 'getviewprint' },
 				success : function(data, textStatus, xhr) {
 					if (xhr.status == 200) {
 						$.each(data.result, function(key, val) {
-							$('#tb-print').append(`
-								<tr>
-								<td>
-								<input type="checkbox" id="chek-print" value="`+ val.id +`" name="val_chek[]">
-								</td>
-								<td>`+ val.kd_pemesanan +`</td>
-								<td>`+ val.nama +`</td>
-								<td>`+ val.no_telepon +`</td>
-								<td>`+ val.no_wa +`</td>
-								<td>`+ val.deskripsi_lokasi +`</td>
-								</tr>
-								`);
+							if (val.status != 'New') {
+								$('#tb-print').append(`
+									<tr>
+									<td>
+									<input type="checkbox" id="chek-print" value="`+ val.id +`" name="val_chek[]">
+									</td>
+									<td>`+ val.kd_pemesanan +`</td>
+									<td>`+ val.nama +`</td>
+									<td>`+ val.no_telepon +`</td>
+									<td>`+ val.no_wa +`</td>
+									<td>`+ val.deskripsi_lokasi +`</td>
+									</tr>
+									`);
+							}
 						});
 					} else {
 						$('#tb-print').append(`
 							<tr>
 							<td colspan="6" class="text-center">Tidak ada data pesanan</td>
 							</tr>
-						`);
+							`);
 					}
 				}
 			});
@@ -130,6 +132,9 @@
 					if (data.result) {
 						$('.print').printArea();
 					}
+				},
+				error: function(data) {
+					alert('ok');
 				}
 			});
 		});

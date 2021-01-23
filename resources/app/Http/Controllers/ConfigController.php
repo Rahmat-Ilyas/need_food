@@ -58,6 +58,26 @@ class ConfigController extends Controller
 						'message' => 'Data not found'
 					], 204);
 				}
+			} else if ($request->req == 'getviewprint') {
+				$result = [];
+				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->where('status', 'Proccess')->orWhere('status', 'Delivery')->get();
+				foreach ($pemesanan as $dta) {
+					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
+					$result[] = $dta;
+				}
+
+				if (count($result) > 0) {
+					return response()->json([
+						'success' => true,
+						'message' => 'Success get data',
+						'result'  => $result
+					], 200);
+				} else {
+					return response()->json([
+						'success' => false,
+						'message' => 'Data not found'
+					], 204);
+				}
 			} else if ($request->req == 'riwayatpesanan') {
 				$result = [];
 				if ($request->status == 'all') $pemesanan = Pemesanan::orderBy('id', 'desc')->get();

@@ -252,16 +252,10 @@
 
   <!-- jQuery  -->
   <script src="{{ asset('assets/plugins/waypoints/lib/jquery.waypoints.js') }}"></script>
-  <script src="{{ asset('assets/plugins/counterup/jquery.counterup.min.js') }}"></script>
 
-
-
-  <script src="{{ asset('assets/plugins/morris/morris.min.js') }}"></script>
   <script src="{{ asset('assets/plugins/raphael/raphael-min.js') }}"></script>
 
   <script src="{{ asset('assets/plugins/jquery-knob/jquery.knob.js') }}"></script>
-
-  <script src="{{ asset('assets/pages/jquery.dashboard.js') }}"></script>
 
   <script src="{{ asset('assets/plugins/isotope/js/isotope.pkgd.min.js') }}"></script>
   <script src="{{ asset('assets/plugins/magnific-popup/js/jquery.magnific-popup.min.js') }}"></script>
@@ -389,11 +383,6 @@
       $(document).tooltip({ selector: '[data-toggle1="tooltip"]' });
 
       $('.buttonText').text('Pilih Foto');
-
-      $('.counter').counterUp({
-        delay: 100,
-        time: 1200
-      });
 
       $(".knob").knob();
 
