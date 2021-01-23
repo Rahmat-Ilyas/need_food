@@ -2594,10 +2594,12 @@ class RestfullApiController extends Controller
 			if ($set_kas <= 0) $set_kas = 0;
 			$tanggal = date('Y-m-d', $tanggal_get);
 
-			$result[date('D', $tanggal_get)]['debit'] = $set_debit;
-			$result[date('D', $tanggal_get)]['kredit'] = $set_kredit;
-			$result[date('D', $tanggal_get)]['uang_kas'] = $set_kas;
-			$result[date('D', $tanggal_get)]['tanggal'] = $tanggal;
+			$result[] = [
+				'debit' => $set_debit,
+				'kredit' => $set_kredit,
+				'uang_kas' => $set_kas,
+				'tanggal' => $tanggal
+			];
 		}
 
 		return response()->json([
