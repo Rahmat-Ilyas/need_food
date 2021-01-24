@@ -50,7 +50,7 @@ class AuthMobileController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Unauthorised',
-			], 401);
+			], 201);
 		}
 	}
 
