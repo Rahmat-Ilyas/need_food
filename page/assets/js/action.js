@@ -31,12 +31,12 @@ $(function () {
             },
            success: function (response) {
             $("#loading, .loader").attr('hidden', '');
-            Swal.fire({
-                title: 'Berhasil Diproses',
-                text: 'Terima Kasih Telah Melakukan Konfirmasi Pembayaran, Pesanan anda akan segera di proses',
-                type: 'success',
-                onClose: () => { location.href = url; }
-            });
+                Swal.fire({
+                    title: 'Berhasil Diproses',
+                    text: 'Terima Kasih Telah Melakukan Konfirmasi Pembayaran, Pesanan anda akan segera di proses',
+                    type: 'success',
+                    onClose: () => { location.href = url; }
+                });
            }
        });
        

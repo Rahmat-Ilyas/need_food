@@ -5,22 +5,18 @@
         <div class="banner-img">
             <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
         </div>
-        <div class="container">
-            {{-- <div class="row"> --}}
-             
+        <div class="container"> 
                 <div class="sub_banner_text">NGUMPUL BARENG TEMAN BINGUNG MAU MAKAN APA ?</div>
                  <div class="banner-text">Need Food Container <br> Solusinya</div>
                  <div class="tombol_jumbroton">
                      <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
                    </div>
                   <div class="text_time_header"> Setiap hari 08:30 am - 23:00 pm </div>
-             
-            {{-- </div> --}}
         </div>
     </div>
 </header>
 
-<section class="tentang">
+<section id="tentang">
     <div class="container">
         <div class="row">
             <div class="col-md-6 content-first">
@@ -60,7 +56,7 @@
     </div>
 </section>
 
-<section class="menu">
+<section id="menu">
     <div class="box_menu">
        <div class="container">
            <div class="row content_first_menu">
@@ -138,7 +134,7 @@
 </section>
 
 <section class="layouts_area">
-    <div class="container">
+    <div id="testimoni" class="container">
         <div class="title_tentang grid_testimoni_title"> Testimoni </div>
     <div class="row">
         <div class="col-lg-4">
@@ -183,7 +179,7 @@
 
 <section class="saran_masukan">
     <div class="container">
-        <div class="row">
+        <div id="kontak" class="row">
             <div class="col-md-6">
                 <div class="title_tentang"> Saran dan <br> <span class="note_text">Masukkan</span> </div>
                 <p class="text_saran">Masukkan saran tentang produk <br> dan pelayanan kami</p>
@@ -193,37 +189,55 @@
                 <div class="box_kontak">
                         <form class="form_kontak">
                             <div class="form-group">
-                                <input type="text" class="form-control-kontak" id="formGroupExampleInput" placeholder="Nama">
+                                <input type="text" class="form-control-kontak" name="nama" id="formGroupExampleInput" placeholder="Nama">
                               </div>
                               <div class="form-group">
-                                <input type="text" class="form-control-kontak" id="formGroupExampleInput" placeholder="Nama Belakang">
+                                <input type="email" class="form-control-kontak" name="email" id="formGroupExampleInput" placeholder="E-Mail">
                               </div>
                               <div class="form-group">
-                                <input type="email" class="form-control-kontak" id="formGroupExampleInput" placeholder="E-Mail">
-                              </div>
-                              <div class="form-group">
-                                <textarea id="textarea" placeholder="Tulis Pesan"></textarea>
+                                <textarea id="textarea" placeholder="Tulis Pesan" name="pesan"></textarea>
                               </div>
 
                             
-                                <button type="button" class="tombol_submit tombol-order_header">Submit</button>
-                            
-
+                                <button type="button" id="submit_saran_masukan" class="tombol_submit tombol_saran_masukan">Submit</button>
+                                <div class="container">
+                                    <div class="row validation_error">
+                                        <div class="col-lg-12 offset-lg-12 mt-3">
+                                            <div class="alert">
+                                                <span class="closebtn">&times;</span> 
+                                                <strong>Form Belum Lengkap !!!</strong> 
+                                                <ul class="list_error">
+                                                  
+                                                </ul>
+                                              </div>
+                
+                                        </div>
+                                    </div>
+                                </div>
                         </form>
+
                 </div>
+           
             </div>
     </div>
     </div>
   
 </section>
 
-{{-- <div class="flat_button grid_button_flag">
-    <i class="icofont-shopping-cart" id="icon_flat"></i>
-    <span class="badge badge-danger pill_number">3</span>
-</div> --}}
 
+{{-- 
 <div class="flat_button grid_button_faq">
    <div class="faq_text">FAQ</div>
-</div>
+</div> --}}
 
 @endsection
+@push('skript')
+    <script>
+        $(function () {
+            $('.validation_error').css('display','none');
+            $('.closebtn').on('click', function () {
+                $('.validation_error').css('display','none');
+             })
+        })
+    </script>
+@endpush

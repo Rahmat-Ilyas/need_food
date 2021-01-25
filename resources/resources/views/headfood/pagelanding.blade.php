@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('page/assets/css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('page/assets/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('page/assets/css/toastr.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/css/landings.css') }}">
 <link rel="stylesheet" href="{{ asset('page/assets/css/slick.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
@@ -18,6 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/icofont/icofont.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
 
 </head>
 
@@ -45,16 +48,16 @@
                                         class="sr-only">(current)</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link portfolio">Menu</a>
+                                <a class="nav-link tentang scroll" href="#tentang">Tentang</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link kontak">Tentang</a>
+                                <a class="nav-link portfolio scroll" href="#menu">Menu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link kontak">Testimonis</a>
+                                <a class="nav-link testimoni scroll" href="#testimoni">Testimoni</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link kontak">Kontak</a>
+                                <a class="nav-link kontak scroll" href="#kontak">Kontak</a>
                             </li>
                         </ul>
     
@@ -104,16 +107,68 @@
 <script src="{{ asset('page/assets/js/jquery-3.5.1.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('page/assets/js/mains.js') }}"></script>
+<script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
+<script src="{{ asset('page/assets/js/main.js') }}"></script>
 <script src="{{ asset('page/assets/js/landing.js') }}"></script>
 <script src="{{ asset('page/assets/js/slick.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.js"></script>
 <script>
     
-    window.addEventListener('scroll',function () {
-        let header = document.querySelector('nav');
-        let windowPosition = window.scrollY > 0;
-        header.classList.toggle('scrolling-active', windowPosition);
-    })
+   $(document).ready(function () {
+       scrollingpage();
+       changenavbar();
+   });
+
+    function scrollingpage() {
+        var scrollink = $('.scroll');
+
+        scrollink.click(function (e) {
+            e.preventDefault();
+            $('body,html').animate({
+            scrollTop: $(this.hash).offset().top
+            }, 1000 );
+        });
+
+        $(window).scroll(function() {
+        var scrollbarLocation = $(this).scrollTop();
+
+        scrollink.each(function() {
+            
+            var sectionOffset = $(this.hash).offset().top - 20;
+            
+            if ( sectionOffset <= scrollbarLocation ) {
+                $(this).parent().addClass('active');
+                $(this).parent().siblings().removeClass('active');
+            }
+            })
+            
+        })
+    }
+
+    function changenavbar() {
+        const header = document.querySelector(".navbar");
+        const sectionOne = document.querySelector(".text_time_header");
+
+        const sectionOneOptions = {
+        rootMargin: "-200px 0px 0px 0px"
+        };
+
+        const sectionOneObserver = new IntersectionObserver(function(
+        entries,
+        sectionOneObserver
+        ) {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+            header.classList.add("nav-scrolled");
+            } else {
+            header.classList.remove("nav-scrolled");
+            }
+        });
+        },
+        sectionOneOptions);
+
+        sectionOneObserver.observe(sectionOne);
+    }
 
 </script>
 @stack('skript')
