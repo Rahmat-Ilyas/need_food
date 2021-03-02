@@ -196,12 +196,12 @@
                         html+='<input type="hidden" value="'+valueOfElement.id+'" name="additional_id[]">';
                         html+='<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah_adt[]">';
                     }
-                    sub_total+=parseInt(valueOfElement.harga);
+                    sub_total+=parseInt(valueOfElement.harga * valueOfElement.kuantitas);
                 });
                 $('#subtotal').html('Rp '+sub_total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
                 $('#paket_data').append(html);
                 $('#label_subtotal').html(`Sub Total (${data.length} Item)`);
-                total = sub_total+10000;
+                total = sub_total+50000;
                 $('.sub_list_currency_total').html(total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
             }
              });
@@ -225,11 +225,11 @@
                     success : function(data) {
                         $("#loading, .loader").attr('hidden', '');
                         Swal.fire({
-                     title: 'Berhasil Diproses',
-                     text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
-                     type: 'success',
-                     onClose: () => { location.href = url; }
-                 });
+                        title: 'Berhasil Diproses',
+                        text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
+                        type: 'success',
+                        onClose: () => { location.href = url; }
+                    });
                     },
                     error: function (res) {
                         var text = '';

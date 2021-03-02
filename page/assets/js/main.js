@@ -3,6 +3,7 @@ $(document).ready(function () {
     var tampung = [];
     var tampung_qty_paket = [];
     var body = [];
+    var list_pesanan_modal = [];
     var url = $('meta[name="host_url"]').attr('content');
     var token = $('meta[name="csrf-token"]').attr('content');
 
@@ -152,7 +153,7 @@ $(document).ready(function () {
                     $('.group_text_order').html('<p class="text-card-order">'+value.keterangan+'</p>');
                     $('.tampung_value').html('<input type="hidden" id="get_paket_id" value="'+value.id+'">');
                     $('#nominals').html('<span class="currency-general">'+value.harga+'</span><span class="sub-currency">/ Paket</span>');
-                    $('.form_qty').html("<div class='input-groups grid_calculate_order'><span class='input-group-btn'><button type='button' class='tombols btn-number' onclick='number(`paket_input`,`mines`)' data-type='minus' data-field='quant[1]'><i class='icofont-minus icon-number'></i></button></span><input type='text' name='quant[1]' class='form-nedd input-number' id='paket_input' value='6' min='1' max='1000'><span class='input-group-btn'><button type='button' class='tombols btn-number' data-type='plus' onclick='number(`paket_input`,`add`)' data-field='quant[1]'><i class='icofont-plus icon-number'></i></button></span></div>");
+                    $('.form_qty').html("<div class='input-groups grid_calculate_order'><span class='input-group-btn'><button type='button' class='tombols btn-number' onclick='number(`paket_input`,`mines`)' data-type='minus' data-field='quant[1]'><i class='icofont-minus icon-number'></i></button></span><input type='text' name='quant[1]' class='form-nedd input-number' id='paket_input' value='1' min='1' max='1000'><span class='input-group-btn'><button type='button' class='tombols btn-number' data-type='plus' onclick='number(`paket_input`,`add`)' data-field='quant[1]'><i class='icofont-plus icon-number'></i></button></span></div>");
                 }
             }
         });
@@ -221,6 +222,31 @@ $('.btn-number').click(function(e){
         input.val(0);
     }
 });
+
+$('#submit_saran_masukan').on('click', function (e) {
+    e.preventDefault();
+
+    $.ajax({
+        url     : url+"/api/kritiksaran/create",
+        method  : "POST",
+        headers : headers(),
+        data    :$('.form_kontak').serialize(),
+        success : function(data) {
+            toastr_notice('success','Data Terkirim'); 
+            $('.form_kontak').trigger('reset');
+        },
+        error: function (res) {
+            var text = '';
+            $('.validation_error').css('display','block');
+            console.log(res.responseJSON);
+            $.each(res.responseJSON.message, function (indexInArray, valueOfElement) { 
+                text += '<li>'+valueOfElement+'</li>';
+            });
+            $('.list_error').append(text);
+        }
+    });
+    
+})
 
 $('.input-number').focusin(function(){
    $(this).data('oldValue', $(this).val());
@@ -360,6 +386,7 @@ $(".input-number").keydown(function (e) {
     $('.grid_button_flag').click(function () {
         var content_cart_modal = '';
         var path_asset_image = '';
+        
         if (tampung.length != 0) {
                $('.box-keranjang-modal').remove();
                $.each(tampung, function (key, values) {
@@ -385,9 +412,9 @@ $(".input-number").keydown(function (e) {
                 content_cart_modal += '</div>';
                 content_cart_modal += '<div class="col-lg-4">';
                 content_cart_modal += '<div class="row grid-form-modal">';
-                content_cart_modal += '<button type="button" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';
-                content_cart_modal += '<input type="text" name="quant[1]" class="form-nedd-keranjang input-number" value="'+values.kuantitas+'" min="1" max="1000">';
-                content_cart_modal += '<button type="button" class="tombol_keranjang_number btn-number">   <i class="icofont-plus icon-number_additional"></i></button>';
+                content_cart_modal += "<button type='button' onclick='number(`form_keranjang_modal"+values.id+"`,`mines`)' class='tombol_keranjang_number btn-number'><i class='icofont-minus icon-number_additional'></i> </button>";
+                content_cart_modal += "<input type='text' id='form_keranjang_modal"+values.id+"' name='quant[1]' class='form-nedd-keranjang input-number' value='"+values.kuantitas+"' min='1' max='1000'>";
+                content_cart_modal += "<button type='button' onclick='number(`form_keranjang_modal"+values.id+"`,`add`)' class='tombol_keranjang_number btn-number'><i class='icofont-plus icon-number_additional'></i></button>";
                 content_cart_modal += '<div class="icon-delete"><i class="icofont-ui-delete delete_paket_modal" data-action="'+key+'"></i></div>';
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
@@ -409,11 +436,24 @@ $(".input-number").keydown(function (e) {
     })
 
     $('.tombol-lg-modal').click(function () {
+        var params_list_modal = '';
+        $.each(tampung, function (indexInArray, valueOfElement) { 
+            params_list_modal = {
+                'id' : valueOfElement.id,
+                'foto' : valueOfElement.foto,
+                'nama' : valueOfElement.nama,
+                'harga' : valueOfElement.harga,
+                'kuantitas':$(`#form_keranjang_modal${valueOfElement.id}`).val(),
+                'type' : valueOfElement.type
+            }
+            list_pesanan_modal.push(params_list_modal);
+        });
+
         $.ajax({
             url  : url+'/keranjang/paket_pesanan',
             type : 'POST',
             data : {
-                'tampung' : JSON.stringify(tampung),
+                'tampung' : JSON.stringify(list_pesanan_modal),
                 '_token' : token
             },
             success: function (response) {

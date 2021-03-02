@@ -93,9 +93,9 @@
                     html += '</div>';
                     html += '<div class="col-lg-4">';
                     html += '<div class="row form-keranjang">';  
-                    html += '<button type="button" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';    
-                    html += ' <input type="text" name="quant[1]" class="form-nedd-keranjang input-number" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
-                    html += '<button type="button" class="tombol_keranjang_number btn-number">   <i class="icofont-plus icon-number_additional"></i></button>';
+                    html += '<button type="button" onclick="number(`input_page_keranjang'+valueOfElement.id+'`,`mines`)" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';    
+                    html += ' <input type="text" name="quant[1]" id="input_page_keranjang'+valueOfElement.id+'" class="form-nedd-keranjang input-number" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
+                    html += '<button type="button" onclick="number(`input_page_keranjang'+valueOfElement.id+'`,`add`)" class="tombol_keranjang_number btn-number">   <i class="icofont-plus icon-number_additional"></i></button>';
                     html += ' <div class="icon-delete"><i class="icofont-ui-delete delete_item_keranjang" data-action="'+indexInArray+'"></i></div>';  
                     html += '</div>';
                     html += '</div>';
@@ -104,7 +104,7 @@
                    html += '<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
                    html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
 
-                   total_harga+=parseInt(valueOfElement.harga);
+                   total_harga+=parseInt(valueOfElement.harga * valueOfElement.kuantitas);
 
               });
               
@@ -121,24 +121,12 @@
        })
 
        show_modal_detail = (title,sub_url) => {
-        console.log(data_array_paket);
-        // $.each(data_array_paket, function (indexInArray, valueOfElement) { 
-        //      if (valueOfElement.type == 'paket') {
-        //          paket_id.push(valueOfElement.id);
-        //          jumlah.push(valueOfElement.kuantitas);
-        //      }
-        // });
  
         $.ajax({
             url  : url+'/api/getalatpaket',
             type : 'POST',
             headers : headers(),
             data: $('#cek_paket_cart').serialize(),
-            // data : {
-            //     'paket_id' : paket_id,
-            //     'jumlah' : jumlah,
-            //     '_token' : token
-            // },
             success: function (response) {
             
                var path_asset_image =  url+'/assets/images/kategori';
