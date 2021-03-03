@@ -89,7 +89,6 @@
                         <div class="col-sm-2">
                             <select name="satuan" id="satuan" class="form-control">
                                 <option value="pcs">Pieces (pcs)</option>
-                                <option value="kg">Kilogram (kg)</option>
                                 <option value="g">Gram (g)</option>
                             </select>
                         </div>
@@ -179,7 +178,7 @@
     </div>
 </div>
 
-<!-- MODAL TAMBAH BAHAN-->
+<!-- MODAL EDIT BAHAN-->
 <div class="modal modal-edit-bahan" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -224,7 +223,6 @@
                         <div class="col-sm-9">
                             <select name="satuan" id="edt_satuan" class="form-control">
                                 <option value="pcs">Pieces (pcs)</option>
-                                <option value="kg">Kilogram (kg)</option>
                                 <option value="g">Gram (g)</option>
                             </select>
                         </div>

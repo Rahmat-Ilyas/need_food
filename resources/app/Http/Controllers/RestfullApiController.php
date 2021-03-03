@@ -1181,7 +1181,7 @@ class RestfullApiController extends Controller
 			'no_telepon' => 'required',
 			'no_wa' => 'required',
 			'tanggal_antar' => 'required|date',
-			'waktu_antar' => 'required',
+			'waktu_antar' => 'required|date_format:H:i',
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
 			'longitude' => 'required',
@@ -1213,6 +1213,14 @@ class RestfullApiController extends Controller
 			$pemesanan = $request->all();
 			$pemesanan['kd_pemesanan'] = $kd_pemesanan;
 			$pemesanan['status'] = 'New';
+
+			// 00:00 - 13:00 = Pagi
+			// 13:01 - 23:59 = Sore
+			if ($request->waktu_antar <= '13:00') 
+				$pemesanan['waktu_antar'] = $request->waktu_antar.' (Pagi)';
+			else if ($request->waktu_antar <= '23:59')
+				$pemesanan['waktu_antar'] = $request->waktu_antar.' (Sore)';
+			
 			$request->catatan ? $request->catatan : $pemesanan['catatan'] = '-';
 			unset($pemesanan['paket_id']);
 			unset($pemesanan['jumlah_paket']);
