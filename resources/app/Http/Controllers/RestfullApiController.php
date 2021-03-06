@@ -1417,6 +1417,30 @@ class RestfullApiController extends Controller
 		}
 	}
 
+	public function getAlatPesanan($id)
+	{
+		$alatpesanan = AlatPesanan::where('pemesanan_id', $id)->get();
+
+		if (count($alatpesanan) > 0) {
+			$result = [];
+			foreach ($alatpesanan as $res) {
+				unset($res['created_at']);
+				unset($res['updated_at']);
+				$result[] = $res;
+			}
+			return response()->json([
+				'success' => true,
+				'message' => 'Success get data',
+				'result'  => $result
+			], 200);
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'Data is empty'
+			], 404);
+		}
+	}
+
 	public function getPesananUserold(Request $request)
 	{
 		$validator = Validator::make($request->all(), [

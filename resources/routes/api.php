@@ -78,6 +78,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::get('datapesanan/pesanan/today', 'RestfullApiController@getPesananToday');
     Route::get('datapesanan/driver/{driver_id}', 'RestfullApiController@getPesananDriver');
     Route::get('datapesanan/getuser/old', 'RestfullApiController@getPesananUserold');
+    Route::get('datapesanan/getalatpesanan/{pesanan_id}', 'RestfullApiController@getAlatPesanan');
     Route::put('datapesanan/updatestatus/{id}', 'RestfullApiController@updateStatusPesanan');
     Route::put('datapesanan/updatedriver/{id}', 'RestfullApiController@updateDriverPesanan');
     Route::put('datapesanan/uploadbuktipembayaran/{token}', 'RestfullApiController@uploadBuktiPembayaran');
