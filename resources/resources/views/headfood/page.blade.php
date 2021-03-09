@@ -46,110 +46,113 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
                             <a class="nav-link home" href="{{ route('page.index') }}">Home <span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link portfolio">Menu</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link kontak">Tentang</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link kontak">Testimoni</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link kontak">Kontak</a>
-                        </li>
-                    </ul>
-
-                </div>
-            </div>
-
-        </nav>
-
-        @yield('konten')
-        @include('headfood.modal')
-
-        <footer>
-            <div class="container">
-                <div class="row footer-group">
-                    <div class="col-lg-4 col-xs-12">
-                        <img src="{{ asset('page/assets/images/logofooter.png') }}" alt="" srcset="">
-                        <p class="sub-title-footer">Usefull Link</p>
-                        <ul class="list-footer">
-                            <li class="sub-list-footer">Tentang Need Food</li>
-                            <li class="sub-list-footer">Tentang Produk Kami</li>
-                            <li class="sub-list-footer">Belanja Aman</li>
-                            <li class="sub-list-footer">Info Pemesanan</li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-4 col-xs-12">
-                        <ul class="list-footer_second">
-                            <li class="sub-list-footer">Layanan Kami</li>
-                            <li class="sub-list-footer">Kontak</li>
-                            <li class="sub-list-footer">Inovasi</li>
-                            <li class="sub-list-footer">Testimoni</li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-4 col-xs-12">
-                        <ul class="list-footer_second">
-                            <li class="sub-list-footer">No Telepon : 0059-4985-43</li>
-                            <li class="sub-list-footer">E-mail : needfood@gmail.com</li>
-                            <li class="sub-list-footer">
-                                <i class="icofont-brand-whatsapp"></i>
-                                &nbsp;&nbsp;&nbsp;
-                                <i class="icofont-instagram"></i>
+                                class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link portfolio">Menu</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link kontak">Tentang</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link kontak">Testimoni</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link kontak">Kontak</a>
                             </li>
                         </ul>
+
                     </div>
                 </div>
-            </div>
-        </footer>
 
-    </div>
+            </nav>
 
-</body>
-<script src="{{ asset('page/assets/js/jquery-3.5.1.min.js') }}"></script>
-<script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
-<script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('page/assets/vendor/bootstrap-select/dist/js/bootstrap-select.js') }}"></script>
-<script src="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.js') }}"></script>
-<script src="{{ asset('page/assets/js/main.js') }}"></script>
-<script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5g4U_FtOK7LX789QyNyJe90DmnastiI8&callback=initMap&libraries=&v=weekly" defer></script>
-<script>
- var marker;
+            @yield('konten')
+            @include('headfood.modal')
 
-function initMap() {
-    const center = { lat: -5.146512141348986, lng: 119.43296873064695 };
+            <footer>
+                <div class="container">
+                    <div class="row footer-group">
+                        <div class="col-lg-4 col-xs-12">
+                            <img src="{{ asset('page/assets/images/logofooter.png') }}" alt="" srcset="">
+                            <p class="sub-title-footer">Usefull Link</p>
+                            <ul class="list-footer">
+                                <li class="sub-list-footer">Tentang Need Food</li>
+                                <li class="sub-list-footer">Tentang Produk Kami</li>
+                                <li class="sub-list-footer">Belanja Aman</li>
+                                <li class="sub-list-footer">Info Pemesanan</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 col-xs-12">
+                            <ul class="list-footer_second">
+                                <li class="sub-list-footer">Layanan Kami</li>
+                                <li class="sub-list-footer">Kontak</li>
+                                <li class="sub-list-footer">Inovasi</li>
+                                <li class="sub-list-footer">Testimoni</li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4 col-xs-12">
+                            <ul class="list-footer_second">
+                                <li class="sub-list-footer">No Telepon : 0059-4985-43</li>
+                                <li class="sub-list-footer">E-mail : needfood@gmail.com</li>
+                                <li class="sub-list-footer">
+                                    <i class="icofont-brand-whatsapp"></i>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <i class="icofont-instagram"></i>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
 
-    const map = new google.maps.Map(document.getElementById("mapView"), {
-        zoom: 14,
-        center: center,
-    });
+        </div>
 
-    marker = new google.maps.Marker({
-        position: center,
-        map,
-    });
+    </body>
+    <script src="{{ asset('page/assets/js/jquery-3.5.1.min.js') }}"></script>
+    <script src="{{ asset('page/assets/js/popper.min.js') }}"></script>
+    <script src="{{ asset('page/assets/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('page/assets/vendor/bootstrap-select/dist/js/bootstrap-select.js') }}"></script>
+    <script src="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('page/assets/js/main.js') }}"></script>
+    <script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAISwXwMy9RIBS6qnrxkC3fPRL3hfSrJSg&callback=initMap&libraries=&v=weekly" defer></script>
+    <script>
+     var marker;
 
-    google.maps.event.addListener(map, 'click', function(event) {
-        setMarker(this, event.latLng);
-    });
+     function initMap() {
+        const center = { lat: -5.146512141348986, lng: 119.43296873064695 };
 
-}
-
-function setMarker(map, markerPosition) {
-    if( marker ){
-        marker.setPosition(markerPosition);
-    } else {
-        marker = new google.maps.Marker({
-            position: markerPosition,
-            map: map
+        const map = new google.maps.Map(document.getElementById("mapView"), {
+            zoom: 14,
+            center: center,
+            fullscreenControl: true,
+            mapTypeControl: false,
+            streetViewControl: false
         });
+
+        marker = new google.maps.Marker({
+            position: center,
+            map,
+        });
+
+        google.maps.event.addListener(map, 'click', function(event) {
+            setMarker(this, event.latLng);
+        });
+
     }
-    map.setZoom(16);
-    map.setCenter(markerPosition);
+
+    function setMarker(map, markerPosition) {
+        if( marker ){
+            marker.setPosition(markerPosition);
+        } else {
+            marker = new google.maps.Marker({
+                position: markerPosition,
+                map: map
+            });
+        }
+        map.setZoom(16);
+        map.setCenter(markerPosition);
 
         // isi nilai koordinat ke form
         document.getElementById("setLongitude").value = markerPosition.lng();
@@ -159,10 +162,24 @@ function setMarker(map, markerPosition) {
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({'latLng': markerPosition}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                if (results[1]) {
-                    infowindow.setContent(results[1].formatted_address);
-                    infowindow.open(map, marker);
+                var lokasi = results[1].formatted_address;
+                document.getElementsByClassName("deskripsi_lokasi")[0].value = lokasi;
+
+                var subTotal = document.getElementById("subtotal").textContent;
+                subTotal = subTotal.match(/\d/g).join("")
+                var ongkir;
+                if (lokasi.includes("Kota Makassar")) {
+                    document.getElementById("biaya_pengiriman").value = '50000';
+                    document.getElementById("ongkir").innerHTML = 'Rp 50,000';
+                    ongkir = 50000;
+                } else {
+                    document.getElementById("biaya_pengiriman").value = '100000';
+                    document.getElementById("ongkir").innerHTML = 'Rp 100,000';
+                    ongkir = 100000;
                 }
+                var setTotal = parseInt(subTotal)+ongkir;
+                document.getElementById("setTotal").innerHTML = setTotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
             } else {
                 console.log("Geocoder failed due to: " + status);
             }
