@@ -118,9 +118,9 @@
     <script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAISwXwMy9RIBS6qnrxkC3fPRL3hfSrJSg&callback=initMap&libraries=&v=weekly" defer></script>
     <script>
-     var marker;
+       var marker;
 
-     function initMap() {
+       function initMap() {
         const center = { lat: -5.146512141348986, lng: 119.43296873064695 };
 
         const map = new google.maps.Map(document.getElementById("mapView"), {
@@ -128,7 +128,7 @@
             center: center,
             fullscreenControl: false,
             mapTypeControl: false,
-            streetViewControl: false
+            streetViewControl: false,
         });
 
         marker = new google.maps.Marker({
@@ -138,20 +138,50 @@
 
         google.maps.event.addListener(map, 'click', function(event) {
             setMarker(this, event.latLng);
+            document.getElementById("location_input").value = "";
+        });
+
+        google.maps.event.addListener(map, 'drag', function(event) {
+            marker.setPosition(map.getCenter());
+        });
+
+        google.maps.event.addListener(map, 'dragend', function(event) {
+            setMarker(this, map.getCenter());
+            document.getElementById("location_input").value = "";
         });
 
         const geocoder = new google.maps.Geocoder();
         document.getElementById("find_location").addEventListener("click", (event) => {
             event.preventDefault();
-            geocodeAddress(geocoder, map);
+            if (document.getElementById("location_input").value == "")
+                document.getElementById("location_input").focus();
+            else
+                geocodeAddress(geocoder, map);
         });
 
         document.getElementById("this_location").addEventListener("click", (event) => {
             event.preventDefault();
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    thisLocatio = { lat: position.coords.latitude, lng: position.coords.longitude };
-                    setMarker(this, thisLocatio);
+                    var thisLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+
+                    if( marker ){
+                        marker.setPosition(thisLocation);
+                    } else {
+                        marker = new google.maps.Marker({
+                            position: thisLocation,
+                            map: map
+                        });
+                    }
+                    map.setZoom(16);
+                    map.setCenter(thisLocation);
+
+                    // isi nilai koordinat ke form
+                    document.getElementById("setLongitude").value = position.coords.longitude;
+                    document.getElementById("setLatitude").value = position.coords.latitude;
+                    document.getElementById("location_input").value = "";
+
+                    setGeocoder(thisLocation);
                 }, function() {
                     alert('Anda harus memberi izin untuk mengakses lokasi anda!');
                 });
@@ -182,13 +212,21 @@
                 map: map
             });
         }
-        map.setZoom(16);
+        if (map.getZoom() <= 14)
+            map.setZoom(16);
+        else
+            map.setZoom(map.getZoom());
+
         map.setCenter(markerPosition);
 
         // isi nilai koordinat ke form
         document.getElementById("setLongitude").value = markerPosition.lng();
         document.getElementById("setLatitude").value = markerPosition.lat();
 
+        setGeocoder(markerPosition);
+    }
+
+    function setGeocoder(markerPosition) {
         // Get Lokasi
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({'latLng': markerPosition}, function(results, status) {
