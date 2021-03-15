@@ -126,7 +126,7 @@
         const map = new google.maps.Map(document.getElementById("mapView"), {
             zoom: 14,
             center: center,
-            fullscreenControl: true,
+            fullscreenControl: false,
             mapTypeControl: false,
             streetViewControl: false
         });
@@ -140,6 +140,37 @@
             setMarker(this, event.latLng);
         });
 
+        const geocoder = new google.maps.Geocoder();
+        document.getElementById("find_location").addEventListener("click", (event) => {
+            event.preventDefault();
+            geocodeAddress(geocoder, map);
+        });
+
+        document.getElementById("this_location").addEventListener("click", (event) => {
+            event.preventDefault();
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    thisLocatio = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    setMarker(this, thisLocatio);
+                }, function() {
+                    alert('Anda harus memberi izin untuk mengakses lokasi anda!');
+                });
+            } else {
+                alert('geolocation failure!');
+            }
+        });
+    }
+
+    function geocodeAddress(geocoder, resultsMap) {
+        const address = document.getElementById("location_input").value;
+        geocoder.geocode({ address: address }, (results, status) => {
+            if (status === "OK") {
+                resultsMap.setCenter(results[0].geometry.location);
+                setMarker(resultsMap, results[0].geometry.location);
+            } else {
+              alert("Geocode was not successful for the following reason: " + status);
+          }
+      });
     }
 
     function setMarker(map, markerPosition) {

@@ -16,12 +16,17 @@
                                 <div class="title_pengantaran">
                                     Set Lokasi Pengantaran
                                 </div>
+                                <div class="form-inline pl-2" style="position: absolute; z-index: 99; margin-top: 20px;">
+                                    <input type="text" id="location_input" class="form-control" placeholder="Temukan lokasi anda...">
+                                    <button class="btn btn-rounded bg-white border" id="find_location" data-toggle="tooltip" data-placement="top" title="Cari Lokasi"><i class="icofont-search-map"></i></button>
+                                    <button class="btn btn-rounded bg-white border" id="this_location" data-toggle="tooltip" data-placement="top" title="Gunakan Lokasi Sekarang"><i class="icofont-location-pin"></i></button>
+                                </div>
                                 <div id="mapView" class="maps_area"></div>
                                 <input type="hidden" name="latitude" value="-5.146512141348986" id="setLatitude">
                                 <input type="hidden" name="longitude" value="119.43296873064695" id="setLongitude">
                                 <input type="hidden" id="biaya_pengiriman" name="biaya_pengiriman" value="">
                                 <div class="form_lokasi">
-                                    <button class="tombol-custom tombol_lokasi_pengantaran"><i class="icofont-location-pin"></i> Gunakan Lokasi Sekarang</button>
+                                    {{-- <button class="tombol-custom tombol_lokasi_pengantaran"><i class="icofont-location-pin"></i> Gunakan Lokasi Sekarang</button> --}}
                                     <textarea id="text-area" name="deskripsi_lokasi" class="grid_deskripsi deskripsi_lokasi" placeholder="Deskripsi Alamat"></textarea>
                                 </div>
 
@@ -187,6 +192,8 @@
   var sub_total = 0;
   var total = 0;
   $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
     $('.validation_error').css('display','none');
     $('.pengantaran-main').hide();
     $('.form_first').html(makeleton_form());   
