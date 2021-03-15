@@ -129,6 +129,7 @@
             fullscreenControl: false,
             mapTypeControl: false,
             streetViewControl: false,
+            gestureHandling: "greedy"
         });
 
         marker = new google.maps.Marker({
