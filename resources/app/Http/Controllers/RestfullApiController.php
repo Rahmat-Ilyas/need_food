@@ -68,7 +68,10 @@ class RestfullApiController extends Controller
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
+				if ($supplier) 
+					$rw['supplier'] = $supplier->nama_supplier;
+				else
+					$rw['supplier'] = 'Supplier Lainnya';
 				$riwayat_beli[] = $rw;
 			}
 			$data->riwayat_beli = $riwayat_beli;
@@ -379,7 +382,10 @@ class RestfullApiController extends Controller
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
+				if ($supplier) 
+					$rw['supplier'] = $supplier->nama_supplier;
+				else
+					$rw['supplier'] = 'Supplier Lainnya';
 				$riwayat_beli[] = $rw;
 			}
 			$data->riwayat_beli = $riwayat_beli;

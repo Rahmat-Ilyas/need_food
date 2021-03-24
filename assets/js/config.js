@@ -359,6 +359,52 @@ $(document).ready(function () {
    });
 
    // SET ALAT KEMBALI 
+   $(document).on('click', '#add-alat-hilang', function(e) {
+      swal({
+         title: "Input Alat Hilang",
+         html: `<form id="thisalatKembali">
+         <div class="text-left">
+         <div>
+         <h5><label>Data Pesanan</label></h5>
+         <select class="form-control select2" name="pesanan_id" id="data_pesanan" required="">
+         <option value="">Pilih Alat</option>
+         <option value="">Pilih Alat1</option>
+         <option value="">Pilih Alat2</option>
+         </select>
+         </div>
+         </div>
+         </form>`,
+         showCancelButton: true,
+         confirmButtonClass: 'btn-primary btn-md waves-effect waves-light',
+         cancelButtonClass: 'btn-white btn-md waves-effect',
+         confirmButtonText: 'Selesai',
+         focusConfirm: false,
+         preConfirm: () => {
+            var data = $(document).find('#thisalatKembali').serialize();
+            $.ajax({
+               url: host + "/api/inventori/setalatkembali/"+id,
+               method: "POST",
+               headers: headers,
+               data: data,
+               success: function (data) {
+                  Swal.fire({
+                     title: 'Berhasil Diproses',
+                     text: 'Alat telah kembali',
+                     type: 'success',
+                     onClose: () => {
+                        $('.modal').modal('hide');
+                     }
+                  });
+               },
+               error: function (data) {
+                  setError(data);
+               }
+            });
+         }
+      });
+   });
+
+   // SET ALAT KEMBALI 
    $(document).on('click', '#set-alat-kembali', function(e) {
       var id = $(this).attr('data-id');
       swal({
