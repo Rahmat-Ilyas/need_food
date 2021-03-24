@@ -1430,6 +1430,8 @@ class RestfullApiController extends Controller
 		if (count($alatpesanan) > 0) {
 			$result = [];
 			foreach ($alatpesanan as $res) {
+				$alt = Alat::where('id', $res->alat_id)->first();
+				$res['nama_alat'] = $alt ? $alt->nama : 'data alat sudah tidak ada';
 				unset($res['created_at']);
 				unset($res['updated_at']);
 				$result[] = $res;
@@ -1443,7 +1445,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data is empty'
-			], 404);
+			], 200);
 		}
 	}
 

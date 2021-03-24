@@ -360,46 +360,116 @@ $(document).ready(function () {
 
    // SET ALAT KEMBALI 
    $(document).on('click', '#add-alat-hilang', function(e) {
-      swal({
-         title: "Input Alat Hilang",
-         html: `<form id="thisalatKembali">
-         <div class="text-left">
-         <div>
-         <h5><label>Data Pesanan</label></h5>
-         <select class="form-control select2" name="pesanan_id" id="data_pesanan" required="">
-         <option value="">Pilih Alat</option>
-         <option value="">Pilih Alat1</option>
-         <option value="">Pilih Alat2</option>
-         </select>
-         </div>
-         </div>
-         </form>`,
-         showCancelButton: true,
-         confirmButtonClass: 'btn-primary btn-md waves-effect waves-light',
-         cancelButtonClass: 'btn-white btn-md waves-effect',
-         confirmButtonText: 'Selesai',
-         focusConfirm: false,
-         preConfirm: () => {
-            var data = $(document).find('#thisalatKembali').serialize();
-            $.ajax({
-               url: host + "/api/inventori/setalatkembali/"+id,
-               method: "POST",
-               headers: headers,
-               data: data,
-               success: function (data) {
-                  Swal.fire({
-                     title: 'Berhasil Diproses',
-                     text: 'Alat telah kembali',
-                     type: 'success',
-                     onClose: () => {
-                        $('.modal').modal('hide');
-                     }
+      $.ajax({
+         url     : host+"/api/datapesanan",
+         method  : "GET",
+         headers  : headers,
+         success : function(data) {
+            $('.info-alat').attr('hidden', '');
+            var optionSwal='';
+
+            if (data.result) {
+               $.each(data.result, function(key, val) {
+                  optionSwal += '<option value="'+val.id+'">'+val.kd_pemesanan+'/'+val.nama+'/'+val.no_telepon+'</option>';
+               });
+            }
+
+            swal({
+               title: "Input Alat Hilang",
+               html: `<form id="thisalatKembali">
+               <div class="text-left">
+               <div class="m-b-20">
+               <h5><label>Temukan Data Pesanan</label></h5>
+               <select class="form-control select2-swal" name="pesanan_id" id="data_pesanan_swal" required="">
+               <option value=""></option>
+               `+ optionSwal +`
+               </select>
+               </div>
+               <div class="m-b-20">
+               <h5><label>Pilh Alat Yang Hilang</label></h5>
+               <select class="form-control select2-swal1" name="alat_id" id="alat_id_swal" required="">
+               <option value=""></option>
+               </select>
+               <span class="info-alat text-danger" hidden=""><i>Tidak ada alat di set untuk pesanan yang dipilih. Cek pesanan yang lain!</i></span>
+               </div>
+               <div class="m-b-20 row">
+               <div class="col-sm-8">
+               <h5><label>Input Jumlah Alat Hilang</label></h5>
+               <div class="form-group row">
+               <div class="col-sm-8">
+               <input type="number" class="form-control" name="alat_hilang" placeholder="Jumlah Alat Hilang" value="">
+               </div>
+               <div class="col-sm-4">
+               <input type="tex" class="form-control" value="pcs" disabled>
+               </div>
+               </div>
+               </div>
+               </div>
+               </form>`,
+               showCancelButton: true,
+               confirmButtonClass: 'btn-primary btn-md waves-effect waves-light',
+               cancelButtonClass: 'btn-white btn-md waves-effect',
+               confirmButtonText: 'Selesai',
+               focusConfirm: false,
+               allowOutsideClick: false,
+               width: '500px',
+               onOpen: () => {
+                  $('.select2-swal').select2({
+                     placeholder: 'Pilih Kode Pesanan/Nama Pemesan/Nomor Telepon'
+                  });
+                  $('.select2-swal1').select2({
+                     placeholder: 'Pilih Alat Yang Telah Hilang'
                   });
                },
-               error: function (data) {
-                  setError(data);
+               preConfirm: () => {
+                  var data = $(document).find('#thisalatKembali').serialize();
+                  $.ajax({
+                     url: host + "/api/inventori/setalatkembali/"+id,
+                     method: "POST",
+                     headers: headers,
+                     data: data,
+                     success: function (data) {
+                        Swal.fire({
+                           title: 'Berhasil Diproses',
+                           text: 'Alat telah kembali',
+                           type: 'success',
+                           onClose: () => {
+                              $('.modal').modal('hide');
+                           }
+                        });
+                     },
+                     error: function (data) {
+                        setError(data);
+                     }
+                  });
                }
             });
+         }
+      });
+   });
+
+   $(document).on('change', '.select2-swal', function(event) {
+      event.preventDefault();
+      $('.select2-swal1').select2({
+         placeholder: 'Pilih Alat Yang Telah Hilang'
+      });
+      var pesanan_id = $(this).val();
+      $.ajax({
+         url     : host+"/api/datapesanan/getalatpesanan/"+pesanan_id,
+         method  : "GET",
+         headers  : headers,
+         success : function(data) {
+            var optionAlatSwal='<option value=""></option>';
+            $('.select2-swal1').html(optionAlatSwal);
+            if (data.result) {
+               $.each(data.result, function(key, val) {
+                  optionAlatSwal += '<option value="'+val.alat_id+'">'+val.nama_alat+' / JUMLAH KELUAR: '+val.jumlah+' pcs</option>';
+               });
+               $('.select2-swal1').html(optionAlatSwal);
+               $('.info-alat').attr('hidden', '');
+            } else {
+               $('.info-alat').removeAttr('hidden');
+            }
          }
       });
    });
