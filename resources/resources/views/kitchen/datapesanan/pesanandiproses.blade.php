@@ -32,7 +32,8 @@
 								<th>WhatsApp</th>
 								<th>Jadwal Antar</th>
 								<th>Catatan</th>
-								<th width="100" class="text-center">Aksi</th>
+								<th width="60" class="text-center">Detail</th>
+								<th width="60" class="text-center">Aksi</th>
 							</tr>
 						</thead>
 
@@ -46,8 +47,8 @@
 	</div> 
 </div>
 
-<!-- MODAL DETAIL -->
-<div class="modal detail-bahan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+<!-- MODAL DETAIL BAHAN PESANAN -->
+<div class="modal detail-bahan-psn" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -55,13 +56,53 @@
 				<h4 class="modal-title" id="myModalLabel">Detail Bahan Pesanan</h4>
 			</div>
 			<div class="modal-body" style="padding: 10px 40px 10px 40px">
+				<h4><u>Bahan Paket</u></h4>
+				<table class="table table-bordered" id="tableDetail" style="font-size: 13px;">
+					<thead>
+						<tr>
+							<th width="10">No</th>
+							<th>Foto Bahan</th>
+							<th>Nama Bahan</th>
+							<th>Ukuran Jumlah</th>
+						</tr>
+					</thead>
+					<tbody id="data-bahan-pesanan">
+						<tr>
+							<td colspan="4" class="text-center">
+								<i>Tidak ada data</i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
 
+				<h4><u>Additional Pesanan</u></h4>
+				<table class="table table-bordered" id="tableDetailAdt" style="font-size: 13px;">
+					<thead>
+						<tr>
+							<th width="10">No</th>
+							<th>Foto Bahan</th>
+							<th>Nama Daging</th>
+							<th>Berat Daging</th>
+							<th>Jumlah Pax</th>
+						</tr>
+					</thead>
+					<tbody id="data-additional-pesanan">
+						<tr>
+							<td colspan="5" class="text-center">
+								<i>Tidak ada additional untuk pesanan ini</i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="text-right">
+					<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
+				</div>
 			</div>
 		</div>
 	</div><!-- /.modal-dialog -->
 </div>
 
-<!-- MODAL DETAIL -->
+<!-- MODAL ATUR ALAT -->
 <div class="modal set-alat" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<form id="formPilihAlat">
@@ -90,6 +131,61 @@
 			</div>
 		</form>
 	</div><!-- /.modal-dialog -->
+</div>
+
+<!-- MODAL DETAIL -->
+<div class="modal detail-pesanan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myModalLabel">Detail Alat</h4>
+			</div>
+			<div class="modal-body" style="padding: 20px 40px 20px 40px">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Kode Pemesanan: </b>
+						<span class="col-sm-8 p-0" id="dtl_kd_pemesanan"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Nama Pemesan: </b>
+						<span class="col-sm-8 p-0" id="dtl_nama"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Telepon: </b>
+						<span class="col-sm-8 p-0" id="dtl_no_telepon"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">WhatsApp: </b>
+						<span class="col-sm-8 p-0" id="dtl_no_wa"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Tanggal Antar: </b>
+						<span class="col-sm-8 p-0" id="dtl_tanggal_antar"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Paket Pesanan: </b>
+						<span class="col-sm-8 p-0 row" id="dtl_paket"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Additional: </b>
+						<span class="col-sm-8 p-0 row" id="dtl_additional"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Catatan: </b>
+						<span class="col-sm-8 p-0" id="dtl_catatan"></span>
+					</li>
+					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Alamat: </b>
+						<span class="col-sm-8 p-0" id="dtl_deskripsi_lokasi"></span>
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
+			</div>
+		</div>
+	</div>
 </div>
 @endsection
 
@@ -130,8 +226,9 @@
 								date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
 								val.catatan,
 								`<div class="text-center">
-								<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Bahan Pesanan" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-shopping-basket"></i></a>
-								<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Atur Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i></a>
+								<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i></a>
+								<a href="#" role="button" class="btn btn-purple btn-sm waves-effect waves-light" id="detail-bahan-psn" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Bahan Pesanan" data-toggle="modal" data-target=".detail-bahan-psn"><i class="fa fa-shopping-basket"></i></a>`,
+								`<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Atur Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i></a>
 								<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="md-assignment-turned-in"></i></a>
 								</div>`,
 								]).draw(false);
@@ -140,6 +237,89 @@
 				}
 			});
 			notifCountView();
+		}
+
+		$(document).on('click', '#detail-bahan-psn', function(event) {
+			event.preventDefault();
+			var id = $(this).attr('dta-id');
+
+			$.ajax({
+				url     : host+"/api/datapesanan/"+id,
+				method  : "GET",
+				headers	: headers,
+				success : function(data) {
+					if (data.result.bahan.length>0) {
+						var colBahan = '';
+						var no = 1;
+						$.each(data.result.bahan, function(key, val) {
+							var foto = getFoto(val.bahan_id);
+							colBahan += `
+							<tr>
+							<td>`+no+`</td>
+							<td>
+							<img src="`+host+`/assets/images/bahan/`+foto+`" width="60">
+							</td>
+							<td>`+val.nama_bahan+`</td>
+							<td>`+val.jumlah_bahan+`</td>
+							</tr>
+							`;
+							no=no+1;
+						});
+						$('#data-bahan-pesanan').html(colBahan);
+					}
+
+					if (data.result.additional.length>0) {
+						var colAdditional = '';
+						var no = 1;
+						$.each(data.result.additional, function(key, val) {
+							var foto = getFoto(val.additional_id, 'adt');
+							colAdditional += `
+							<tr>
+							<td>`+no+`</td>
+							<td>
+							<img src="`+host+`/assets/images/bahan/`+foto+`" width="60">
+							</td>
+							<td>`+val.nama_daging+`</td>
+							<td>`+val.berat+`</td>
+							<td>`+val.jumlah+` pax</td>
+							</tr>
+							`;
+							no=no+1;
+						});
+						$('#data-additional-pesanan').html(colAdditional);
+					}
+				}
+			});
+		});
+
+		function getFoto(id, adt=null) {
+			var foto = '';
+			if (!adt) {
+				$.ajax({
+					url     : host+"/api/inventori/getbahan/"+id,
+					method  : "GET",
+					headers	: headers,
+					success : function(data) {
+						if (data.result) {
+							foto = data.result.foto;
+						}
+					},
+					async: false
+				});
+			} else {
+				$.ajax({
+					url     : host+"/api/kelolamenu/getadditional/"+id,
+					method  : "GET",
+					headers	: headers,
+					success : function(data) {
+						if (data.result) {
+							foto = data.result.foto;
+						}
+					},
+					async: false
+				});
+			}
+			return foto;
 		}
 
 		$(document).on('click', '#set-alat', function(event) {
@@ -252,6 +432,47 @@
 							}
 						});
 					}
+				}
+			});
+		});
+
+		// DETAIL PESANAN
+		$(document).on('click', '#detail-pesanan', function(e) {
+			e.preventDefault();
+
+			var id = $(this).attr('dta-id');
+
+			$.ajax({
+				url     : host+"/api/datapesanan/"+id,
+				method  : "GET",
+				headers : headers,
+				success : function(data) {
+					$.each(data.result, function(key, val) {
+						$('#dtl_'+key).text(val);
+						if (key == 'tanggal_antar') {
+							var dt = new Date(val);
+							var month = dt.getMonth()+1;
+							var date = dt.getDate();
+							if (month < 10) month = '0'+month;
+							if (dt.getDate() < 10) date = '0'+dt.getDate();
+							var tanggal = date+'/'+month+'/'+dt.getFullYear();
+							$('#dtl_tanggal_antar').text(tanggal+' ('+data.result.waktu_antar+')');
+						}
+					});
+
+					$('#dtl_paket').html('');
+					$.each(data.result.paket, function(key, val) {
+						$('#dtl_paket').append('<p>- '+val.nama_paket+' ('+val.jumlah+' pax)</p>');
+					});
+
+					var countAdt = 0;
+					$('#dtl_additional').html('');
+					$.each(data.result.additional, function(key, val) {
+						$('#dtl_additional').append('<p>- '+val.nama_daging+' ('+val.jumlah+' pax)</p>');
+						countAdt = countAdt + 1;
+					});
+
+					if (countAdt == 0) $('#dtl_additional').html('-');
 				}
 			});
 		});

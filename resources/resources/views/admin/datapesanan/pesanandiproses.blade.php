@@ -303,7 +303,7 @@
 					var countAdt = 0;
 					$('#dtl_additional').html('');
 					$.each(data.result.additional, function(key, val) {
-						$('#dtl_additional').append('<p>- '+val.nama_daging+'</p>');
+						$('#dtl_additional').append('<p>- '+val.nama_daging+' ('+val.jumlah+' pax)</p>');
 						countAdt = countAdt + 1;
 					});
 
