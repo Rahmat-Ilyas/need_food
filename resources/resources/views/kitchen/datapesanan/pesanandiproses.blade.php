@@ -32,7 +32,7 @@
 								<th>WhatsApp</th>
 								<th>Jadwal Antar</th>
 								<th>Catatan</th>
-								<th width="150" class="text-center">Aksi</th>
+								<th width="100" class="text-center">Aksi</th>
 							</tr>
 						</thead>
 
@@ -47,13 +47,28 @@
 </div>
 
 <!-- MODAL DETAIL -->
+<div class="modal detail-bahan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myModalLabel">Detail Bahan Pesanan</h4>
+			</div>
+			<div class="modal-body" style="padding: 10px 40px 10px 40px">
+
+			</div>
+		</div>
+	</div><!-- /.modal-dialog -->
+</div>
+
+<!-- MODAL DETAIL -->
 <div class="modal set-alat" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<form id="formPilihAlat">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-					<h4 class="modal-title" id="myModalLabel">Detail Alat</h4>
+					<h4 class="modal-title" id="myModalLabel">Atur Alat Pesanan Yang Akan Dikirim</h4>
 				</div>
 				<div class="modal-body" style="padding: 10px 40px 10px 40px">
 					<table class="table table-bordered" id="tableDetail" style="font-size: 13px;">
@@ -115,8 +130,9 @@
 								date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
 								val.catatan,
 								`<div class="text-center">
-								<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Set Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i> Set Alat</a>
-								<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="fa fa-shopping-basket"></i> Selesai</a>
+								<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-bahan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Bahan Pesanan" data-toggle="modal" data-target=".detail-bahan"><i class="fa fa-shopping-basket"></i></a>
+								<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Atur Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i></a>
+								<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="md-assignment-turned-in"></i></a>
 								</div>`,
 								]).draw(false);
 						});

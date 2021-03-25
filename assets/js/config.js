@@ -374,20 +374,20 @@ $(document).ready(function () {
                });
             }
 
-            swal({
+            Swal.fire({
                title: "Input Alat Hilang",
-               html: `<form id="thisalatKembali">
+               html: `<form id="formSetAlatHilang">
                <div class="text-left">
                <div class="m-b-20">
                <h5><label>Temukan Data Pesanan</label></h5>
-               <select class="form-control select2-swal" name="pesanan_id" id="data_pesanan_swal" required="">
+               <select class="form-control select2-swal" name="pemesanan_id" id="data_pesanan_swal" required="">
                <option value=""></option>
                `+ optionSwal +`
                </select>
                </div>
                <div class="m-b-20">
                <h5><label>Pilh Alat Yang Hilang</label></h5>
-               <select class="form-control select2-swal1" name="alat_id" id="alat_id_swal" required="">
+               <select class="form-control select2-swal1" name="alatpsn_id" id="alat_id_swal" required="">
                <option value=""></option>
                </select>
                <span class="info-alat text-danger" hidden=""><i>Tidak ada alat di set untuk pesanan yang dipilih. Cek pesanan yang lain!</i></span>
@@ -397,10 +397,10 @@ $(document).ready(function () {
                <h5><label>Input Jumlah Alat Hilang</label></h5>
                <div class="form-group row">
                <div class="col-sm-8">
-               <input type="number" class="form-control" name="alat_hilang" placeholder="Jumlah Alat Hilang" value="">
+               <input type="number" class="form-control" name="jumlah" id="input_alat_hilang" placeholder="Jumlah Alat Hilang" value="">
                </div>
                <div class="col-sm-4">
-               <input type="tex" class="form-control" value="pcs" disabled>
+               <input type="text" class="form-control" value="pcs" disabled>
                </div>
                </div>
                </div>
@@ -410,7 +410,6 @@ $(document).ready(function () {
                confirmButtonClass: 'btn-primary btn-md waves-effect waves-light',
                cancelButtonClass: 'btn-white btn-md waves-effect',
                confirmButtonText: 'Selesai',
-               focusConfirm: false,
                allowOutsideClick: false,
                width: '500px',
                onOpen: () => {
@@ -422,19 +421,55 @@ $(document).ready(function () {
                   });
                },
                preConfirm: () => {
-                  var data = $(document).find('#thisalatKembali').serialize();
+                  var data = {};
+                  data.pesanan_id = document.getElementById('data_pesanan_swal').value;
+                  data.alat_id = document.getElementById('alat_id_swal').value;
+                  data.alat_hilang = document.getElementById('input_alat_hilang').value;
+                  return data;
+               }
+            }).then((result) => {
+               if (result.value.pesanan_id == '' || result.value.alat_id == '' || result.value.alat_hilang == '') {
+                  Swal.fire({
+                     title: 'Terdapat Inputan Kosong',
+                     text: 'Pastikan semua inputan telah terisi semua. Silahkan isi form yang ada!',
+                     type: 'warning'
+                  });
+               } else {
+                  var data = $('#formSetAlatHilang').serialize();
                   $.ajax({
-                     url: host + "/api/inventori/setalatkembali/"+id,
-                     method: "POST",
-                     headers: headers,
+                     url     : host+"/api/inventori/setalathilang",
+                     method  : "POST",
+                     headers  : headers,
                      data: data,
-                     success: function (data) {
+                     success : function(data) {
                         Swal.fire({
                            title: 'Berhasil Diproses',
-                           text: 'Alat telah kembali',
-                           type: 'success',
-                           onClose: () => {
-                              $('.modal').modal('hide');
+                           text: 'Data alat hilang berhasil ditambah',
+                           type: 'success'
+                        });
+
+                        $.ajax({
+                           url: host + "/api/inventori/getalathilang",
+                           method: "GET",
+                           headers: headers,
+                           success: function (data) {
+                              var tableAlatHilang = $('#tableAlatHilang').DataTable();
+                              tableAlatHilang.clear().draw();
+                              var no = 1;
+                              $.each(data.result, function (key, vl) {
+                                 tableAlatHilang.row.add([
+                                    no,
+                                    vl.kd_pemesanan,
+                                    vl.nama_pemesan,
+                                    vl.nama_alat,
+                                    vl.jumlah_hilang,
+                                    vl.tanggal_hilang,
+                                    `<td class="text-center">
+                                    <a href="#" class="btn btn-sm btn-default" id="set-alat-kembali" data-id="` + vl.id + `" ><i class="fa fa-reply"></i> Telah Kembali</a>
+                                    </td>`
+                                    ]).draw(false);
+                                 no = no + 1;
+                              });
                            }
                         });
                      },
@@ -446,33 +481,33 @@ $(document).ready(function () {
             });
          }
       });
-   });
+});
 
-   $(document).on('change', '.select2-swal', function(event) {
-      event.preventDefault();
-      $('.select2-swal1').select2({
-         placeholder: 'Pilih Alat Yang Telah Hilang'
-      });
-      var pesanan_id = $(this).val();
-      $.ajax({
-         url     : host+"/api/datapesanan/getalatpesanan/"+pesanan_id,
-         method  : "GET",
-         headers  : headers,
-         success : function(data) {
-            var optionAlatSwal='<option value=""></option>';
-            $('.select2-swal1').html(optionAlatSwal);
-            if (data.result) {
-               $.each(data.result, function(key, val) {
-                  optionAlatSwal += '<option value="'+val.alat_id+'">'+val.nama_alat+' / JUMLAH KELUAR: '+val.jumlah+' pcs</option>';
-               });
-               $('.select2-swal1').html(optionAlatSwal);
-               $('.info-alat').attr('hidden', '');
-            } else {
-               $('.info-alat').removeAttr('hidden');
-            }
-         }
-      });
+$(document).on('change', '.select2-swal', function(event) {
+   event.preventDefault();
+   $('.select2-swal1').select2({
+      placeholder: 'Pilih Alat Yang Telah Hilang'
    });
+   var pesanan_id = $(this).val();
+   $.ajax({
+      url     : host+"/api/datapesanan/getalatpesanan/"+pesanan_id,
+      method  : "GET",
+      headers  : headers,
+      success : function(data) {
+         var optionAlatSwal='<option value=""></option>';
+         $('.select2-swal1').html(optionAlatSwal);
+         if (data.result) {
+            $.each(data.result, function(key, val) {
+               optionAlatSwal += '<option value="'+val.id+'">'+val.nama_alat+' / JUMLAH KELUAR: '+val.jumlah+' pcs</option>';
+            });
+            $('.select2-swal1').html(optionAlatSwal);
+            $('.info-alat').attr('hidden', '');
+         } else {
+            $('.info-alat').removeAttr('hidden');
+         }
+      }
+   });
+});
 
    // SET ALAT KEMBALI 
    $(document).on('click', '#set-alat-kembali', function(e) {
@@ -1188,11 +1223,11 @@ $(document).ready(function () {
    // GET PAKET
    function getPaket() {
       $.ajax({
-        url: host + "/configuration",
-        method: "POST",
-        headers: headers,
-        data: { req: 'getPaket'},
-        success: function(data) {
+       url: host + "/configuration",
+       method: "POST",
+       headers: headers,
+       data: { req: 'getPaket'},
+       success: function(data) {
          $('#setPaket').html(data);
       }
    });

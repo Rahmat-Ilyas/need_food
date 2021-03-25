@@ -1191,6 +1191,7 @@ class RestfullApiController extends Controller
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
 			'longitude' => 'required',
+			'metode_bayar' => 'required',
 			'paket_id' => 'required|array',
 			'jumlah_paket' => 'required|array',
 			'additional_id' => 'array',
@@ -2180,6 +2181,68 @@ class RestfullApiController extends Controller
 		return response()->json([
 			'success' => true,
 			'message' => 'Pengecekan alat selesai'
+		], 200);
+	}
+
+	public function setAlatHilang(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'pemesanan_id' => 'required|integer',
+			'alatpsn_id' => 'required|integer',
+			'jumlah' => 'required|integer'
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$altpsn = AlatPesanan::where('id', $request->alatpsn_id)->first();
+		if ($altpsn) {
+			if ($altpsn->jumlah >= $request->jumlah) {
+				$cekalathilang = AlatHilang::where('pemesanan_id', $altpsn->pemesanan_id)->where('alat_id', $altpsn->alat_id)->first();
+				$alat = Alat::where('id', $altpsn->alat_id)->first();
+				if ($cekalathilang) {
+					$jumlah_alat = $alat->jumlah_alat + $cekalathilang->jumlah_hilang;
+					$jumlah_alat = $jumlah_alat - $request->jumlah;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat->jumlah_alat = $jumlah_alat;
+					$alat->save();
+
+					$cekalathilang->jumlah_hilang = $request->jumlah;
+					$cekalathilang->save();
+				} else {
+					$jumlah_alat = $alat->jumlah_alat - $request->jumlah;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat->jumlah_alat = $jumlah_alat;
+					$alat->save();
+
+					$data = [];
+					$data['pemesanan_id'] = $altpsn->pemesanan_id;
+					$data['alat_id'] = $altpsn->alat_id;
+					$data['jumlah_hilang'] = $request->jumlah;
+					AlatHilang::create($data);
+				}
+				$altpsn->status = 'used';
+				$altpsn->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'Jumlah yang di input melebihi ketentuan'
+				], 406);
+			}
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'alat_id tidak ada'
+			], 401);
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Berhasil menginput alat hilang'
 		], 200);
 	}
 

@@ -36,6 +36,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('inventori/setalat', 'RestfullApiController@invSetalat');
     Route::post('inventori/setstokalat', 'RestfullApiController@setStokalat');
     Route::post('inventori/editalat/{id}', 'RestfullApiController@invPutalat');
+    Route::post('inventori/setalathilang', 'RestfullApiController@setAlatHilang');
     Route::post('inventori/setalatkembali/{alathilang_id}', 'RestfullApiController@setAlatkembali');
     Route::delete('inventori/deletealat/{id}', 'RestfullApiController@deleteAlat');
 
