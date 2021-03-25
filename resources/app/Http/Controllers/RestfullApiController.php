@@ -1531,6 +1531,11 @@ class RestfullApiController extends Controller
 				unset($transaksi['created_at']);
 				unset($transaksi['updated_at']);
 
+				if ($pemesanan->metode_bayar == 'transfer') 
+					$pemesanan['metode_bayar'] = 'Transfer Bank';
+				else if ($pemesanan->metode_bayar == 'cod') 
+					$pemesanan['metode_bayar'] = 'Case On Delivery (COD)';
+
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
@@ -1575,6 +1580,11 @@ class RestfullApiController extends Controller
 					$transaksi = Transaksi::where('pemesanan_id', $pesanan->id)->first();
 					unset($transaksi['created_at']);
 					unset($transaksi['updated_at']);
+
+					if ($pesanan->metode_bayar == 'transfer') 
+						$pesanan['metode_bayar'] = 'Transfer Bank';
+					else if ($pesanan->metode_bayar == 'cod') 
+						$pesanan['metode_bayar'] = 'Case On Delivery (COD)';
 
 					$pesanan['paket'] = $paket;
 					$pesanan['additional'] = $additional;

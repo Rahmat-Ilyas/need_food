@@ -99,6 +99,10 @@
 						<span class="col-sm-8 p-0" id="dtl_tanggal_antar"></span>
 					</li>
 					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Metode Bayar: </b>
+						<span class="col-sm-8 p-0" id="dtl_metode_bayar"></span>
+					</li>
+					<li class="list-group-item row">
 						<b class="col-sm-4 p-0">Paket Pesanan: </b>
 						<span class="col-sm-8 p-0 row" id="dtl_paket"></span>
 					</li>
