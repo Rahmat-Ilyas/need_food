@@ -179,6 +179,9 @@
 						<b class="col-sm-4 p-0">Alamat: </b>
 						<span class="col-sm-8 p-0" id="dtl_deskripsi_lokasi"></span>
 					</li>
+					<li class="list-group-item row" id="setMaps">
+						<div class="col-sm-12 p-0 gmaps" id="mapView" style="height: 200px;" hidden=""></div>
+					</li>
 				</ul>
 			</div>
 			<div class="modal-footer">
@@ -190,7 +193,24 @@
 @endsection
 
 @section('javascript')
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5g4U_FtOK7LX789QyNyJe90DmnastiI8&callback=initMap&libraries=&v=weekly" defer></script>
 <script>
+	var latitude = -5.146512141348986;
+	var longitude = 119.43296873064695;
+	function initMap() {
+		var center = { lat: latitude, lng: longitude };
+
+		var map = new google.maps.Map(document.getElementById("mapView"), {
+			zoom: 18,
+			center: center,
+		});
+
+		var marker = new google.maps.Marker({
+			position: center,
+			map,
+		});
+	}
+
 	$(document).ready(function() {
 		var url = $('#configurl').val();
 		var host = $('#host').val();
@@ -436,11 +456,53 @@
 			});
 		});
 
+		// SET MAPS
+		$.ajax({
+			url     : host+"/configuration",
+			method  : "POST",
+			headers	: headers,
+			data	: { req: 'selesaiDiproses' },
+			success : function(data) {
+				google.maps.event.addDomListener(window, 'load', initMap);
+				$.each(data.result, function(key, val) {
+
+					$('#setMaps').append(`<div class="col-sm-12 p-0 gmaps" id="mapView`+val.id+`" style="height: 250px;" hidden=""></div>`);
+
+					var lng = val.longitude;
+					var lat = val.latitude;
+					var lokasi = val.deskripsi_lokasi;
+					var nama = val.nama;
+					function initMap() {
+						var propertiPeta = {
+							center:new google.maps.LatLng(lat,lng), 
+							zoom:15,
+							mapTypeId:google.maps.MapTypeId.ROADMAP
+						};
+						var peta = new google.maps.Map(document.getElementById("mapView"+val.id), propertiPeta);
+						var marker = new google.maps.Marker({
+							position: new google.maps.LatLng(lat,lng),
+							map: peta
+						});
+						var contentString = '<b>Nama Pemesan: ' + nama + '</b><p>Lokasi: ' + lokasi + '</p>';
+						var infowindow = new google.maps.InfoWindow({
+							content: contentString
+						});
+						infowindow.open(peta, marker);
+					}
+					google.maps.event.addDomListener(window, 'load', initMap);
+				});
+			}
+		});
+
 		// DETAIL PESANAN
 		$(document).on('click', '#detail-pesanan', function(e) {
 			e.preventDefault();
 
 			var id = $(this).attr('dta-id');
+
+			$('.gmaps').attr('hidden', '');
+			google.maps.event.addDomListener(window, 'load', initMap);
+			$('#mapView'+id).removeAttr('hidden');
 
 			$.ajax({
 				url     : host+"/api/datapesanan/"+id,
