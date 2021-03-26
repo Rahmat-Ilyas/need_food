@@ -236,7 +236,7 @@
 							val.deskripsi_lokasi,
 							val.no_telepon,
 							val.no_wa,
-							date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
+							date+'/'+month+'/'+dt.getFullYear()+' '+val.waktu_antar,
 							`<div class="text-center">
 							<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i> Detail</a>
 							</div>`,

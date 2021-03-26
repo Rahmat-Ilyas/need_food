@@ -28,8 +28,9 @@
 							<tr>
 								<th width="110">Kode Pesanan</th>
 								<th>Nama</th>
-								<th>Alamat</th>
+								<th width="150">Alamat</th>
 								<th width="120">Jadwal Antar</th>
+								<th>Metode Bayar</th>
 								<th>Catatan</th>
 								<th width="70">Status</th>
 								<th width="50">Aksi</th>
@@ -46,7 +47,7 @@
 	</div> 
 </div>
 
-<!-- MODAL KONFIRMASI -->
+<!-- MODAL KONFIRMASI TRANSFER BANK -->
 <div class="modal confirm-pesanan" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -57,8 +58,36 @@
 			<div class="modal-body">
 				<img src="" id="bukti_pembayaran" style="width: 100%;">
 				<div class="text-center m-t-20">
-					<button type="button" class="btn btn-danger waves-effect" id="refuse-pesanan"><i class="md-close"></i> Tolak Pesanan</button>
-					<button type="button" class="btn btn-success waves-effect" id="acc-pesanan"><i class="md-check"></i> Verifikasi Pesanan</button>
+					<button type="button" class="btn btn-danger waves-effect refuse-pesanan"><i class="md-close"></i> Tolak Pesanan</button>
+					<button type="button" class="btn btn-success waves-effect acc-pesanan"><i class="md-check"></i> Verifikasi Pesanan</button>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary waves-effect" data-dismiss="modal">Tutup</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- MODAL KONFIRMASI COD -->
+<div class="modal confirm-pesanan-cod" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="myModalLabel">Konfirmasi Pesanan COD</h4>
+			</div>
+			<div class="modal-body">
+				<p>
+					Silahkan konfirmasi pesanan dengan metode pembayaran COD berikut. <br>
+				</p>
+					Detail Pesanan COD:<br>
+					<b>Nama Pemesan:</b> <span id="nama_cod"></span> <br>
+					<b>Alamat:</b> <span id="alamat_cod"></span> <br>
+					<b>Total Harga:</b> <spam id="totalhrg_cod"></spam>
+				<div class="text-center m-t-20">
+					<button type="button" class="btn btn-danger waves-effect refuse-pesanan"><i class="md-close"></i> Tolak Pesanan</button>
+					<button type="button" class="btn btn-success waves-effect acc-pesanan"><i class="md-check"></i> Verifikasi Pesanan</button>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -235,10 +264,11 @@
 							val.nama,
 							val.deskripsi_lokasi,
 							val.jadwal_antar,
+							val.metode_bayar,
 							val.catatan,
 							val.status,
 							`<div class="text-center">
-							<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="confirm-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Konfirmasi Pembayaran" data-toggle="modal" `+val.chek+`><i class="fa fa-check-circle"></i></a>
+							`+val.button+`
 							<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i></a>
 							</div>`,
 							]).draw(false);
@@ -260,14 +290,44 @@
 				headers : headers,
 				success : function(data) {
 					$('#bukti_pembayaran').attr('src', host+'/assets/images/konfirmasi/'+data.result.bukti_pembayaran);
-					$('#acc-pesanan').attr('data-id', id);
-					$('#refuse-pesanan').attr('data-id', id);
+					$('.acc-pesanan').attr('data-id', id);
+					$('.refuse-pesanan').attr('data-id', id);
 				}
 			});
 		});
 
+		// KONFIRMASI PESANAN COD
+		$(document).on('click', '#confirm-pesanan-cod', function(e) {
+			e.preventDefault();
+
+			var id = $(this).attr('dta-id');
+
+			$.ajax({
+				url     : host+"/api/datapesanan/"+id,
+				method  : "GET",
+				headers : headers,
+				success : function(data) {
+					$('#nama_cod').text(data.result.nama);
+					$('#alamat_cod').text(data.result.deskripsi_lokasi);
+					$('#totalhrg_cod').text('Rp. '+data.result.transaksi.total_harga);
+					$('.acc-pesanan').attr('data-id', id);
+					$('.refuse-pesanan').attr('data-id', id);
+				}
+			});
+		});
+
+		// BELUM BAYAR
+		$(document).on('click', '#belum-bayar', function(e) {
+			var id = $(this).attr('data-id');
+			swal({
+				title: "Belum Bisa Diproses",
+				html: "Pesanan belum bisa diproses. Pelanggan belum mengupload bukti pembayaran.",
+				type: "warning",
+			});
+		});
+
 		// ACCEPT PESANAN
-		$(document).on('click', '#acc-pesanan', function(e) {
+		$(document).on('click', '.acc-pesanan', function(e) {
 			var id = $(this).attr('data-id');
 			swal({
 				title: "Verifikasi Pesanan?",
@@ -298,7 +358,7 @@
 		});
 
 		// TOLAK PESANAN
-		$(document).on('click', '#refuse-pesanan', function(e) {
+		$(document).on('click', '.refuse-pesanan', function(e) {
 			var id = $(this).attr('data-id');
 			swal({
 				title: "Tolak Pesanan?",

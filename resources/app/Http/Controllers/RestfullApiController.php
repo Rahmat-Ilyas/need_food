@@ -1740,8 +1740,14 @@ class RestfullApiController extends Controller
 				$this->reduceAlatBahan($id);
 			}
 
-			if ($request->status == 'Proccess' || $request->status == 'proccess') {
-				$this->debitkredit($id, 'pesanan');
+			if ($update->metode_bayar == 'cod') {
+				if ($request->status == 'Arrived' || $request->status == 'arrived') {
+					$this->debitkredit($id, 'pesanan');
+				}
+			} else {
+				if ($request->status == 'Proccess' || $request->status == 'proccess') {
+					$this->debitkredit($id, 'pesanan');
+				}
 			}
 
 			// Kirim Pesanan WA ke Pelanggan if status batal dan proccess
@@ -3059,6 +3065,7 @@ class RestfullApiController extends Controller
 	protected function sendMessageWhatsApp($tipe, $id) 
 	{
 		$rek = DataRekening::first();
+		$getmtdbyr = Pemesanan::where('id', $id)->first();
 		$pemesanan = Pemesanan::where('id', $id)->first();
 		$psn = $this->getDataPesanan($pemesanan, $id);
 
@@ -3081,7 +3088,11 @@ class RestfullApiController extends Controller
 				$additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].' x '.$adt['jumlah'].' Pcs\n';
 			}
 
-			$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';
+			if ($getmtdbyr->metode_bayar == 'transfer') {
+				$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';
+			} else if ($getmtdbyr->metode_bayar == 'cod') {
+				$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan metode Pembayaran COD rinciannya sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nKami akan segera meninjau pesanan anda, mohon tunggu konfirmasi selanjutnya';
+			}
 
 			$url = 'http://116.203.191.58/api/send_message';
 			$data = array(
@@ -3090,7 +3101,11 @@ class RestfullApiController extends Controller
 				"message" => $message
 			);
 		} else if ($tipe == 'order_accept') {
-			$message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+			if ($getmtdbyr->metode_bayar == 'transfer') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+			} else if ($getmtdbyr->metode_bayar == 'cod') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+			}
 
 			$url = 'http://116.203.191.58/api/send_message';
 			$data = array(
@@ -3108,7 +3123,11 @@ class RestfullApiController extends Controller
 				"message" => $message
 			);
 		} else if ($tipe == 'order_done') {
-			$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+			if ($getmtdbyr->metode_bayar == 'transfer') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+			} else if ($getmtdbyr->metode_bayar == 'cod') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu dan siapkan uang pas senilai Rp. '.number_format($psn->transaksi->total_harga).' untuk pembayaran COD 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+			}
 
 			$url = 'http://116.203.191.58/api/send_image_url';
 			$img_url = 'https://kesiniku.com/assets/images/pesanan/'.$psn->foto_pesanan;

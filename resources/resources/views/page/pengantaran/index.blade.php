@@ -244,7 +244,7 @@
             $("#loading, .loader").attr('hidden', '');
             Swal.fire({
                 title: 'Berhasil Diproses',
-                text: 'Pesanan sedang di proses, mohon segera lakukan pembayaran',
+                text: 'Pesanan sedang di proses, mohon periksa WhatsApp anda untuk informasil selanjutnya',
                 type: 'success',
                 onClose: () => { location.href = url; }
             });
