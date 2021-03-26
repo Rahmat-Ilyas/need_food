@@ -3126,7 +3126,7 @@ class RestfullApiController extends Controller
 			if ($getmtdbyr->metode_bayar == 'transfer') {
 				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
 			} else if ($getmtdbyr->metode_bayar == 'cod') {
-				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu dan siapkan uang pas senilai Rp. '.number_format($psn->transaksi->total_harga).' untuk pembayaran COD 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu dan siapkan uang pas senilai Rp. '.number_format($psn->transaksi->total_harga).' untuk pembayaran COD 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesai:\nhttps://kesiniku.com/done/'.$token;
 			}
 
 			$url = 'http://116.203.191.58/api/send_image_url';
