@@ -47,16 +47,16 @@
                                 <a class="nav-link home" href="{{ route('page.index') }}">Home <span
                                         class="sr-only">(current)</span></a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item current-home">
                                 <a class="nav-link tentang scroll" href="#tentang">Tentang</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item current-home">
                                 <a class="nav-link portfolio scroll" href="#menu">Menu</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item current-home">
                                 <a class="nav-link testimoni scroll" href="#testimoni">Testimoni</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item current-home">
                                 <a class="nav-link kontak scroll" href="#kontak">Kontak</a>
                             </li>
                         </ul>
@@ -88,12 +88,12 @@
                     </div>
                     <div class="col-lg-4">
                         <ul class="list-footer_second">
-                            <li class="sub-list-footer">No Telepon 0059-4985-43</li>
-                            <li class="sub-list-footer">E-mail : needfood@gmail.com</li>
+                            <li class="sub-list-footer">No Telepon 082-293-887-789</li>
+                            <li class="sub-list-footer">E-mail : kesiniku@gmail.com</li>
                             <li class="sub-list-footer">
-                                <i class="icofont-brand-whatsapp"></i>
+                                <i onclick="redirectMedsos('https://wa.me/082293887789')" class="icofont-brand-whatsapp" style="cursor: pointer"></i>
                                 &nbsp;&nbsp;&nbsp;
-                                <i class="icofont-instagram"></i>
+                                <i onclick="redirectMedsos('https://www.instagram.com/needfoodcontainer/')" class="icofont-instagram" style="cursor: pointer"></i>
                             </li>
                         </ul>
                     </div>
@@ -112,11 +112,15 @@
 <script src="{{ asset('page/assets/js/landing.js') }}"></script>
 <script src="{{ asset('page/assets/js/slick.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.js"></script>
+@stack('skriptHome')
 <script>
     
    $(document).ready(function () {
        scrollingpage();
        changenavbar();
+       $('.carousel').carousel({
+        interval: 4000
+        })
    });
 
     function scrollingpage() {
@@ -143,6 +147,10 @@
             })
             
         })
+    }
+
+    function redirectMedsos(data) {
+        window.open(''+data+'', '_blank');
     }
 
     function changenavbar() {

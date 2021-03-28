@@ -147,6 +147,7 @@ $(document).ready(function () {
             success : function(data) {
                 var path_asset = url+'/assets/images/paket';
                 var value = data['result'];
+                console.log(value);
                 if (data['success'] == true) {
                     $('.img-paket').html('<img src="'+path_asset+'/'+value.foto+'" class="imageproduct">');
                     $('.ratings').html('<div class="label_rating">9.0</div><div class="row valuerating"><div class="star-rating"><input type="radio" id="5-stars" name="rating" value="5" /><label for="5-stars" class="star">&#9733;</label><input type="radio" id="4-stars" name="rating" value="4"/><label for="4-stars" class="star">&#9733;</label><input type="radio" id="3-stars" name="rating" value="3" /><label for="3-stars" class="star">&#9733;</label><input type="radio" id="2-stars" name="rating" value="2" /><label for="2-stars" class="star">&#9733;</label><input type="radio" id="1-star" name="rating" value="1" /><label for="1-star" class="star">&#9733;</label></div></div>');
@@ -154,6 +155,7 @@ $(document).ready(function () {
                     $('.tampung_value').html('<input type="hidden" id="get_paket_id" value="'+value.id+'">');
                     $('#nominals').html('<span class="currency-general">'+value.harga+'</span><span class="sub-currency">/ Paket</span>');
                     $('.form_qty').html("<div class='input-groups grid_calculate_order'><span class='input-group-btn'><button type='button' class='tombols btn-number' onclick='number(`paket_input`,`mines`)' data-type='minus' data-field='quant[1]'><i class='icofont-minus icon-number'></i></button></span><input type='text' name='quant[1]' class='form-nedd input-number' id='paket_input' value='1' min='1' max='1000'><span class='input-group-btn'><button type='button' class='tombols btn-number' data-type='plus' onclick='number(`paket_input`,`add`)' data-field='quant[1]'><i class='icofont-plus icon-number'></i></button></span></div>");
+                    $('.action_data').html('<button class="tombol-lg tombol-keranjang text-button" id="send_to_card_paket">Masukkan Keranjang</button>');
                 }
             }
         });
@@ -293,7 +295,7 @@ $(".input-number").keydown(function (e) {
         $('.item-toogle').toggleClass('active-toogle');
     })
 
-    $('#send_to_card_paket').on('click',function () {
+    $(document).on('click','#send_to_card_paket',function () {
         var id_paket = $('#get_paket_id').val();
         var type = 'paket';
         var get_qty_paket = $('#paket_input').val();
@@ -463,17 +465,21 @@ $(".input-number").keydown(function (e) {
     })
 
     send_to_delivery = (data) => {
-        $.ajax({
-            url  : url+'/keranjang/paket_to_delivery',
-            type : 'POST',
-            data : {
-                'data' : JSON.stringify(data),
-                '_token' : token
-            },
-            success: function (response) {
-               window.location.href = url+'/pengantaran';
-            }
-        })
+        if (data == 'Tidak ada session') {
+            toastr_notice('error','Gagal !! Belum Ada Pesanan');
+        } else {
+            $.ajax({
+                url  : url+'/keranjang/paket_to_delivery',
+                type : 'POST',
+                data : {
+                    'data' : JSON.stringify(data),
+                    '_token' : token
+                },
+                success: function (response) {
+                   window.location.href = url+'/pengantaran';
+                }
+            })
+        }
     }
 
     number = (elemen,type) => {

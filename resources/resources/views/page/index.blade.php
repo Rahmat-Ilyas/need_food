@@ -1,6 +1,60 @@
 @extends('headfood.pagelanding')
 @section('homes')
-<header>
+
+<section>
+    <div id="myCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+            <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active courosel-custom-banner" data-interval="2000">
+                <div class="overlay-image" style="background-image:url('page/assets/images/slide2.png')"></div>
+                <div class="container">     
+                    <div class="sub_banner_text">Good meat makes great experience</div>
+                     <div class="banner-text">Need Food Container <br> Solusinya</div>
+                     <div class="tombol_jumbroton">
+                         <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
+                       </div>
+                      <div class="text_time_header"> Setiap hari 10:00 - 20:00 WITA </div>
+                  </div>
+            </div>
+            <div class="carousel-item courosel-custom-banner" data-interval="1000">
+                <div class="overlay-image" style="background-image:url('page/assets/images/image_jumbroton.png')"></div>
+                <div class="container"> 
+                    <div class="sub_banner_text">Good meat makes great experience</div>
+                     <div class="banner-text">Need Food Container <br> Solusinya</div>
+                     <div class="tombol_jumbroton">
+                         <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
+                       </div>
+                      <div class="text_time_header"> Setiap hari 10:00 - 20:00 WITA </div>
+                  </div>
+            </div>
+            <div class="carousel-item courosel-custom-banner" data-interval="500">
+                <div class="container"> 
+                    <div class="overlay-image" style="background-image:url('page/assets/images/slide3.png')"></div>
+                    {{-- <div class="sub_banner_text">Good meat makes great experience</div>
+                     <div class="banner-text">Need Food Container <br> Solusinya</div>
+                     <div class="tombol_jumbroton">
+                         <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
+                       </div>
+                      <div class="text_time_header"> Setiap hari 10:00 - 20:00 WITA </div> --}}
+                  </div>
+            </div>
+        </div>
+        {{-- <a href="#myCarousel" class="carousel-control-prev" role="button" data-slide="prev">
+            <span class="sr-only">Previous</span>
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </a>
+        <a href="#myCarousel" class="carousel-control-next" role="button" data-slide="next">
+            <span class="sr-only">Previous</span>
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </a> --}}
+    </div>
+</section>
+
+{{-- <header>
     <div class="single-banner">
         <div class="banner-img">
             <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
@@ -14,7 +68,7 @@
                   <div class="text_time_header"> Setiap hari 10:00 - 20:00 WITA </div>
         </div>
     </div>
-</header>
+</header> --}}
 
 <section id="tentang">
     <div class="container">
@@ -24,13 +78,15 @@
               <div class="col-md-11">
                 <p class="text_tentang">Shabu-Yakiniku's favorite food is just tasty & fun 
                     shabu adalah makanan jepang jenis nabemono berupa irisan daging sapi yang tipis & dicelup kedalam panci berisi kuah & dan kini penyajiannya dilengkapi suki, sayuran, udon atau mie.</p>
+                <div id="readMore">
                     <p class="text_tentang">yakiniku adalah istilah bahasa jepang untuk daging dipanggang atau dibakar di atas api</p>
                     <p class="text_tentang">Berbicara tentang makanan
                         siapa yang bisa menolak daging berkualitas tinggi dipadu dengan saus yakiniku (tare) buatan sendiri juga kuah shabu yang diolah secara homemade dengan resep rahasia.
                         dan ini tentu saja menjamin bahan2 sehat tanpa pengawet & MSG untuk menjaga kualitas & cita rasanya dan yang terpenting adalah halal.
                         kami adalah sebuah brand kuliner yang mengosong Japanese Food yaitu Shabu-Yakiniku sebagai product utama kami, dimana kami datang memberikan solusi untuk layanan pesan antar (Homey Shabu-Yakiniku) dan layanan pondokan (Foodstall Shabu-Yakiniku)</p>
+                </div>
               </div>
-                <button class="tombol-custom tombol_tentang grid_button_tentang">LIHAT SEMUA</button>
+                <a href="javascript:void();" class="readmore-btn">Lihat lainnya <i class="icofont-long-arrow-right"></i></a>
             </div>
             <div class="col-md-6">
                 <iframe src="https://www.youtube.com/embed/TUhw_l4jCUU" frameborder="0"
@@ -53,7 +109,7 @@
                 <img src="{{ asset('page/assets/images/home_service_mini.png') }}" class="img_service_mini" alt="" srcset="">
                 <div class="row">
                     <div class="col-md-11">
-                        <p class="text_service mt-5">Jika kamu penggemar berat barbeque/yakiniku kamu tetap bisa menikmatinya walaupun tidak menyantapnya di resto & jika kamu tertarik berkumpul untuk acara khusus dirumah kamu dapat membuatnya menyenangkan dengan memesan layanan homey shabu yakiniku, karena kamu akan mendapatkan kesenangan dengan memanggang bersama memegang makanan sambil bercengkrama dan mengobrol dengan keluarga dengan seorang teman </p>  
+                        <p class="text_service mt-5">Jika kamu penggemar berat barbeque/yakiniku kamu tetap bisa menikmatinya walaupun tidak menyantapnya di resto & jika kamu tertarik berkumpul untuk acara khusus dirumah kamu dapat membuatnya menyenangkan dengan memesan layanan homey shabu yakiniku, karena kamu akan mendapatkan kesenangan dengan memanggang makanan sambil bercengkrama dan mengobrol dengan keluarga dengan seorang teman </p>  
                     </div>
                 </div>
             </div>
@@ -78,7 +134,6 @@
                 <div class="col-lg-3">
                     <div class="title_tentang grid_menu_title"> Menu </div>
                     <div class="text_menu">Tersedia pilihan paket menu unggulan dengan kombinasi daging</div>
-                    <button class="tombol-custom tombol_menu grid_button_tentang">LIHAT SEMUA</button>
                 </div>
                 <div class="col-lg-9">
                         <div class="row card_grid">
@@ -142,7 +197,17 @@
     <div class="title_keunggulan"> keunggulan Bahan Kami </div>
         <div class="row">
             <div class="col-md-12">
-                <p class="text_keunggulan">Cara belanja yang mudah, harga terjangkau, hemat waktu, biaya & tenaga 100%, Halal & Hygiene Pack, Daging sapi yang berkualitas selalu menggunakan daging dengan grape terbaik, bahan-bahan lain juga berkualitas, Free Delivery untuk wilayah makassar </p>
+                <ul style="list-style: none" class="text_keunggulan mt-4">
+                    <li>Cara Belanja yang mudah</li>
+                    <li class="mt-2">Harga Terjangkau</li>
+                    <li class="mt-2">Hemat Waktu</li>
+                    <li class="mt-2">Biaya & tenaga 100%</li>
+                    <li class="mt-2">Halal % Hygiene pack</li>
+                    <li class="mt-2">Daging sapi yang berkualitas</li>
+                    <li class="mt-2">Selalu Menggunakan daging dengan grade terbaik</li>
+                    <li class="mt-2">Bahan-bahan lain juga berkualitas</li>
+                    <li class="mt-2">Free delivery untuk wilayah Makassar</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -151,46 +216,101 @@
 <section class="layouts_area">
     <div id="testimoni" class="container">
         <div class="title_tentang grid_testimoni_title"> Testimoni </div>
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="box_testimoni">
-               <p class="text_box_testi">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Id commodo commodo, massa sit ipsum proin sed sollicitudin. Urna nibh adipiscing parturient.</p>
-               <div class="row footer_box_testi">
-                    <div class="container">               
-                        <img src="{{ asset('page/assets/images/user.png') }}" class="rounded-circle img_testi">
-                            <div class="name_user">Arkam Maulana</div>
-                            <div class="status_user">Mahasiswa/Pelajar</div>
+
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+            <ol class="carousel-indicators">
+              <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+              <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+              <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            </ol>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="single-box">
+                                <div class="img-area">
+                                    <img src="{{ asset('page/assets/images/makassar.png') }}" class="rounded-circle img_testi">
+                                </div>
+                                <div class="img-text">
+                                    <h2>Pemerintah Kota Makassar</h2>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-box">
+                                <div class="img-area">
+                                    <img src="{{ asset('page/assets/images/makassar.png') }}" class="rounded-circle img_testi">
+                                </div>
+                                <div class="img-text">
+                                    <h2>Pemerintah Kota Makassar</h2>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-box">
+                                <div class="img-area">
+                                    <img src="{{ asset('page/assets/images/makassar.png') }}" class="rounded-circle img_testi">
+                                </div>
+                                <div class="img-text">
+                                    <h2>Pemerintah Kota Makassar</h2>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-               </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="box_testimoni">
-               <p class="text_box_testi">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Id commodo commodo, massa sit ipsum proin sed sollicitudin. Urna nibh adipiscing parturient.</p>
-               <div class="row footer_box_testi">
-                <div class="container">               
-                    <img src="{{ asset('page/assets/images/user.png') }}" class="rounded-circle img_testi">
-                        <div class="name_user">Arkam Maulana</div>
-                        <div class="status_user">Mahasiswa/Pelajar</div>
                 </div>
-           </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="box_testimoni">
-               <p class="text_box_testi">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Id commodo commodo, massa sit ipsum proin sed sollicitudin. Urna nibh adipiscing parturient.</p>
-               <div class="container">  
-               <div class="row footer_box_testi">             
-                    <img src="{{ asset('page/assets/images/user.png') }}" class="rounded-circle img_testi">
-                        <div class="name_user">Arkam Maulana</div>
-                        <div class="status_user">Mahasiswa/Pelajar</div>
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="single-box">
+                                <div class="img-area">
+                                    <img src="{{ asset('page/assets/images/sulsel.png') }}" class="rounded-circle img_testi">
+                                </div>
+                                <div class="img-text">
+                                    <h2>Pemerintah Provinsi Sulsel</h2>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-box">
+                                <div class="img-area">
+                                    <img src="{{ asset('page/assets/images/sulsel.png') }}" class="rounded-circle img_testi">
+                                </div>
+                                <div class="img-text">
+                                    <h2>Pemerintah Provinsi Sulsel</h2>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="single-box">
+                                <div class="img-area">
+                                    <img src="{{ asset('page/assets/images/sulsel.png') }}" class="rounded-circle img_testi">
+                                </div>
+                                <div class="img-text">
+                                    <h2>Pemerintah Provinsi Sulsel</h2>
+                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-           </div>
             </div>
-        </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+          </div>
+
     </div>
-    </div>
-</section>
+</section> 
 
 <section class="saran_masukan">
     <div class="container">
@@ -240,18 +360,24 @@
 </section>
 
 
-{{-- 
-<div class="flat_button grid_button_faq">
+
+{{-- <div class="flat_button grid_button_faq">
    <div class="faq_text">FAQ</div>
 </div> --}}
 
 @endsection
-@push('skript')
+@push('skriptHome')
     <script>
         $(function () {
+            $('#readMore').hide();
             $('.validation_error').css('display','none');
             $('.closebtn').on('click', function () {
                 $('.validation_error').css('display','none');
+             })
+
+             $('.readmore-btn').on('click',function () {
+                 $(this).parent().toggleClass('showContent');
+                 $('#readMore').slideToggle();
              })
         })
     </script>

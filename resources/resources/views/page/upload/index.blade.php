@@ -23,7 +23,7 @@
                           </div>
                           <div class="notes_upload_title">Keterangan</div>
                           <div class="col-lg-8">
-                            <div class="notes_upload_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.Fringilla sed tellus orci praesent sem eget. Amet eu, habitant id vel magna vitae</div>
+                            <div class="notes_upload_text"><strong>Penting !!!</strong> Mohon Konfirmasi Pembayaran ini hanya di lakukan <strong>setelah</strong> Anda melakukan pembayaran. Isi data dengan benar untuk memudahkan kami memverifikasi konfirmasi anda </div>
                           </div>
                           <div class="col-lg-6">
                             <button id="upload_submit" class="tombol-custom tombol-keranjang text-button grid_upload">UPLOAD</button>

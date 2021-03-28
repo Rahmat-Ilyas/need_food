@@ -37,7 +37,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-12 action_data">
-                    <button class="tombol-lg tombol-keranjang text-button" id="send_to_card_paket">Masukkan Keranjang</button>
+                    
                 </div>
             </div>
         </div>

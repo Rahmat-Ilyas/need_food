@@ -101,7 +101,7 @@ nav a:hover {
 .sub_banner_text {
     position: absolute;
     bottom: 430px;
-    left: 31%;
+    left: 24%;
     transform: translate(-50%, -50%);
     font-size: 20px;
     font-family: 'Poppins', serif;
@@ -129,6 +129,17 @@ nav a:hover {
     margin: 0 5px;
     padding: 0;
     cursor: pointer;
+}
+
+.readmore-btn{
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 21px;
+    font-feature-settings: 'cpsp' on;
+    color: #EB5757;
+
 }
 
 .slick-dots li button {
@@ -170,12 +181,35 @@ nav a:hover {
     left: 11%;
 }
 
-header{
-    overflow-x: hidden;
+/* header{
+    height: 32rem;
+    background: #777;
+    color: red;
+
+} */
+
+.courosel-custom-banner{
+    height: 40rem;
+    background: #777;
 }
+
+.overlay-image{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-position: center;
+    background-size: cover;
+}
+
 
 #tentang{
     overflow-x: hidden;
+}
+
+.showContent p {
+    height: auto;
 }
 
 
@@ -524,8 +558,9 @@ iframe{
 }
 
 .keunggulan{
-    height: 521px;
-    background-image: url("/page/assets/images/background_keunggulan.png");
+    height: 768px;
+    /* background-image: url("/page/assets/images/background_keunggulan.png"); */
+    background: black;
 }
 
 .layouts_area{
@@ -534,7 +569,7 @@ iframe{
     background-repeat: no-repeat;
     /* background-attachment: fixed; */
     background-position: 0 0 0 200px;
-    height: 1161px;
+    height: 950px;
 }
 
 .section_title_group{
@@ -572,8 +607,8 @@ iframe{
 }
 
 .img_testi{
-    width: 70px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     /* border-radius: 50%; */
 }
 
@@ -814,6 +849,55 @@ footer {
     color: black;
   }
 
+  .img-text{
+      width: 100%;
+      height: 300px;
+      display: block;
+      font-family: 'Poppins',serif;
+      text-align: center;
+      padding: 40% 5%;
+      background: #ffffff;
+      box-shadow: 0px 10px 21px rgba(0.25, 0.25, 0.25, 0.25);
+      color: #4F4F4F;
+      border-radius: 15px;
+  }
+
+  .img-text h2{
+      font-size: 25px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+  }
+
+  .img-text p{
+      font-size: 14px;
+  }
+
+  .single-box{
+      position: relative;
+      margin-bottom: 30px;
+  }
+
+  .img-area{
+      position: absolute;
+      height: 100px;
+      overflow: hidden;
+      top: 15px;
+      left: 125px;
+  }
+
+  .carousel-indicators{
+      left: 0;
+      top: auto;
+      bottom: -70px;
+  }
+
+  .carousel-indicators li{
+      background: #EB5757;
+      border-radius: 50%;
+      width: 15px;
+      height: 15px;
+  }
+
 
 @media only screen and (max-width:576px) {
 
@@ -989,6 +1073,7 @@ footer {
         font-size: 16px;
         text-align: center;
         margin-top: 20px;
+        
     }
 
     .saran_masukan{

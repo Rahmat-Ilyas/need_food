@@ -20,7 +20,7 @@
 
                                 </div>
                                 <div class="container mt-3 content-keranjang-list">
-                                
+                                    
                                 </div>
                             </form>
                                
@@ -38,7 +38,7 @@
                                         <div class="box_total_keranjang"></div>
                                     </div> 
                                 </div>
-                                    <button class="tombol-custom tombol-keranjang text-button grid_button_cart" id="send_to_delivery">BUAT PESANAN</button>
+                                    <button class="tombol-custom tombol-keranjang text-button grid_button_cart" id="send_to_delivery">PROSES</button>
                                     <div class="text_danger_info_cart">* Pesanan Minimum 2 pcs</div>
                            </div>
                        </div>
@@ -56,11 +56,13 @@
         var path_asset_image = '';
         var html = '';
         var total_harga = 0;
+        var resultHarga = 0;
+        var no = 0;
         var data_array_paket = '';
         var paket_id = [], jumlah = [];
         var token = $('meta[name="csrf-token"]').attr('content');
         $(document).ready(function () {
-
+            $('.MenuForCart').css('font-weight','bold');
             $('.content-keranjang-list').hide();
             $('.konten_box_harga').hide();
             $('.content-keranjang-first').html(makeleton_cart());   
@@ -72,43 +74,73 @@
             success : function(data) {
                 data_array_paket = data;
                 console.log(data_array_paket);
-              $.each(data_array_paket, function (indexInArray, valueOfElement) {
-                if(valueOfElement['type'] == 'paket'){
-                    path_asset_image =  url+'/assets/images/paket';
-                   }else{
-                       path_asset_image =  url+'/assets/images/bahan';
-                   } 
-                   html += '<div class="box-keranjang mt-3 row_index_cart_page_'+indexInArray+'">';
-                   html += '<div class="row">'; 
-                   html += '<div class="col-lg-8">';
-                    html += '<div class="row">';
-                   html += '<div class="col-lg-6">';
-                    html += '<img src="'+path_asset_image+'/'+valueOfElement.foto+'" class="img-keranjang">';
-                    html += '</div>';
-                    html +='<div class="col-lg-6 group-text-keranjang-page">';
-                    html += '<div class="text-image-keranjang">'+valueOfElement.nama+'</div>';
-                    html += '<div class="text-currency-keranjang-page"> Rp. '+valueOfElement.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+' </div>'
-                    html += '</div>';
-                    html += '</div>';    
-                    html += '</div>';
-                    html += '<div class="col-lg-4">';
-                    html += '<div class="row form-keranjang">';  
-                    html += '<button type="button" onclick="number(`input_page_keranjang'+valueOfElement.id+'`,`mines`)" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';    
-                    html += ' <input type="text" name="quant[1]" id="input_page_keranjang'+valueOfElement.id+'" class="form-nedd-keranjang input-number" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
-                    html += '<button type="button" onclick="number(`input_page_keranjang'+valueOfElement.id+'`,`add`)" class="tombol_keranjang_number btn-number">   <i class="icofont-plus icon-number_additional"></i></button>';
-                    html += ' <div class="icon-delete"><i class="icofont-ui-delete delete_item_keranjang" data-action="'+indexInArray+'"></i></div>';  
-                    html += '</div>';
-                    html += '</div>';
-                    html += '</div>';
-                   html += '</div>';
-                   html += '<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
-                   html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
+            
+                if (data_array_paket != 'Tidak ada session') {
+                    $.each(data_array_paket, function (indexInArray, valueOfElement) {
+                  
+                  if(valueOfElement['type'] == 'paket'){
+                      path_asset_image =  url+'/assets/images/paket';
+                     }else{
+                         path_asset_image =  url+'/assets/images/bahan';
+                     } 
+                     html += '<div class="box-keranjang mt-3 row_index_cart_page_'+indexInArray+'">';
+                     html += '<div class="row">'; 
+                     html += '<div class="col-lg-8">';
+                      html += '<div class="row">';
+                     html += '<div class="col-lg-6">';
+                      html += '<img src="'+path_asset_image+'/'+valueOfElement.foto+'" class="img-keranjang">';
+                      html += '</div>';
+                      html +='<div class="col-lg-6 group-text-keranjang-page">';
+                      html += '<div class="text-image-keranjang">'+valueOfElement.nama+'</div>';
+                      html += '<div class="text-currency-keranjang-page"> Rp. '+valueOfElement.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+' </div>'
+                      html += '</div>';
+                      html += '</div>';    
+                      html += '</div>';
+                      html += '<div class="col-lg-4">';
+                      html += '<div class="row form-keranjang">';  
+                      html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`mines`)" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';    
+                      html += ' <input type="text" name="quant[1]" id="input_page_keranjang'+no+'" class="form-nedd-keranjang input-number valueKeranjangInput'+valueOfElement.id+'" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
+                      html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`add`,)" class="tombol_keranjang_number btn-number"><i class="icofont-plus icon-number_additional"></i></button>';
+                      html += ' <div class="icon-delete"><i class="icofont-ui-delete delete_item_keranjang" data-action="'+indexInArray+'"></i></div>';  
+                      html += '</div>';
+                      html += '</div>';
+                      html += '</div>';
+                     html += '</div>';
+                     html += '<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
+                     html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
+  
+                     no++;
+                    resultHarga =  total_harga+=parseInt(valueOfElement.harga * valueOfElement.kuantitas);
+                    appendToHargaContent(resultHarga);
+  
+                });
+                } else {
+                    html += ' <div class="text_title_box_harga">Maaf, Tidak Ada Produk yang di Tambahkan</div>';
+                }
 
-                   total_harga+=parseInt(valueOfElement.harga * valueOfElement.kuantitas);
+              appendToHargaContent(resultHarga);
 
-              });
-              
-              $('.box_total_keranjang').append('Rp. '+total_harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+              numberKeranjang = (harga,elemen,type) => {
+                var totalResultS = 0;
+                $('.box_total_keranjang').html('');
+                var val = $(`#${elemen}`).val();
+                if (type == 'add') {
+                    val++;
+                    $(`#${elemen}`).val(val);
+                   totalResultS =  resultHarga + (harga * val);
+                }else{
+                    val--;
+                    $(`#${elemen}`).val(val);
+                }         
+                
+                appendToHargaContent(totalResultS);
+
+            }
+             
+             function appendToHargaContent(params) {
+                $('.box_total_keranjang').html('Rp. '+params.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+             }  
+             
               $('.content-keranjang-list').append(html);
             }
         });
