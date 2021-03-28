@@ -156,17 +156,17 @@
                                 <div class="row ongkos_content">
                                     <div class="place_pricing">Makassar</div>
                                     <i class="icofont-long-arrow-right icont-ongkos-1"></i>
-                                    <div class="side_pricing">Rp 50.000</div>
+                                    <div class="side_pricing">Free</div>
                                 </div>
                                 <div class="row ongkos_content">
                                     <div class="place_pricing">Gowa</div>
                                     <i class="icofont-long-arrow-right icont-ongkos-2"></i>
-                                    <div class="side_pricing">Rp 100.000</div>
+                                    <div class="side_pricing">Rp 50.000</div>
                                 </div>
                                 <div class="row ongkos_content">
                                     <div class="place_pricing">Maros</div>
                                     <i class="icofont-long-arrow-right icont-ongkos-3"></i>
-                                    <div class="side_pricing">Rp 100.000</div>
+                                    <div class="side_pricing">Rp 50.000</div>
                                 </div>
                             </div>
                         </div>
