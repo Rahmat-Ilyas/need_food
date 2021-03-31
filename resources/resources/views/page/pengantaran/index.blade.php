@@ -156,17 +156,17 @@
                                 <div class="row ongkos_content">
                                     <div class="place_pricing">Makassar</div>
                                     <i class="icofont-long-arrow-right icont-ongkos-1"></i>
-                                    <div class="side_pricing">Rp 50.000</div>
+                                    <div class="side_pricing">Free</div>
                                 </div>
                                 <div class="row ongkos_content">
                                     <div class="place_pricing">Gowa</div>
                                     <i class="icofont-long-arrow-right icont-ongkos-2"></i>
-                                    <div class="side_pricing">Rp 100.000</div>
+                                    <div class="side_pricing">Rp 50.000</div>
                                 </div>
                                 <div class="row ongkos_content">
                                     <div class="place_pricing">Maros</div>
                                     <i class="icofont-long-arrow-right icont-ongkos-3"></i>
-                                    <div class="side_pricing">Rp 100.000</div>
+                                    <div class="side_pricing">Rp 50.000</div>
                                 </div>
                             </div>
                         </div>
@@ -192,6 +192,7 @@
   var url = $('meta[name="host_url"]').attr('content');
   var sub_total = 0;
   var total = 0;
+  var datax;
   $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -204,9 +205,9 @@
         url     : url+'/getpaket_to_delivery',
         method  : "GET",
         success : function(data) {
-            console.log(data);
+            datax = data;
             var html = '';
-            $.each(data, function (indexInArray, valueOfElement) { 
+            $.each(datax, function (indexInArray, valueOfElement) { 
                 if (valueOfElement.type == 'paket') {
                     html+='<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
                     html+='<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah_paket[]">';
@@ -226,43 +227,94 @@
 
     $('#submit_pengantaran').on('click', function (event) {
        event.preventDefault();
-       $.ajax({
-        url     : url+"/api/datapesanan/store",
-        method  : "POST",
-        headers : headers(),
-        data    :$('.form_pengantaran').serialize(),
-        xhr: function () {
-            var xhr = new window.XMLHttpRequest();
-            xhr.upload.addEventListener('progress', function (evt) {
-                if (evt.lengthComputable) {
-                    $("#loading, .loader").removeAttr('hidden');
-                }
-            }, false);
-            return xhr;
-        },
-        success : function(data) {
-            $("#loading, .loader").attr('hidden', '');
-            Swal.fire({
-                title: 'Berhasil Diproses',
-                text: 'Pesanan sedang di proses, mohon periksa WhatsApp anda untuk informasil selanjutnya',
-                type: 'success',
-                onClose: () => { location.href = url; }
-            });
-        },
-        error: function (res) {
-            var text = '';
-            $("#loading, .loader").attr('hidden', '');
-            $('.validation_error').css('display','block');
-            $('html, body').animate({
-                scrollTop: $(".validation_error").offset().top
-            }, 1500);
-            console.log(res.responseJSON.message);
-            $.each(res.responseJSON.message, function (indexInArray, valueOfElement) { 
-                text += '<li>'+valueOfElement+'</li>';
-            });
-            $('.list_error').append(text);
-        }
-    });
+// <<<<<<< HEAD
+//        $.ajax({
+//         url     : url+"/api/datapesanan/store",
+//         method  : "POST",
+//         headers : headers(),
+//         data    :$('.form_pengantaran').serialize(),
+//         xhr: function () {
+//             var xhr = new window.XMLHttpRequest();
+//             xhr.upload.addEventListener('progress', function (evt) {
+//                 if (evt.lengthComputable) {
+//                     $("#loading, .loader").removeAttr('hidden');
+//                 }
+//             }, false);
+//             return xhr;
+//         },
+//         success : function(data) {
+//             $("#loading, .loader").attr('hidden', '');
+//             Swal.fire({
+//                 title: 'Berhasil Diproses',
+//                 text: 'Pesanan sedang di proses, mohon periksa WhatsApp anda untuk informasil selanjutnya',
+//                 type: 'success',
+//                 onClose: () => { location.href = url; }
+//             });
+//         },
+//         error: function (res) {
+//             var text = '';
+//             $("#loading, .loader").attr('hidden', '');
+//             $('.validation_error').css('display','block');
+//             $('html, body').animate({
+//                 scrollTop: $(".validation_error").offset().top
+//             }, 1500);
+//             console.log(res.responseJSON.message);
+//             $.each(res.responseJSON.message, function (indexInArray, valueOfElement) { 
+//                 text += '<li>'+valueOfElement+'</li>';
+//             });
+//             $('.list_error').append(text);
+//         }
+//     });
+// =======
+       console.log(datax)
+       if (datax != 'Tidak ada session') {
+               $.ajax({
+                        url     : url+"/api/datapesanan/store",
+                        method  : "POST",
+                        headers : headers(),
+                        data    :$('.form_pengantaran').serialize(),
+                        xhr: function () {
+                            var xhr = new window.XMLHttpRequest();
+                            xhr.upload.addEventListener('progress', function (evt) {
+                                if (evt.lengthComputable) {
+                                    $("#loading, .loader").removeAttr('hidden');
+                                }
+                            }, false);
+                            return xhr;
+                        },
+                        success : function(data) {
+                            $("#loading, .loader").attr('hidden', '');
+                            Swal.fire({
+                                title: 'Berhasil Diproses',
+                                text: 'Pesanan sedang di proses, mohon periksa WhatsApp anda untuk informasil selanjutnya',
+                                type: 'success',
+                                onClose: () => { location.href = url; }
+                            });
+                        },
+                        error: function (res) {
+                            var text = '';
+                            $("#loading, .loader").attr('hidden', '');
+                            $('.validation_error').css('display','block');
+                            $('html, body').animate({
+                                scrollTop: $(".validation_error").offset().top
+                            }, 1500);
+                            console.log(res.responseJSON.message);
+                            $.each(res.responseJSON.message, function (indexInArray, valueOfElement) { 
+                                text += '<li>'+valueOfElement+'</li>';
+                            });
+                            $('.list_error').append(text);
+                        }
+                    });
+        
+       } else {
+        Swal.fire({
+                title: 'Gagal',
+                text: 'Data Pesanan Belum Ada, Silahkan Checkout terlebih Dahulu',
+                type: 'error',
+                onClose: () => { location.href = url+'/order'; }
+            });        
+       }
+// >>>>>>> origin/abdilla_area
    })
 
     $('.closebtn').on('click', function () {

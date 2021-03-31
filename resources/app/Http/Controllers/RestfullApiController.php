@@ -1690,7 +1690,7 @@ class RestfullApiController extends Controller
 		$search = array_column($alat, 'key', 'kategori_alat_id');
 		$alat_fix = [];
 		// Dapat alat minimal 1 paket
-		if ($total_paket >= 1) {
+		if ($total_paket >= 5) {
 			foreach ($search as $fix => $key) {
 				$jumlah = 0;
 				foreach ($alat as $ext) {

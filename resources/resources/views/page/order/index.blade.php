@@ -96,6 +96,9 @@
 @push('skript')
     <script>
         $(document).ready(function () {
+
+            $('.MenuForOrder').css('font-weight','bold');
+
             $('.paket_content').hide();
             $('.box-element').hide();    
             $('.paket_skelton').html(makeleton_paket());   

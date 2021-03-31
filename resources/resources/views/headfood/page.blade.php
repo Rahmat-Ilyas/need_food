@@ -49,16 +49,13 @@
                                 class="sr-only">(current)</span></a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link portfolio">Menu</a>
+                                <a class="nav-link kontak scroll MenuForOrder" href="{{route('page.order.index')}}">Order</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link kontak">Tentang</a>
+                                <a class="nav-link kontak scroll MenuForCart" href="{{route('page.keranjang')}}">Keranjang</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link kontak">Testimoni</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link kontak">Kontak</a>
+                                <a class="nav-link kontak scroll MenuForDelivery" href="{{route('page.pengantaran')}}">Pengantaran</a>
                             </li>
                         </ul>
 
@@ -93,8 +90,8 @@
                         </div>
                         <div class="col-lg-4 col-xs-12">
                             <ul class="list-footer_second">
-                                <li class="sub-list-footer">No Telepon : 0059-4985-43</li>
-                                <li class="sub-list-footer">E-mail : needfood@gmail.com</li>
+                                <li class="sub-list-footer">No Telepon : 082-293-887-789<</li>
+                                <li class="sub-list-footer">E-mail : kesiniku@gmail.com</li>
                                 <li class="sub-list-footer">
                                     <i class="icofont-brand-whatsapp"></i>
                                     &nbsp;&nbsp;&nbsp;
@@ -239,13 +236,13 @@
                 subTotal = subTotal.match(/\d/g).join("")
                 var ongkir;
                 if (lokasi.includes("Kota Makassar")) {
+                    document.getElementById("biaya_pengiriman").value = '0';
+                    document.getElementById("ongkir").innerHTML = 'Rp 0';
+                    ongkir = 0;
+                } else {
                     document.getElementById("biaya_pengiriman").value = '50000';
                     document.getElementById("ongkir").innerHTML = 'Rp 50,000';
                     ongkir = 50000;
-                } else {
-                    document.getElementById("biaya_pengiriman").value = '100000';
-                    document.getElementById("ongkir").innerHTML = 'Rp 100,000';
-                    ongkir = 100000;
                 }
                 var setTotal = parseInt(subTotal)+ongkir;
                 document.getElementById("setTotal").innerHTML = setTotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

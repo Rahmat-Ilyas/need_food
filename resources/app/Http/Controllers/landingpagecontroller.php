@@ -26,11 +26,12 @@ class landingpagecontroller extends Controller
     }
 
     public function keranjang_index(Request $request){ 
-        if ($request->session()->has('paket')) {
-            return view('page.keranjang.index');   
-        }else{
-            return 'None';
-        }      
+        // if ($request->session()->has('paket')) {
+        //     return view('page.keranjang.index');   
+        // }else{
+        //     return 'None';
+        // }      
+        return view('page.keranjang.index');  
     }
 
     public function paket_pesanan(Request $request){
@@ -65,11 +66,12 @@ class landingpagecontroller extends Controller
     }
 
     public function pengantaran(Request $request){
-        if ($request->session()->has('paket_to_delivery')) {
-            return view('page.pengantaran.index');   
-        }else{
-            return 'None';
-        }
+        // if ($request->session()->has('paket_to_delivery')) {
+        //     return view('page.pengantaran.index');   
+        // }else{
+        //     return 'None';
+        // }
+        return view('page.pengantaran.index');
     }
 
     public function upload_struk_view(){

@@ -1133,6 +1133,10 @@ table .table_detail_alat{
     padding: 30px 0px 15px 20px;
 }
 
+.pengantaran-list{
+    padding: 30px 0px 15px 20px;
+}
+
 .title_pengantaran{
     font-family: 'Poppins', serif;
     font-style: normal;
