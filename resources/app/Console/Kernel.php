@@ -33,10 +33,12 @@ class Kernel extends ConsoleKernel
                 $day_plus1 = strtotime($dta->created_at)+(86400*1);
                 $day_plus2 = strtotime($dta->created_at)+(86400*2);
 
-                if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus1)) {
-                    $this->sendMessageWhatsApp($dta->id);
-                } else if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus2)) {
-                    $this->sendMessageWhatsApp($dta->id);
+                if ($dta->metode_bayar == 'transfer') {
+                    if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus1)) {
+                        $this->sendMessageWhatsApp($dta->id);
+                    } else if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus2)) {
+                        $this->sendMessageWhatsApp($dta->id);
+                    }
                 }
 
                 if ($this_day > strtotime($dta->created_at)+(86400*3)) {
