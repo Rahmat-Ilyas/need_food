@@ -479,6 +479,13 @@ $(document).ready(function () {
                   });
                }
             });
+         },
+         error: function (data) {
+            Swal.fire({
+               title: 'Belum Ada Data',
+               text: 'Belum ada data pesanan ditemukan',
+               type: 'info',
+            });
          }
       });
 });
