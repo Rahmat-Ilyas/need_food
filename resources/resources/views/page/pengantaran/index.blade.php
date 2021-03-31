@@ -47,11 +47,11 @@
                                 <div class="form-row">
                                     <div class="form-group col-lg-6">
                                         <label for="no_telepon">No Telepon</label>
-                                        <input type="number" name="no_telepon" class="form-control" id="no_telepon">
+                                        <input type="number" name="no_telepon" class="form-control" id="no_telepon" min="62" step="any" value="+62">
                                     </div>
                                     <div class="form-group col-lg-6">
                                         <label for="no_wa">No WhatsApp</label>
-                                        <input type="number" name="no_wa" class="form-control" id="no_wa">
+                                        <input type="number" name="no_wa" class="form-control" id="no_wa"  min="62">
                                     </div>
                                 </div>
 
@@ -226,7 +226,7 @@
     });
 
     $('#submit_pengantaran').on('click', function (event) {
-       event.preventDefault();
+     event.preventDefault();
 // <<<<<<< HEAD
 //        $.ajax({
 //         url     : url+"/api/datapesanan/store",
@@ -266,62 +266,110 @@
 //         }
 //     });
 // =======
-       console.log(datax)
-       if (datax != 'Tidak ada session') {
-               $.ajax({
-                        url     : url+"/api/datapesanan/store",
-                        method  : "POST",
-                        headers : headers(),
-                        data    :$('.form_pengantaran').serialize(),
-                        xhr: function () {
-                            var xhr = new window.XMLHttpRequest();
-                            xhr.upload.addEventListener('progress', function (evt) {
-                                if (evt.lengthComputable) {
-                                    $("#loading, .loader").removeAttr('hidden');
-                                }
-                            }, false);
-                            return xhr;
-                        },
-                        success : function(data) {
-                            $("#loading, .loader").attr('hidden', '');
-                            Swal.fire({
-                                title: 'Berhasil Diproses',
-                                text: 'Pesanan sedang di proses, mohon periksa WhatsApp anda untuk informasil selanjutnya',
-                                type: 'success',
-                                onClose: () => { location.href = url; }
-                            });
-                        },
-                        error: function (res) {
-                            var text = '';
-                            $("#loading, .loader").attr('hidden', '');
-                            $('.validation_error').css('display','block');
-                            $('html, body').animate({
-                                scrollTop: $(".validation_error").offset().top
-                            }, 1500);
-                            console.log(res.responseJSON.message);
-                            $.each(res.responseJSON.message, function (indexInArray, valueOfElement) { 
-                                text += '<li>'+valueOfElement+'</li>';
-                            });
-                            $('.list_error').append(text);
-                        }
-                    });
-        
-       } else {
+console.log(datax)
+if (datax != 'Tidak ada session') {
+ $.ajax({
+    url     : url+"/api/datapesanan/store",
+    method  : "POST",
+    headers : headers(),
+    data    :$('.form_pengantaran').serialize(),
+    xhr: function () {
+        var xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener('progress', function (evt) {
+            if (evt.lengthComputable) {
+                $("#loading, .loader").removeAttr('hidden');
+            }
+        }, false);
+        return xhr;
+    },
+    success : function(data) {
+        $("#loading, .loader").attr('hidden', '');
         Swal.fire({
-                title: 'Gagal',
-                text: 'Data Pesanan Belum Ada, Silahkan Checkout terlebih Dahulu',
-                type: 'error',
-                onClose: () => { location.href = url+'/order'; }
-            });        
-       }
+            title: 'Berhasil Diproses',
+            text: 'Pesanan sedang di proses, mohon periksa WhatsApp anda untuk informasil selanjutnya',
+            type: 'success',
+            onClose: () => { location.href = url; }
+        });
+    },
+    error: function (res) {
+        var text = '';
+        $("#loading, .loader").attr('hidden', '');
+        $('.validation_error').css('display','block');
+        $('html, body').animate({
+            scrollTop: $(".validation_error").offset().top
+        }, 1500);
+        console.log(res.responseJSON.message);
+        $.each(res.responseJSON.message, function (indexInArray, valueOfElement) { 
+            text += '<li>'+valueOfElement+'</li>';
+        });
+        $('.list_error').append(text);
+    }
+});
+
+} else {
+    Swal.fire({
+        title: 'Gagal',
+        text: 'Data Pesanan Belum Ada, Silahkan Checkout terlebih Dahulu',
+        type: 'error',
+        onClose: () => { location.href = url+'/order'; }
+    });        
+}
 // >>>>>>> origin/abdilla_area
-   })
+})
 
     $('.closebtn').on('click', function () {
         $('.validation_error').css('display','none');
         $('html, body').animate({
             scrollTop: $(".banner_order").offset().top
         }, 1500);
+    });
+
+    $('#no_wa').popover({
+        container: "body",
+        placement: "bottom",
+        content: "Input ulang nomor WhatsApp jika berbeda dengan nomor telepon"
+    });
+
+    // Validasi Nomor Telepon dan WA
+    $('#no_telepon').focus(function(event) {
+        if ($(this).val() != 62) {
+            $(this).val($(this).val());
+        } else {
+            $(this).val('62');
+        }
+        $('#no_wa').popover('hide');
+    });
+
+    $('#no_telepon').blur(function(event) {
+        $('#no_wa').popover('hide');
+
+    });
+
+    $('#no_telepon').keyup(function(event) {
+        $('#no_wa').popover('show');
+        $('#no_wa').val($(this).val());
+    });
+
+    $('#no_telepon').on('keyup click', function(event) {
+        if ($(this).val().substring(0,2) != 62) {
+            $(this).val(62);
+        }
+    });
+
+    $('#no_wa').focus(function(event) {
+        if ($(this).val() != 62 && $(this).val() != $('#no_telepon').val()) {
+            $(this).val($(this).val());
+        } else {
+            $(this).val('62');
+        }
+    });
+
+    $('#no_wa').on('keyup click', function(event) {
+        if ($(this).val().substring(0,2) != 62) {
+            $(this).val(62);
+        }
+
+        $('#no_wa').popover('hide');
     })
 
 });
