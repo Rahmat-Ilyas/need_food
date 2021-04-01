@@ -17,9 +17,13 @@
                                     Set Lokasi Pengantaran
                                 </div>
                                 <div class="form-inline pl-2" style="position: absolute; z-index: 99; margin-top: 20px;">
-                                    <input type="text" id="location_input" class="form-control" placeholder="Temukan lokasi anda..." autocomplete="off">
-                                    <button class="btn btn-rounded bg-white border" id="find_location" data-toggle="tooltip" data-placement="top" title="Cari Lokasi"><i class="icofont-search-map"></i></button>
-                                    <button class="btn btn-rounded bg-white border" id="this_location" data-toggle="tooltip" data-placement="top" title="Gunakan Lokasi Sekarang"><i class="icofont-location-pin"></i></button>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" id="location_input" class="form-control" placeholder="Temukan lokasi anda..." autocomplete="off">
+                                            <button class="btn btn-rounded bg-white border" id="find_location" data-toggle="tooltip" data-placement="top" title="Cari Lokasi"><i class="icofont-search-map"></i></button>
+                                            <button class="btn btn-rounded bg-white border" id="this_location" data-toggle="tooltip" data-placement="top" title="Gunakan Lokasi Sekarang"><i class="icofont-location-pin"></i></button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div id="mapView" class="maps_area"></div>
                                 <span><small><i>*Klik atau drag pada map untuk mengatur lokasi pengantaran.</i></small></span>

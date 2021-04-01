@@ -34,41 +34,13 @@
             <div class="carousel-item courosel-custom-banner" data-interval="500">
                 <div class="container"> 
                     <div class="overlay-image" style="background-image:url('page/assets/images/slide3.png')"></div>
-                    {{-- <div class="sub_banner_text">Good meat makes great experience</div>
-                     <div class="banner-text">Need Food Container <br> Solusinya</div>
-                     <div class="tombol_jumbroton">
-                         <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
-                       </div>
-                      <div class="text_time_header"> Setiap hari 10:00 - 20:00 WITA </div> --}}
                   </div>
             </div>
         </div>
-        {{-- <a href="#myCarousel" class="carousel-control-prev" role="button" data-slide="prev">
-            <span class="sr-only">Previous</span>
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        </a>
-        <a href="#myCarousel" class="carousel-control-next" role="button" data-slide="next">
-            <span class="sr-only">Previous</span>
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        </a> --}}
     </div>
 </section>
 
-{{-- <header>
-    <div class="single-banner">
-        <div class="banner-img">
-            <img src="{{ asset('page/assets/images/image_jumbroton.png') }}" alt="" srcset="">
-        </div>
-        <div class="container"> 
-                <div class="sub_banner_text">Good meat makes great experience</div>
-                 <div class="banner-text">Need Food Container <br> Solusinya</div>
-                 <div class="tombol_jumbroton">
-                     <button class="tombol-lg tombol-order_header">Pesan Sekarang</button>
-                   </div>
-                  <div class="text_time_header"> Setiap hari 10:00 - 20:00 WITA </div>
-        </div>
-    </div>
-</header> --}}
+
 
 <section id="tentang">
     <div class="container">
@@ -101,7 +73,7 @@
 </section>
 
 <section class="service">
-    <div class="title_service text-center"> Service </div>
+    <div class="title_service text-center"> Service <img src="{{ asset('page/assets/images/identity.png') }}" id="identify"> </div>
     <div class="container">
         <div class="row box_card">
             <div class="col-md-6">

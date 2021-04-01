@@ -1460,6 +1460,41 @@ footer {
         width: 170px;
     }
 
+    #location_input{
+        width: 90%;
+    }
+
+    #find_location{
+        position: relative;
+        left: 185px;
+        bottom: 38px;
+    }
+
+    #this_location{
+        position: relative;
+        left: 185px;
+        bottom: 38px;
+    }
+
+    .navbar-toggler{
+        background: none;
+        margin-right: 10px;
+    }
+
+    .btn_toogler_icon{
+        height: 1px;
+        width: 25px;
+        margin: 6px 0;
+        background-color: #EB5757;
+        display: block;
+    }
+
+    .navbar-collapse{
+        background: #ffffff;
+        border-radius: 5px;
+        padding : 10px;
+    }
+
     .navbar-nav {
         margin-left: 0;
     }

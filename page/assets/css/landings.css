@@ -370,6 +370,7 @@ nav a:hover {
 #menu{
     height: 750px;
     background: #FFFFFF;
+    overflow: hidden;
 }
 
 .box_menu{
@@ -559,8 +560,7 @@ iframe{
 
 .keunggulan{
     height: 768px;
-    /* background-image: url("/page/assets/images/background_keunggulan.png"); */
-    background: black;
+    background-image: url("/page/assets/images/background_keunggulan.png");
 }
 
 .layouts_area{
@@ -923,11 +923,15 @@ footer {
         margin-right: 10px;
     }
 
+    .service #identify{
+        position: relative;
+    }
+
     .btn_toogler_icon{
         height: 1px;
         width: 25px;
         margin: 6px 0;
-        background-color: #ffffff;
+        background-color: #EB5757;
         display: block;
     }
 
