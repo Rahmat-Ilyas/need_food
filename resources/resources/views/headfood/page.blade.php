@@ -121,6 +121,7 @@
     <script src="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('page/assets/js/main.js') }}"></script>
     <script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAISwXwMy9RIBS6qnrxkC3fPRL3hfSrJSg&callback=initMap&libraries=&v=weekly" defer></script>
     <script>
        var marker;

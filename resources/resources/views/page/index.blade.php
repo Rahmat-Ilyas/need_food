@@ -73,7 +73,8 @@
 </section>
 
 <section class="service">
-    <div class="title_service text-center"> Service <img src="{{ asset('page/assets/images/identity.png') }}" id="identify"> </div>
+    <div class="title_service text-center"> Service </div>
+    <img src="{{ asset('page/assets/images/identity.png') }}" id="identify">
     <div class="container">
         <div class="row box_card">
             <div class="col-md-6">
@@ -105,6 +106,7 @@
            <div class="row content_first_menu">
                 <div class="col-lg-3">
                     <div class="title_tentang grid_menu_title"> Menu </div>
+                    <img src="{{ asset('page/assets/images/identity.png') }}" id="identifysecond">
                     <div class="text_menu">Tersedia pilihan paket menu unggulan dengan kombinasi daging</div>
                 </div>
                 <div class="col-lg-9">
@@ -187,8 +189,8 @@
 
 <section class="layouts_area">
     <div id="testimoni" class="container">
-        <div class="title_tentang grid_testimoni_title"> Testimoni </div>
-
+        <div class="title_tentang grid_testimoni_title text-center"> Testimoni </div>
+        <img src="{{ asset('page/assets/images/identity.png') }}" id="identifythree">
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
               <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>

@@ -2398,7 +2398,6 @@ class RestfullApiController extends Controller
 			'jumlah' => 'required|array'
 		]);
 
-
 		if ($validator->fails()) {
 			return response()->json([
 				'success' => false,
@@ -2417,9 +2416,7 @@ class RestfullApiController extends Controller
 		foreach ($request->paket_id as $i => $dta) {
 			$set_paket[] = ['paket_id' => $request->paket_id[$i], 'jumlah' => $request->jumlah[$i]];
 		}
-
 		$result = $this->set_paket($set_paket, null,'alat_front');
-
 		if (count($result) > 0) {
 			return response()->json([
 				'success' => true,

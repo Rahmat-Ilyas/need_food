@@ -898,6 +898,23 @@ footer {
       height: 15px;
   }
 
+  #identify{
+    position: relative;
+    left: 545px;
+    bottom: 20px;
+  }
+
+  #identifysecond{
+    position: relative;
+    bottom: 20px;
+  }
+
+  #identifythree{
+    position: relative;
+    left: 490px;
+    bottom: 70px;
+  }
+
 
 @media only screen and (max-width:576px) {
 
@@ -913,6 +930,21 @@ footer {
         display: block;
         width: 100px;
     }
+
+    #identify{
+        position: relative;
+        left: 112px;
+    }
+
+    #identifysecond{
+        position: relative;
+        left: 96px;
+      }
+    
+      #identifythree{
+        position: relative;
+        left: 96px;
+      }
 
     .navbar-nav {
         margin-left: 0;

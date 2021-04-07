@@ -3,6 +3,7 @@ $(document).ready(function () {
     var tampung = [];
     var tampung_qty_paket = [];
     var body = [];
+    var totalQty = 0;
     var list_pesanan_modal = [];
     var url = $('meta[name="host_url"]').attr('content');
     var token = $('meta[name="csrf-token"]').attr('content');
@@ -176,7 +177,7 @@ $(document).ready(function () {
                      additional += '<div class="card_additional">';
                      additional += '<img src="'+path_asset_bahan+'/'+valueOfElement.foto+'" class="image_additonal">'; 
                      additional += '<div class="text-image">'+valueOfElement.nama_daging+'</div>';
-                     additional += '<input type="checkbox" class="checbox_image" name="id_additional" value="'+valueOfElement.id+'"/>';
+                     additional += '<input type="checkbox" class="checbox_image" data-nama="'+valueOfElement.nama_daging+'" name="id_additional" value="'+valueOfElement.id+'"/>';
                      additional += '<div class="card_additional_body">';
                      additional += '<div class="row form_card_additonal_product">';
                      additional += '<div class="col-sm-12">';
@@ -194,12 +195,13 @@ $(document).ready(function () {
         }
     });
 
+
 $('.btn-number').click(function(e){
     e.preventDefault();
     fieldName = $(this).attr('data-field');
     type      = $(this).attr('data-type');
     var input = $("input[name='"+fieldName+"']");
-    var currentVal = parseInt(input.val());
+    var currentVal = parseInt(input.val()); 
     if (!isNaN(currentVal)) {
         if(type == 'minus') {
             
@@ -325,6 +327,60 @@ $(".input-number").keydown(function (e) {
         toastr_notice('success','Berhasil Masukkan Ke Keranjang');
     })
 
+    $(document).on('change','.checbox_image', function () {
+        $('.list_item_text_additional').html('');
+        var html = '';
+        var val_this = $(this).val();
+        var valueTitle = '';
+        var tampungVal = [];
+
+        $('input:checkbox[name=id_additional]:checked').each(function () {
+            var val_this = $(this).val();
+
+          valueTitle = {
+            'nama' : $(this).data('nama'),
+            'kuantitas' : $(`#additional_input${val_this}`).val()
+         }
+
+               tampungVal.push(valueTitle);
+
+        });
+
+        $.each(tampungVal, function (indexInArray, valueOfElement) { 
+            html += `<li>- &nbsp; ${valueOfElement.kuantitas} ${valueOfElement.nama}</li>`;
+        });
+        $('.list_item_text_additional').append(html);
+
+        // if (this.checked) {
+        //     var val_this = $(this).val();
+        //     var valueTitle = '';
+        //     var tampungVal = [];
+
+        //     $('input:checkbox[name=id_additional]:checked').each(function () {
+        //         var val_this = $(this).val();
+    
+        //       valueTitle = {
+        //         'nama' : $(this).data('nama'),
+        //         'kuantitas' : $(`#additional_input${val_this}`).val()
+        //      }
+    
+        //            tampungVal.push(valueTitle);
+    
+        //     });
+
+        //     // valueTitle = {
+        //     //     'nama' : $(this).data('nama'),
+        //     //     'kuantitas' : $(`#additional_input${val_this}`).val()
+        //     // }
+
+        //     // tampungVal.push(valueTitle);
+        //     // $.each(tampungVal, function (indexInArray, valueOfElement) { 
+        //     //      html += `<li>- &nbsp; ${valueOfElement.kuantitas} ${valueOfElement.nama}</li>`;
+        //     // });
+        //     // $('.list_item_text_additional').append(html);
+        // }
+    })
+
     $('#additional_get').click(function (event) {
         event.preventDefault();
         var get_id_addtional = [];
@@ -414,9 +470,9 @@ $(".input-number").keydown(function (e) {
                 content_cart_modal += '</div>';
                 content_cart_modal += '<div class="col-lg-4">';
                 content_cart_modal += '<div class="row grid-form-modal">';
-                content_cart_modal += "<button type='button' onclick='number(`form_keranjang_modal"+values.id+"`,`mines`)' class='tombol_keranjang_number btn-number'><i class='icofont-minus icon-number_additional'></i> </button>";
-                content_cart_modal += "<input type='text' id='form_keranjang_modal"+values.id+"' name='quant[1]' class='form-nedd-keranjang input-number' value='"+values.kuantitas+"' min='1' max='1000'>";
-                content_cart_modal += "<button type='button' onclick='number(`form_keranjang_modal"+values.id+"`,`add`)' class='tombol_keranjang_number btn-number'><i class='icofont-plus icon-number_additional'></i></button>";
+                content_cart_modal += "<button type='button' onclick='number(`form_keranjang_modal"+values.id+values.type+"`,`mines`)' class='tombol_keranjang_number btn-number'><i class='icofont-minus icon-number_additional'></i> </button>";
+                content_cart_modal += "<input type='text' id='form_keranjang_modal"+values.id+values.type+"' name='quant[1]' class='form-nedd-keranjang input-number' value='"+values.kuantitas+"' min='1' max='1000'>";
+                content_cart_modal += "<button type='button' onclick='number(`form_keranjang_modal"+values.id+values.type+"`,`add`)' class='tombol_keranjang_number btn-number'><i class='icofont-plus icon-number_additional'></i></button>";
                 content_cart_modal += '<div class="icon-delete"><i class="icofont-ui-delete delete_paket_modal" data-action="'+key+'"></i></div>';
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
@@ -439,29 +495,59 @@ $(".input-number").keydown(function (e) {
 
     $('.tombol-lg-modal').click(function () {
         var params_list_modal = '';
+        totalQty= 0;
         $.each(tampung, function (indexInArray, valueOfElement) { 
             params_list_modal = {
                 'id' : valueOfElement.id,
                 'foto' : valueOfElement.foto,
                 'nama' : valueOfElement.nama,
                 'harga' : valueOfElement.harga,
-                'kuantitas':$(`#form_keranjang_modal${valueOfElement.id}`).val(),
+                'kuantitas':parseInt($("#form_keranjang_modal"+valueOfElement.id+valueOfElement.type+"").val()),
                 'type' : valueOfElement.type
             }
             list_pesanan_modal.push(params_list_modal);
         });
+        console.log(list_pesanan_modal)
+        $.each(list_pesanan_modal, function (indexInArray, valueOfElement) { 
 
-        $.ajax({
-            url  : url+'/keranjang/paket_pesanan',
-            type : 'POST',
-            data : {
-                'tampung' : JSON.stringify(list_pesanan_modal),
-                '_token' : token
-            },
-            success: function (response) {
-               window.location.href = url+'/keranjang';
+            if (valueOfElement.type == 'paket') {
+                console.log(valueOfElement)
+                console.log(valueOfElement.kuantitas);
+                totalQty += parseInt(valueOfElement.kuantitas);
             }
-        })
+        });
+
+        if (totalQty != 0) {
+            if (totalQty > 1) {
+                 $.ajax({
+                    url  : url+'/keranjang/paket_pesanan',
+                    type : 'POST',
+                    data : {
+                        'tampung' : JSON.stringify(list_pesanan_modal),
+                        '_token' : token
+                    },
+                    success: function (response) {
+                    window.location.href = url+'/keranjang';
+                    }
+                })
+            }else{
+                Swal.fire({
+                    title: 'Gagal Diproses ke Keranjang !!',
+                    text: 'Kuantitas Pesanan untuk Menu Paket Utama harus lebih dari 2 pack',
+                    type: 'error'
+                });
+                list_pesanan_modal = [];
+            }
+        }else{
+            Swal.fire({
+                title: 'Gagal Diproses ke Keranjang !!',
+                text: 'Anda Belum Memilih Paket Utama',
+                type: 'error'
+            });
+            list_pesanan_modal = [];
+        }
+
+     
     })
 
     send_to_delivery = (data) => {

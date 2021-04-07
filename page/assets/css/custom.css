@@ -342,6 +342,16 @@ select:focus{
     margin-left: 30px;
 }
 
+.sub_list_currencyongkir{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
+    color: #909090;
+    margin-left: 30px;
+}
+
 .sub_list_currency_total{
     font-family: 'Poppins',serif;
     font-style: normal;
@@ -1839,12 +1849,12 @@ footer {
         box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
         border-radius: 0px 0px 5px 5px;
         padding: 10px 20px 10px 20px;
-        transform: perspective(1000px) rotateX(-90deg);
-        transition: 0.5s;
+        /* transform: perspective(1000px) rotateX(-90deg);
+        transition: 0.5s; */
     }
 
     .active-toogle{
-        transform: perspective(1000px) rotateX(0deg);
+        /* transform: perspective(1000px) rotateX(0deg); */
     }
 
     .value_toogle{
