@@ -42,6 +42,14 @@
                     <img src="{{ asset('page/assets/images/logo.png') }}" id="gramLogo">
                 </a>
 
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="btn_toogler_icon"></span>
+                <span class="btn_toogler_icon"></span>
+                <span class="btn_toogler_icon"></span>
+            </button>
+
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
@@ -113,6 +121,7 @@
     <script src="{{ asset('page/assets/vendor/owl-courosel/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('page/assets/js/main.js') }}"></script>
     <script src="{{ asset('page/assets/js/toastr.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAISwXwMy9RIBS6qnrxkC3fPRL3hfSrJSg&callback=initMap&libraries=&v=weekly" defer></script>
     <script>
        var marker;

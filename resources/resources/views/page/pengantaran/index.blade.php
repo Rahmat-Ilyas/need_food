@@ -17,9 +17,13 @@
                                     Set Lokasi Pengantaran
                                 </div>
                                 <div class="form-inline pl-2" style="position: absolute; z-index: 99; margin-top: 20px;">
-                                    <input type="text" id="location_input" class="form-control" placeholder="Temukan lokasi anda..." autocomplete="off">
-                                    <button class="btn btn-rounded bg-white border" id="find_location" data-toggle="tooltip" data-placement="top" title="Cari Lokasi"><i class="icofont-search-map"></i></button>
-                                    <button class="btn btn-rounded bg-white border" id="this_location" data-toggle="tooltip" data-placement="top" title="Gunakan Lokasi Sekarang"><i class="icofont-location-pin"></i></button>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="text" id="location_input" class="form-control" placeholder="Temukan lokasi anda..." autocomplete="off">
+                                            <button class="btn btn-rounded bg-white border" id="find_location" data-toggle="tooltip" data-placement="top" title="Cari Lokasi"><i class="icofont-search-map"></i></button>
+                                            <button class="btn btn-rounded bg-white border" id="this_location" data-toggle="tooltip" data-placement="top" title="Gunakan Lokasi Sekarang"><i class="icofont-location-pin"></i></button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div id="mapView" class="maps_area"></div>
                                 <span><small><i>*Klik atau drag pada map untuk mengatur lokasi pengantaran.</i></small></span>
@@ -47,11 +51,19 @@
                                 <div class="form-row">
                                     <div class="form-group col-lg-6">
                                         <label for="no_telepon">No Telepon</label>
+<<<<<<< HEAD
                                         <input type="number" name="no_telepon" class="form-control" id="no_telepon" min="62" step="any" value="+62">
                                     </div>
                                     <div class="form-group col-lg-6">
                                         <label for="no_wa">No WhatsApp</label>
                                         <input type="number" name="no_wa" class="form-control" id="no_wa"  min="62">
+=======
+                                        <input type="text" name="no_telepon" class="form-control" id="no_telepon">
+                                    </div>
+                                    <div class="form-group col-lg-6">
+                                        <label for="no_wa">No WhatsApp</label>
+                                        <input type="text" name="no_wa" class="form-control" value="62" id="no_wa">
+>>>>>>> origin/abdilla_area
                                     </div>
                                 </div>
 
@@ -137,7 +149,7 @@
                                         <div class="sub_list_pemesanan">Ongkos Kirim </div>
                                     </div>
                                     <div class="col-lg-6">
-                                        <div class="sub_list_currency" id="ongkir"> Rp 0</div>
+                                        <div class="sub_list_currencyongkir" id="ongkir"> Rp 0</div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -194,6 +206,16 @@
   var total = 0;
   var datax;
   $(document).ready(function () {
+
+
+    $('#no_wa').keyup(function () {
+       if ($(this).val() == '' || $(this).val().length == 1 ) {
+        $(this).val(62);
+       }        
+    })
+
+    $('#no_wa').mask('0000-0000-0000');
+    $('#no_telepon').mask('0000-0000-0000');
     $('[data-toggle="tooltip"]').tooltip();
 
     $('.validation_error').css('display','none');
@@ -224,6 +246,28 @@
             $('.sub_list_currency_total').html(total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         }
     });
+
+    $('#namalengkap,#no_telepon,#no_wa,#tanggal_antar,#waktu_antar,#text-area').on('focus',function () {
+        var getString = $('.deskripsi_lokasi').val();
+        var hargaOngkir = 0;
+        var totalResult = 0;
+        if (getString.indexOf('Makassar') > 0) {
+            hargaOngkir = 0;
+            totalResult = total + hargaOngkir;
+            $('#ongkir').html(`Rp. ${hargaOngkir.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
+              $('.sub_list_currency_total').html(totalResult.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        }else if(getString.indexOf('Gowa') > 0){
+            hargaOngkir = 50000;
+            totalResult = total + hargaOngkir;
+            $('#ongkir').html(`Rp. ${hargaOngkir.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
+              $('.sub_list_currency_total').html(totalResult.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        }else if(getString.indexOf('Maros') > 0){
+            hargaOngkir = 50000;
+            totalResult = total + hargaOngkir;
+            $('#ongkir').html(`Rp. ${hargaOngkir.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
+              $('.sub_list_currency_total').html(totalResult.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        }
+    })
 
     $('#submit_pengantaran').on('click', function (event) {
      event.preventDefault();
@@ -373,5 +417,6 @@ if (datax != 'Tidak ada session') {
     })
 
 });
+
 </script>
 @endpush

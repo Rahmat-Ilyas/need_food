@@ -56,9 +56,11 @@
         var path_asset_image = '';
         var html = '';
         var total_harga = 0;
-        var resultHarga = 0;
         var no = 0;
         var data_array_paket = '';
+        var hargaGroup = [];
+        var qtyGroup = [];
+        var totalQty = 0;
         var paket_id = [], jumlah = [];
         var token = $('meta[name="csrf-token"]').attr('content');
         $(document).ready(function () {
@@ -100,7 +102,7 @@
                       html += '<div class="row form-keranjang">';  
                       html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`mines`)" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';    
                       html += ' <input type="text" name="quant[1]" id="input_page_keranjang'+no+'" class="form-nedd-keranjang input-number valueKeranjangInput'+valueOfElement.id+'" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
-                      html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`add`,)" class="tombol_keranjang_number btn-number"><i class="icofont-plus icon-number_additional"></i></button>';
+                      html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`add`)" class="tombol_keranjang_number btn-number"><i class="icofont-plus icon-number_additional"></i></button>';
                       html += ' <div class="icon-delete"><i class="icofont-ui-delete delete_item_keranjang" data-action="'+indexInArray+'"></i></div>';  
                       html += '</div>';
                       html += '</div>';
@@ -110,35 +112,53 @@
                      html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
   
                      no++;
-                    resultHarga =  total_harga+=parseInt(valueOfElement.harga * valueOfElement.kuantitas);
-                    appendToHargaContent(resultHarga);
-  
+
+                    hargaGroup.push(parseInt(valueOfElement.harga))
+                    qtyGroup.push(parseInt(valueOfElement.kuantitas))
+
+                    // resultHarga =  total_harga+=parseInt(valueOfElement.harga * valueOfElement.kuantitas);
+                    appendToHargaContent(hargaGroup,qtyGroup,null,null);
+                    
+                    
                 });
                 } else {
                     html += ' <div class="text_title_box_harga">Maaf, Tidak Ada Produk yang di Tambahkan</div>';
                 }
 
-              appendToHargaContent(resultHarga);
 
               numberKeranjang = (harga,elemen,type) => {
-                var totalResultS = 0;
-                $('.box_total_keranjang').html('');
+                var lastChar = elemen.substr(elemen.length - 1);
+                var getEle = 0;
                 var val = $(`#${elemen}`).val();
                 if (type == 'add') {
                     val++;
                     $(`#${elemen}`).val(val);
-                   totalResultS =  resultHarga + (harga * val);
+                    getEle = val;
+                    appendToHargaContent(hargaGroup,qtyGroup,lastChar,getEle);
                 }else{
                     val--;
                     $(`#${elemen}`).val(val);
+                    getEle = val;
+                    appendToHargaContent(hargaGroup,qtyGroup,lastChar,getEle);
                 }         
-                
-                appendToHargaContent(totalResultS);
-
             }
              
-             function appendToHargaContent(params) {
-                $('.box_total_keranjang').html('Rp. '+params.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+             function appendToHargaContent(harga,qty,ele,valQtyAdd) {
+                var resultHarga = 0;
+                if (ele == null) {
+                    for (let index = 0; index < qty.length; index++) {
+                        resultHarga += harga[index] * qty[index];                   
+                     } 
+                }else{
+                   qty[ele] = valQtyAdd;
+                   for (let index = 0; index < qty.length; index++) {
+                        resultHarga += harga[index] * qty[index];                   
+                     } 
+                     data_array_paket[ele]['kuantitas'] = valQtyAdd;
+                }
+                 
+
+                $('.box_total_keranjang').html('Rp. '+resultHarga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
              }  
              
               $('.content-keranjang-list').append(html);
@@ -153,14 +173,14 @@
        })
 
        show_modal_detail = (title,sub_url) => {
- 
+        console.log($('#cek_paket_cart').serialize());
         $.ajax({
             url  : url+'/api/getalatpaket',
             type : 'POST',
             headers : headers(),
             data: $('#cek_paket_cart').serialize(),
             success: function (response) {
-            
+              console.log(response)
                var path_asset_image =  url+'/assets/images/kategori';
                 console.log(response);
                 $('#modal-title').text(title);
@@ -179,8 +199,25 @@
 
 
       $('#send_to_delivery').on('click',function (e) {
-          e.preventDefault();
-          send_to_delivery(data_array_paket);
+          e.preventDefault();  
+          totalQty = 0;
+          console.log(data_array_paket);
+            $.each(data_array_paket, function (indexInArray, valueOfElement) { 
+                if (valueOfElement.type == 'paket') {
+                    totalQty += valueOfElement.kuantitas;
+                }
+            });
+            if (totalQty > 1) {
+                   send_to_delivery(data_array_paket);
+            }else{
+                Swal.fire({
+                    title: 'Gagal Diproses ke Pengantaran !!',
+                    text: 'Kuantitas Pesanan untuk Menu Paket Utama harus lebih dari 2 pack',
+                    type: 'error'
+                });
+            }
+
+       
       })
 
         });

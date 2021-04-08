@@ -52,8 +52,7 @@
                                 <div class="row side-kontent-additional">
                                     <div class="text-info-product">Total Tambahan</div>
                                     <ul class="list_item_text_additional">
-                                        <li>- &nbsp; 5 Sirlon US 200g</li>
-                                        <li>- &nbsp; 5 Sirlon US 200g</li>
+                                       
                                     </ul>
                                     <div class="col-sm-12">
                                         <button id="additional_get"  class="tombol-custom tombol-keranjang text-button">Masukkan Keranjang</button>
