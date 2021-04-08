@@ -1228,8 +1228,15 @@ class RestfullApiController extends Controller
 			else if ($request->waktu_antar <= '23:59')
 				$pemesanan['waktu_antar'] = $request->waktu_antar.' (Sore)';
 
-			$pemesanan['no_telepon'] = '+'.$request->no_telepon;
-			$pemesanan['no_wa'] = '+'.$request->no_wa;
+			// Nomor Telepon
+			$no_telepon = str_replace('-', '', $request->no_telepon);
+			$no_telepon = str_replace(' ', '', $no_telepon);
+			$pemesanan['no_telepon'] = $no_telepon;
+
+			// Nomor WA
+			$no_wa = str_replace('-', '', $request->no_wa);
+			$no_wa = str_replace(' ', '', $no_wa);
+			$pemesanan['no_wa'] = $no_wa;
 			
 			$request->catatan ? $request->catatan : $pemesanan['catatan'] = '-';
 			unset($pemesanan['paket_id']);

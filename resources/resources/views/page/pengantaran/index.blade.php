@@ -51,19 +51,19 @@
                                 <div class="form-row">
                                     <div class="form-group col-lg-6">
                                         <label for="no_telepon">No Telepon</label>
-<<<<<<< HEAD
+{{-- <<<<<<< HEAD
                                         <input type="number" name="no_telepon" class="form-control" id="no_telepon" min="62" step="any" value="+62">
                                     </div>
                                     <div class="form-group col-lg-6">
                                         <label for="no_wa">No WhatsApp</label>
                                         <input type="number" name="no_wa" class="form-control" id="no_wa"  min="62">
-=======
+======= --}}
                                         <input type="text" name="no_telepon" class="form-control" id="no_telepon">
                                     </div>
                                     <div class="form-group col-lg-6">
                                         <label for="no_wa">No WhatsApp</label>
-                                        <input type="text" name="no_wa" class="form-control" value="62" id="no_wa">
->>>>>>> origin/abdilla_area
+                                        <input type="text" name="no_wa" class="form-control" id="no_wa">
+{{-- >>>>>>> origin/abdilla_area --}}
                                     </div>
                                 </div>
 
@@ -210,12 +210,12 @@
 
     $('#no_wa').keyup(function () {
        if ($(this).val() == '' || $(this).val().length == 1 ) {
-        $(this).val(62);
+        $(this).val('+62');
        }        
     })
 
-    $('#no_wa').mask('0000-0000-0000');
-    $('#no_telepon').mask('0000-0000-0000');
+    $('#no_wa').mask('+62 000-0000-0000');
+    $('#no_telepon').mask('+62 000-0000-0000');
     $('[data-toggle="tooltip"]').tooltip();
 
     $('.validation_error').css('display','none');
@@ -376,10 +376,10 @@ if (datax != 'Tidak ada session') {
 
     // Validasi Nomor Telepon dan WA
     $('#no_telepon').focus(function(event) {
-        if ($(this).val() != 62) {
+        if ($(this).val() != '+62') {
             $(this).val($(this).val());
         } else {
-            $(this).val('62');
+            $(this).val('+62');
         }
         $('#no_wa').popover('hide');
     });
@@ -395,22 +395,23 @@ if (datax != 'Tidak ada session') {
     });
 
     $('#no_telepon').on('keyup click', function(event) {
-        if ($(this).val().substring(0,2) != 62) {
-            $(this).val(62);
+        if ($(this).val().substring(0,3) != '+62') {
+            $(this).val('+62');
+            $('#no_wa').val($(this).val());
         }
     });
 
     $('#no_wa').focus(function(event) {
-        if ($(this).val() != 62 && $(this).val() != $('#no_telepon').val()) {
+        if ($(this).val() != '+62' && $(this).val() != $('#no_telepon').val()) {
             $(this).val($(this).val());
         } else {
-            $(this).val('62');
+            $(this).val('+62');
         }
     });
 
     $('#no_wa').on('keyup click', function(event) {
-        if ($(this).val().substring(0,2) != 62) {
-            $(this).val(62);
+        if ($(this).val().substring(0,3) != '+62') {
+            $(this).val('+62');
         }
 
         $('#no_wa').popover('hide');
