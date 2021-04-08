@@ -109,6 +109,7 @@ $(document).ready(function () {
         method  : "GET",
         headers	: headers(),
         success : function(data) {
+            console.log(data);
                 var datapaket = '';
                 var data_paket_xs = '';
                 if (data['success'] == true) {
@@ -125,6 +126,40 @@ $(document).ready(function () {
                 }
         }
     });
+
+    $.ajax({
+        url     : url+'/api/kelolamenu/getpaket',
+        method  : "GET",
+        headers	: headers(),
+        success : function(data) {
+            var html = '';
+                if (data['success'] == true) {
+                $.each(data.result, function (indexInArray, valueOfElement) { 
+                    html += '<div class="col-lg-4">';
+                    html += '<div class="card_menu">';      
+                    html += '<div class="title_card_menu">'+valueOfElement.nama+'</div>';
+                    html += '<div class="card_menu_currency">'+valueOfElement.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'</div>';
+                    html += '<hr class="line_menu">';    
+                    html += '<ul class="list_sub_menu">';
+                    $.each(valueOfElement.item_paket, function (index, value) { 
+                        html += '<li>'+value+'</li>';
+                    });
+                    html += '</ul>';                      
+                    html += '<div class="row justify-content-center">';       
+                    html += '<button class="tombol_menu_card tombol-order_header">Lihat</button>';           
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                });
+                $('.card_grid').html(html);      
+                }
+        }
+    });
+
+    $(document).on('click','.tombol-order_header',function () {
+        window.location.href=url+'/order';
+    })
+    
 
     $(document).on('click','.list_menu_paket', function () {
         var id = $(this).data('id');
@@ -303,12 +338,15 @@ $(".input-number").keydown(function (e) {
         var get_qty_paket = $('#paket_input').val();
         $('#paket_input').val(1);
         var params = '';
+       
+        console.log(id_paket);
         
         $.ajax({
             url     : url+'/api/kelolamenu/getpaket/'+id_paket,
             method  : "GET",
             headers	: headers(),
             success : function(data) {
+                  console.log(data);
                   params = {  
                     'id' : data.result['id'],
                     'foto' : data.result['foto'],
@@ -317,14 +355,11 @@ $(".input-number").keydown(function (e) {
                     'kuantitas':get_qty_paket,
                     'type' : type, 
                   };      
-
-                  grouop_value(params);    
-
+                  grouop_value(params);
             }
         });
          
         $('.pill_number').html(tampung['length']+1);
-        toastr_notice('success','Berhasil Masukkan Ke Keranjang');
     })
 
     $(document).on('change','.checbox_image', function () {
@@ -423,8 +458,7 @@ $(".input-number").keydown(function (e) {
                             'kuantitas':value.kuantitas,
                             'type' : 'additional', 
                           };      
-                          grouop_value(params_additional);      
-                          toastr_notice('success','Berhasil Masukkan Ke Keranjang');             
+                          grouop_value(params_additional);                   
                         }
                 });
             });
@@ -438,7 +472,34 @@ $(".input-number").keydown(function (e) {
     })
 
     grouop_value = (params) =>{
-        tampung.push(params);
+        var respon = true;
+        console.log(params);
+        console.log(tampung);
+        $.each(tampung, function (indexInArray, valueOfElement) {   
+            var ParamsPaket = '';
+            if (params.type == 'paket') {
+                ParamsPaket = 'paket';
+                if (params.id == valueOfElement.id && ParamsPaket == valueOfElement.type) {
+                    respon = false;
+                    return respon;
+                 }    
+            }else{
+                respon = true;
+                return respon;
+            }
+        });
+        console.log(respon);
+        if (respon == true) {
+            tampung.push(params);   
+            toastr_notice('success','Berhasil Masukkan Ke Keranjang'); 
+        }else{
+            Swal.fire({
+                title: 'Gagal Diproses ke Keranjang !!',
+                text: 'Paket Sudah ada di Keranjang',
+                type: 'error'
+            });
+        }
+        
     }
 
     $('.grid_button_flag').click(function () {
@@ -490,7 +551,8 @@ $(".input-number").keydown(function (e) {
         console.log(params_row)
         tampung.splice(params_row,1);
         $(`.row_index_${params_row}`).remove();
-        $('.pill_number').html(tampung['length']+1);
+        console.log(tampung);
+        $('.pill_number').html(tampung['length']);
     })
 
     $('.tombol-lg-modal').click(function () {
