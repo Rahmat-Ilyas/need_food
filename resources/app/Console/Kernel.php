@@ -57,7 +57,7 @@ class Kernel extends ConsoleKernel
 
         $no_whatsapp = $pesanan->no_wa;
         $key = '553709ba9cca8ff2d35acbbd3f4e7e07c77267da14eefb11';
-        $message = 'Hai, Kak *'.$pesanan->nama.'*\nAnda belum mengkonfirmasi pembayan, silahkan di konfirmasi segera sebelum pesanan anda dibatalkan!';
+        $message = 'Hai, Kak *'.$pesanan->nama.'*\nAnda belum mengkonfirmasi pembayaran, silahkan di konfirmasi segera sebelum pesanan anda dibatalkan!';
 
         $url = 'http://116.203.191.58/api/send_message';
         $data = array(
