@@ -110,55 +110,7 @@
                     <div class="text_menu">Tersedia pilihan paket menu unggulan dengan kombinasi daging</div>
                 </div>
                 <div class="col-lg-9">
-                        <div class="row card_grid">
-                            <div class="col-lg-4">
-                             <div class="card_menu">
-                                <div class="title_card_menu">YAKINIKU</div>
-                                <div class="card_menu_currency">100.000</div>
-                                <hr class="line_menu">
-                                <ul class="list_sub_menu">
-                                    <li>Gresca</li>
-                                    <li>Mayura</li>
-                                    <li>Disfrutar</li>
-                                    <li>Foc i oil</li>
-                                </ul>
-                                <div class="row justify-content-center">
-                                    <button class="tombol_menu_card tombol-order_header">Lihat</button>
-                                </div>
-                             </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="card_menu">
-                                   <div class="title_card_menu">SHABU 1</div>
-                                   <div class="card_menu_currency">100.000</div>
-                                   <hr class="line_menu">
-                                   <ul class="list_sub_menu">
-                                       <li>Gresca</li>
-                                       <li>Mayura</li>
-                                       <li>Disfrutar</li>
-                                       <li>Foc i oil</li>
-                                   </ul>
-                                   <div class="row justify-content-center">
-                                    <button class="tombol_menu_card tombol-order_header">Lihat</button>
-                                </div>
-                                </div>
-                               </div>
-                               <div class="col-lg-4">
-                                <div class="card_menu">
-                                   <div class="title_card_menu">SHABI 2</div>
-                                   <div class="card_menu_currency">100.000</div>
-                                   <hr class="line_menu">
-                                   <ul class="list_sub_menu">
-                                       <li>Gresca</li>
-                                       <li>Mayura</li>
-                                       <li>Disfrutar</li>
-                                       <li>Foc i oil</li>
-                                   </ul>
-                                   <div class="row justify-content-center">
-                                    <button class="tombol_menu_card tombol-order_header">Lihat</button>
-                                </div>
-                                </div>
-                               </div>
+                    <div class="row card_grid">
                         </div>
                 </div>
            </div>

@@ -16,7 +16,7 @@
                             <div class="box_toogle_menu"> <span class="text_toogle">Menu</span> <i class="icofont-caret-down"></i></div>
                             <ul class="item-toogle">
                           
-                            </ul>
+                            </ul>+
                         </div>
                         <div class="col-lg-10">
                             @include('page.order.yakiniku')
@@ -95,9 +95,7 @@
 @push('skript')
     <script>
         $(document).ready(function () {
-
             $('.MenuForOrder').css('font-weight','bold');
-
             $('.paket_content').hide();
             $('.box-element').hide();    
             $('.paket_skelton').html(makeleton_paket());   

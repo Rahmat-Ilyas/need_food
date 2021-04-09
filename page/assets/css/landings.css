@@ -369,7 +369,6 @@ nav a:hover {
 
 #menu{
     height: 750px;
-    background: #FFFFFF;
     overflow: hidden;
 }
 
@@ -495,7 +494,7 @@ iframe{
 
 .card_menu{
     width: 267px;
-    height: 480px;
+    height: 520px;
     background: #FFFFFF;
     border-radius: 3px;
     box-shadow: 0px 10px 21px rgba(0.25, 0.25, 0.25, 0.25);
@@ -532,6 +531,9 @@ iframe{
     line-height: 27px;
     color: #000000;
     margin-bottom: 24px;
+    height: 170px;
+    position: relative;
+    right: 30px;
 }
 
 .card_grid{
@@ -900,7 +902,7 @@ footer {
 
   #identify{
     position: relative;
-    left: 545px;
+    left: 605px;
     bottom: 20px;
   }
 
@@ -1165,6 +1167,10 @@ footer {
        position: absolute;
        left: 160px;
        margin-bottom: 20px;
+    }
+
+    #menu{
+        height: auto;
     }
 
 }
