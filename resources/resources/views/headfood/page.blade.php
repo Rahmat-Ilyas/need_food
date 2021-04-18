@@ -97,7 +97,7 @@
                         </div>
                         <div class="col-lg-4 col-xs-12">
                             <ul class="list-footer_second">
-                                <li class="sub-list-footer">No Telepon : 082-293-887-789<</li>
+                                <li class="sub-list-footer">No Telepon : 082-293-887-789</li>
                                 <li class="sub-list-footer">E-mail : kesiniku@gmail.com</li>
                                 <li class="sub-list-footer">
                                     <i class="icofont-brand-whatsapp"></i>

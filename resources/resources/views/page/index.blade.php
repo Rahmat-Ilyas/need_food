@@ -33,7 +33,12 @@
             </div>
             <div class="carousel-item courosel-custom-banner" data-interval="500">
                 <div class="container"> 
-                    <div class="overlay-image" style="background-image:url('page/assets/images/slide3.png')"></div>
+                    <div id="imgDesktop">
+                        <div class="overlay-image" style="background-image:url('page/assets/images/slide3.png')"></div>
+                    </div>
+                    <div id="imgMobile">
+                        <div class="overlay-image" style="background-image:url('page/assets/images/image_jumbroton_mobile.png')"></div>
+                    </div>
                   </div>
             </div>
         </div>
@@ -58,7 +63,7 @@
                         kami adalah sebuah brand kuliner yang mengosong Japanese Food yaitu Shabu-Yakiniku sebagai product utama kami, dimana kami datang memberikan solusi untuk layanan pesan antar (Homey Shabu-Yakiniku) dan layanan pondokan (Foodstall Shabu-Yakiniku)</p>
                 </div>
               </div>
-                <a href="javascript:void();" class="readmore-btn">Lihat lainnya <i class="icofont-long-arrow-right"></i></a>
+                <a href="javascript:void(0);" class="readmore-btn">Lihat lainnya <i class="icofont-long-arrow-right"></i></a>
             </div>
             <div class="col-md-6">
                 <iframe src="https://www.youtube.com/embed/TUhw_l4jCUU" frameborder="0"
@@ -295,6 +300,17 @@
 @push('skriptHome')
     <script>
         $(function () {
+
+            if (window.matchMedia('(max-width:576px)').matches) {
+                console.log('mobile')
+               $('#imgDesktop').hide();
+               $('#imgMobile').show();
+            }else{
+                console.log('desktop')
+                $('#imgMobile').hide();
+                $('#imgDesktop').show(); 
+            }
+
             $('#readMore').hide();
             $('.validation_error').css('display','none');
             $('.closebtn').on('click', function () {
