@@ -61,6 +61,7 @@
         var hargaGroup = [];
         var qtyGroup = [];
         var totalQty = 0;
+        var resultHarga = 0;
         var paket_id = [], jumlah = [];
         var token = $('meta[name="csrf-token"]').attr('content');
         $(document).ready(function () {
@@ -144,7 +145,7 @@
             }
              
              function appendToHargaContent(harga,qty,ele,valQtyAdd) {
-                var resultHarga = 0;
+                 resultHarga = 0;
                 if (ele == null) {
                     for (let index = 0; index < qty.length; index++) {
                         resultHarga += harga[index] * qty[index];                   
@@ -156,9 +157,9 @@
                      } 
                      data_array_paket[ele]['kuantitas'] = valQtyAdd;
                 }
-                 
 
-                $('.box_total_keranjang').html('Rp. '+resultHarga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                resultFix(resultHarga);                 
+
              }  
              
               $('.content-keranjang-list').append(html);
@@ -166,11 +167,23 @@
         });
 
        $('.content-keranjang-list').on('click','.delete_item_keranjang',function () {
+            resultHarga = 0;
+            console.log(data_array_paket);
             var params_row = $(this).data('action');
             data_array_paket.splice(params_row,1);
             $(`.row_index_cart_page_${params_row}`).remove();
-            toastr_notice('info','Paket Berhasil di Hapus'); 
+            toastr_notice('info','Paket Berhasil di Hapus');
+            console.log(data_array_paket);
+            $.each(data_array_paket, function (keyss, valuess) { 
+                resultHarga +=  parseInt(valuess.harga) * valuess.kuantitas;
+            }); 
+            console.log(resultHarga);
+            resultFix(resultHarga);
        })
+
+       resultFix = (params) => {
+         $('.box_total_keranjang').html('Rp. '+params.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+       }
 
        show_modal_detail = (title,sub_url) => {
         console.log($('#cek_paket_cart').serialize());
