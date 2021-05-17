@@ -66,10 +66,6 @@
                                     </div>
                                     <div class="form-group col-lg-6">
                                         <label for="waktu_antar">Waktu</label>
-                                        {{-- <select class="form-control selectpicker" name="waktu_antar" title="Pilih Waktu Antar">
-                                            <option value="Pagi">Pagi</option>
-                                            <option value="Malam">Malam</option>
-                                        </select> --}}
                                         <input type="time" name="waktu_antar" class="form-control" id="waktu_antar">
 
                                     </div>

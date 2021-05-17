@@ -135,7 +135,7 @@ $(document).ready(function () {
             var html = '';
                 if (data['success'] == true) {
                 $.each(data.result, function (indexInArray, valueOfElement) { 
-                    html += '<div class="col-lg-4">';
+                    html += '<div class="col-lg-4 mt-3">';
                     html += '<div class="card_menu">';      
                     html += '<div class="title_card_menu">'+valueOfElement.nama+'</div>';
                     html += '<div class="card_menu_currency">'+valueOfElement.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'</div>';
@@ -629,6 +629,8 @@ $(".input-number").keydown(function (e) {
             })
         }
     }
+
+    $(document).on('click','')
 
     number = (elemen,type) => {
         var val = $(`#${elemen}`).val();

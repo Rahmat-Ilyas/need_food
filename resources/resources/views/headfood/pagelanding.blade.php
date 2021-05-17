@@ -88,8 +88,8 @@
                     </div>
                     <div class="col-lg-4">
                         <ul class="list-footer_second">
-                            <li class="sub-list-footer">No Telepon 082-293-887-789</li>
-                            <li class="sub-list-footer">E-mail : kesiniku@gmail.com</li>
+                            <li class="sub-list-footer">No Telepon : <span class="noteFooter">082-293-887-789</span> </li>
+                            <li class="sub-list-footer">E-mail : <span class="noteFooter">kesiniku@gmail.com</span> </li>
                             <li class="sub-list-footer">
                                 <i onclick="redirectMedsos('https://wa.me/082293887789')" class="icofont-brand-whatsapp" style="cursor: pointer"></i>
                                 &nbsp;&nbsp;&nbsp;

@@ -339,6 +339,7 @@ nav a:hover {
     font-size: 20px;
     line-height: 35px;
     text-align: center;
+    list-style: none;
     letter-spacing: 0.045em;
     color: #FFFFFF;
 }
@@ -368,14 +369,14 @@ nav a:hover {
 }
 
 #menu{
-    height: 750px;
+    height: auto;
     overflow: hidden;
 }
 
 
 
 .box_menu{
-    max-height: 499px;
+    /* max-height: 499px; */
     /* background: red; */
       /* background-image: url("/assets/images/backcontact.png"); */
     background-image: url("/page/assets/images/background_menu.jpg");
@@ -564,11 +565,11 @@ iframe{
 
 .keunggulan{
     height: 768px;
-    background-image: url("/page/assets/images/background_keunggulan.png");
+    background-image: url("/kesiniku/page/assets/images/background_keunggulan.png");
+    margin-top: 80px;
 }
 
 .layouts_area{
-    margin-top: 149px;
     background-image: url("/page/assets/images/testimoni_background.png");
     background-repeat: no-repeat;
     /* background-attachment: fixed; */
@@ -942,7 +943,7 @@ footer {
 
     #identifysecond{
         position: relative;
-        left: 96px;
+        left: 102px;
       }
     
       #identifythree{
@@ -1085,7 +1086,7 @@ footer {
     }
 
     .keunggulan{
-        margin-top: 1500px;
+        margin-top: 60px;
     }
 
     .card_grid{
@@ -1095,7 +1096,8 @@ footer {
     }
 
     .card_menu{
-        margin-top: 30px;
+        margin-top: 0px;
+        margin-left: 9px;
     }
 
     .text_menu{
@@ -1112,6 +1114,8 @@ footer {
     .text_keunggulan{
         font-size: 16px;
         text-align: center;
+        position: relative;
+        right: 16px;
         margin-top: 20px;
         
     }
@@ -1177,6 +1181,10 @@ footer {
 
     iframe{
         margin-top: 80px;
+    }
+
+    .noteFooter{
+        font-size: 16px;
     }
 
 }
