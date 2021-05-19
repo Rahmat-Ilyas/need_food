@@ -125,7 +125,7 @@
 
 <section class="keunggulan">
     <div class="container">
-    <div class="title_keunggulan"> keunggulan Bahan Kami </div>
+    <div class="title_keunggulan"> Keunggulan Bahan Kami </div>
         <div class="row">
             <div class="col-md-12">
                 <ul class="text_keunggulan mt-4">

@@ -135,11 +135,7 @@ $(document).ready(function () {
             var html = '';
                 if (data['success'] == true) {
                 $.each(data.result, function (indexInArray, valueOfElement) { 
-<<<<<<< HEAD
-                    html += '<div class="col-lg-4 mb-3">';
-=======
                     html += '<div class="col-lg-4 mt-3">';
->>>>>>> origin/abdilla_area
                     html += '<div class="card_menu">';      
                     html += '<div class="title_card_menu">'+valueOfElement.nama+'</div>';
                     html += '<div class="card_menu_currency">'+valueOfElement.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+'</div>';

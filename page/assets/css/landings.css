@@ -369,11 +369,7 @@ nav a:hover {
 }
 
 #menu{
-<<<<<<< HEAD
-    height: 1200px;
-=======
     height: auto;
->>>>>>> origin/abdilla_area
     overflow: hidden;
 }
 
@@ -384,6 +380,7 @@ nav a:hover {
     /* background: red; */
       /* background-image: url("/assets/images/backcontact.png"); */
     background-image: url("/page/assets/images/background_menu.jpg");
+    padding-bottom: 35px;
 }
 
 .grid_menu_title{
