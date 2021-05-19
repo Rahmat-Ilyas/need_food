@@ -116,7 +116,7 @@
                 </div>
                 <div class="col-lg-9">
                     <div class="row card_grid">
-                        </div>
+                     </div>
                 </div>
            </div>
        </div>
@@ -128,7 +128,7 @@
     <div class="title_keunggulan"> keunggulan Bahan Kami </div>
         <div class="row">
             <div class="col-md-12">
-                <ul style="list-style: none" class="text_keunggulan mt-4">
+                <ul class="text_keunggulan mt-4">
                     <li>Cara Belanja yang mudah</li>
                     <li class="mt-2">Harga Terjangkau</li>
                     <li class="mt-2">Hemat Waktu</li>
