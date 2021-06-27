@@ -217,10 +217,12 @@
         success : function(data) {
             datax = data;
             var html = '';
+            console.log(datax);
             $.each(datax, function (indexInArray, valueOfElement) { 
                 if (valueOfElement.type == 'paket') {
                     html+='<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
                     html+='<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah_paket[]">';
+                    html+='<input type="hidden" value="'+valueOfElement.kategori_menu+'" name="kategori_menu">';
                 }else{
                     html+='<input type="hidden" value="'+valueOfElement.id+'" name="additional_id[]">';
                     html+='<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah_adt[]">';

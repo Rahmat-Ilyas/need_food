@@ -25,8 +25,6 @@
     <link rel="stylesheet" href="{{ asset('assets/js/sweetalert2/sweetalert2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/min/basic.min.css') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/vendor/dropzone/min/dropzone.min.css') }}">
-
-
 </head>
 
 <body>

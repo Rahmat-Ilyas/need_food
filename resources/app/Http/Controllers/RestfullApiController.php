@@ -1175,7 +1175,7 @@ class RestfullApiController extends Controller
 	// PEMESANAN
 	public function setPesanan(Request $request)
 	{
-		
+
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'no_telepon' => 'required',
@@ -1190,6 +1190,7 @@ class RestfullApiController extends Controller
 			'additional_id' => 'array',
 			'jumlah_adt' => 'array',
 			'biaya_pengiriman' => 'required|integer',
+			'kategori_menu' => 'required',
 		]);
 
 		if ($validator->fails()) {

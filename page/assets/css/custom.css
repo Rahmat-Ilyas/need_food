@@ -59,40 +59,228 @@ nav a:hover {
     text-decoration: none;
 }
 
-.box_menu_paket{
-    width: 224px;
-    border: 1px solid #EB5757;
-    box-sizing: border-box;
-    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
+#category_paket_area{
+    margin-top: 18px;
 }
 
-.grid_box_paket{
-    margin-top: 40px;
-    margin-left: 20px;
+/* New CSS */
+
+.titleCard{
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 21px;
+    line-height: 31px;
+    letter-spacing: -0.01em;
+    color: #000000;
+}
+
+
+
+.menu_paket{
+    width: 250px;
+    background: #FFDFDF;
+    margin-bottom: 3px;
+    padding: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+    color: #EB5757;
+}
+
+.contentMenu{
+
+}
+
+.menu_paket:hover{
+    background: #EB5757;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.25);
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.active_category{
+    background: #EB5757;
+    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.25);
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.card_menu_paket{
+    width: 345px;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-bottom: 20px;
+    padding-bottom : 11px;
+}
+
+.img_paket{
+ width: 100%;
+ margin-bottom: 7px;
+}
+
+.btn_qty_paket{
+    background: #E5E5E5;
+    border-radius: 2px;
+    width: 40px;
+    height: 40px;
+
+    padding: 5px;
+    margin-bottom: 0;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+}
+
+.icont-button-paket{
+    font-size: 16px;
+    color: #E57F7F;
+    font-weight : normal;
+}
+
+.form_paket {
+    border: 1px solid #E5E5E5;
+    border-radius: 2px;
+    text-align: center;
+    width: 47px;
+    height: 40px;
+    position: relative;
+    bottom: 0px;
+}
+
+.btn-group-paket{
+    margin-left: 10px;
+}
+
+.price{
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 37px;
+    line-height: 55px;
+    color: #FFFFFF;
+    margin-left: 10px;
+}
+
+.sub_info_price{
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 27px;
+    color: #FFFFFF;
+}
+
+.item_paket_info{
+    position: absolute;
+    top: 168px;
+}
+
+.name_paket{
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 27px;
+    color: #FFFFFF;
+    position: absolute;
+    top: 145px;
+    margin-left: 10px;
+}
+
+.box_paket{
+    margin-top: 30px;
+}
+
+.list_paket_info{
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 22px;
+    margin-left : -5%;
+    list-style : none;
+    letter-spacing: 0.02em;
+    color: #4B4B4B;
+}
+
+.header_paket_info{
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    color: #EB5757;
+}
+
+.tombol_custom_paket {
+    /* padding: 12px 24px 12px 24px; */
+    border-radius: 3px;
+    width: 135px;
+    height: 40px;
+    margin-bottom: 0;
+    position: absolute;
+    right: 25px;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+}
+
+.icofont-shopping-cart{
+    position: relative;
+    top: 2px;
+    font-size: 20px;
+}
+
+.text-button-paket{
+    text-align: center;
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+    position: relative;
+    bottom: 3px;
+}
+
+
+/* END NEW CSS */
+
+.grid_title_paket{
+    margin-top: 25px;
+    margin-left: 93px;
 }
 
 .menu_grid{
     position: relative;
     left: 30px;
 }
-
-.box_title_paket{
-    width: 224px;
-    height: 50px;
-    background: #EB5757;
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
-    border-radius: 5px 5px 0px 0px;
-    font-family: 'Poppins', serif;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 30px;
-    color: #ffffff;
-    text-align: center;
-    padding: 10px;
-}
-
 
 .list_menu_paket{
     font-family: 'Poppins', serif;
@@ -908,7 +1096,7 @@ button:focus {
     font-family: 'Poppins', serif;
     font-style: normal;
     font-weight: 700;
-    font-size: 37px;
+    font-size: 35px;
     line-height: 55px;
     color: #EB5757;
     text-align: center;
@@ -1247,7 +1435,7 @@ footer {
 }
 
 .icofont-cart{
-    font-size: 30px;
+    font-size: 25px;
     color: #fff;
 }
 
@@ -1780,11 +1968,6 @@ footer {
         padding: 15px 0 0 0;
     }
 
-    .box_menu_paket{
-        display: none;
-    }
-
-
 
     .banner_order_additional{
         margin-top: 50px;
@@ -1853,9 +2036,6 @@ footer {
         transition: 0.5s; */
     }
 
-    .active-toogle{
-        /* transform: perspective(1000px) rotateX(0deg); */
-    }
 
     .value_toogle{
         background: #FDFDFD;
