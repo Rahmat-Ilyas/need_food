@@ -94,7 +94,7 @@
                 </button>
             </div>
             <div class="modal-body" id="modal-body-cart">
-
+                <div class="totalGroup"></div>
             </div>
             <div class="modal-footer" id="modal-footer">
                 <button class="tombol-lg-modal tombol-keranjang text-button">Checkout Keranjang <i

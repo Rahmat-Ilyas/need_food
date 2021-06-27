@@ -215,21 +215,82 @@
           e.preventDefault();  
           totalQty = 0;
           console.log(data_array_paket);
-            $.each(data_array_paket, function (indexInArray, valueOfElement) { 
-                if (valueOfElement.type == 'paket') {
-                    totalQty += valueOfElement.kuantitas;
-                }
-            });
-            if (totalQty > 1) {
-                   send_to_delivery(data_array_paket);
-            }else{
-                Swal.fire({
-                    title: 'Gagal Diproses ke Pengantaran !!',
-                    text: 'Kuantitas Pesanan untuk Menu Paket Utama harus lebih dari 2 pack',
-                    type: 'error'
-                });
-            }
+      
+          if (data_array_paket[0]['kategori_menu'] == 1) {
+            var status = true;
+                if (data_array_paket.length < 2) {
+                    $.each(data_array_paket, function (indexInArray, valueOfElement) {
+                        if ( valueOfElement.nama == "Yakiniku") {
+                           valueOfElement.kuantitas >= 5 ? send_to_delivery(data_array_paket) : status = false;   
+                        } 
 
+                        if ( valueOfElement.nama == "Shabu") {
+                            valueOfElement.kuantitas >= 8 ? send_to_delivery(data_array_paket) : status = false;   
+                        } 
+                    });
+                    alert(status);
+                    if (status == false) {
+                        toastr_notice('error', 'Gagal',`Paket Tidak Memenuhi Minimal Pemesanan`)
+                    }
+                }else{
+                    var menu_A;
+                    var menu_B;
+                    $.each(data_array_paket, function (indexIn, valueOfMix) {
+                        if (valueOfMix.nama == 'Shabu') {
+                            valueOfMix.kuantitas >= 3 ? menu_A = true : menu_A = false;
+                        }
+        
+                        if (valueOfMix.nama == 'Yakiniku' ) {
+                            valueOfMix.kuantitas >= 4 ? menu_B = true : menu_B = false;
+                        }
+                    });
+                  
+                    menu_A == true && menu_B == true ? send_to_delivery(data_array_paket) : toastr_notice('error', 'Gagal',`Paket Mix Tidak Memenuhi Minimal Pemesanan`)
+                }
+          }else if (data_array_paket[0]['kategori_menu'] == 2) {
+                var menu_A = true;
+                var menu_B = true;
+                var menu_C = true;
+                $.each(data_array_paket, function (indexInArray, valueOfElement) {
+                    if ( valueOfElement.nama == 'Yakiniku') {
+                        valueOfElement.kuantitas >= 2 ? menu_A = true : menu_A = false;
+                    }else if (valueOfElement.nama == 'Shabu') {
+                        valueOfElement.kuantitas >= 2 ? menu_B = true : menu_B = false;
+                    }else if (valueOfElement.nama == "Takoyaki") {
+                        valueOfElement.kuantitas >= 2 ? menu_C = true : menu_C = false;
+                    }
+                });
+                
+                console.log('A + : '+menu_A);
+                console.log('A + : '+menu_B);
+                console.log('A + : '+menu_C);
+
+                menu_A == true && menu_B == true && menu_C == true ? send_to_delivery(data_array_paket) : toastr_notice('error', 'Gagal',`Paket Tidak Memenuhi Minimal Pemesanan`); 
+          }else if (data_array_paket[0]['kategori_menu'] == 3){
+            var totalHarga = 0;
+              $.each(data_array_paket, function (indexInArray, valueOfElement) {
+                  console.log(valueOfElement.kuantitas);
+                    totalHarga += parseInt(valueOfElement.harga) * parseInt(valueOfElement.kuantitas);
+              });
+              console.log(totalHarga)
+              totalHarga > 3500000 ? send_to_delivery(data_array_paket) : toastr_notice('error', 'Gagal',`Total Pesanan Minimal Rp. 3,500,000,00`);
+          }
+
+          // $.each(data_array_paket, function (indexInArray, valueOfElement) { 
+            //     if (valueOfElement.type == 'paket') {
+            //         totalQty += valueOfElement.kuantitas;
+            //     }
+            // });
+            // if (totalQty > 1) {
+            //        send_to_delivery(data_array_paket);
+            // }else{
+            //     Swal.fire({
+            //         title: 'Gagal Diproses ke Pengantaran !!',
+            //         text: 'Kuantitas Pesanan untuk Menu Paket Utama harus lebih dari 2 pack',
+            //         type: 'error'
+            //     });
+            // }
+            
        
       })
 

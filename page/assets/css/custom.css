@@ -269,6 +269,26 @@ nav a:hover {
     bottom: 3px;
 }
 
+#totalHarga{
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 170%;
+    letter-spacing: 0.1em;
+    color: #000000;
+}
+
+#totalNominal{
+    font-family: 'Poppins', serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 170%;
+    letter-spacing: 0.1em;
+    color: #4F4F4F;
+}
+
 
 /* END NEW CSS */
 

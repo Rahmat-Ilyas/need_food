@@ -569,6 +569,8 @@ $(document).ready(function () {
     $('.grid_button_flag').click(function () {
         var content_cart_modal = '';
         var path_asset_image = '';
+        var total_harga = 0;
+        var totalHtml = '';
         console.log(tampung);
         if (tampung.length != 0) {
             $('.box-keranjang-modal').remove();
@@ -580,6 +582,7 @@ $(document).ready(function () {
                     path_asset_image = url + '/assets/images/bahan';
                 }
 
+                total_harga =+ values.harga * values.kuantitas;
                 content_cart_modal += '<div class="box-keranjang-modal mt-2">';
                 content_cart_modal += '<div class="row content-modal-cart row_index_' + key + '">';
                 content_cart_modal += '<div class="col-lg-8">';
@@ -603,7 +606,13 @@ $(document).ready(function () {
                 content_cart_modal += '</div>';
                 content_cart_modal += '</div>';
             });
+            if (tampung[0]['kategori_menu'] == 3) {
+                totalHtml += '<div id="totalHarga">Total Harga :';
+                totalHtml += `<span id="totalNominal">Rp. ${total_harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>`;
+                totalHtml += '</div>';     
+            }
             $('#modal-body-cart').append(content_cart_modal);
+            $('.totalGroup').html(totalHtml);
             $('#cartmodal').modal('show');
         } else {
             toastr_notice('error', 'Gagal','keranjang Kosong');
@@ -643,7 +652,6 @@ $(document).ready(function () {
         if (list_pesanan_modal.length > 0) {
             if (list_pesanan_modal[0]['kategori_menu'] == 1) {
                 var status = true;
-                alert('ini home service')
                 if (list_pesanan_modal.length < 2) {
                     $.each(list_pesanan_modal, function (indexInArray, valueOfElement) {
                         if ( valueOfElement.nama == "Yakiniku") {
@@ -676,26 +684,25 @@ $(document).ready(function () {
                 }
 
             }else if (list_pesanan_modal[0]['kategori_menu'] == 2) {
-                var status = '';
-                var menu_A;
-                var menu_B;
-                var menu_C;
+          
+                var menu_A = true;
+                var menu_B = true;
+                var menu_C = true;
                 $.each(list_pesanan_modal, function (indexInArray, valueOfElement) {
-                    if ( valueOfElement.nama == 'Yakiniku' && valueOfElement.kuantitas >= 2) {
-                        postToCart(list_pesanan_modal);
-                        status = true;
-                    }else if (valueOfElement.nama == 'Shabu' && valueOfElement.kuantitas >= 2) {
-                        postToCart(list_pesanan_modal);
-                        status = true;
-                    }else{
-                        status = false;
+                    if ( valueOfElement.nama == 'Yakiniku') {
+                        valueOfElement.kuantitas >= 2 ? menu_A = true : menu_A = false;
+                    }else if (valueOfElement.nama == 'Shabu') {
+                        valueOfElement.kuantitas >= 2 ? menu_B = true : menu_B = false;
+                    }else if (valueOfElement.nama == "Takoyaki") {
+                        valueOfElement.kuantitas >= 2 ? menu_C = true : menu_C = false;
                     }
                 });
+                
+                console.log('A + : '+menu_A);
+                console.log('A + : '+menu_B);
+                console.log('A + : '+menu_C);
 
-                alert(status);
-                if (status == false) {
-                    toastr_notice('error', 'Gagal',`Paket Tidak Memenuhi Minimal Pemesanan`);
-                }
+                menu_A == true && menu_B == true && menu_C == true ? postToCart(list_pesanan_modal) : toastr_notice('error', 'Gagal',`Paket Tidak Memenuhi Minimal Pemesanan`);  
                 
             }else{
               var totalHarga = 0;
@@ -760,21 +767,21 @@ $(document).ready(function () {
     })
 
     send_to_delivery = (data) => {
-        if (data == 'Tidak ada session') {
-            toastr_notice('error', 'Gagal','Belum Ada Pesanan');
-        } else {
-            $.ajax({
-                url: url + '/keranjang/paket_to_delivery',
-                type: 'POST',
-                data: {
-                    'data': JSON.stringify(data),
-                    '_token': token
-                },
-                success: function (response) {
-                    window.location.href = url + '/pengantaran';
-                }
-            })
-        }
+        // if (data == 'Tidak ada session') {
+        //     toastr_notice('error', 'Gagal','Belum Ada Pesanan');
+        // } else {
+        //     $.ajax({
+        //         url: url + '/keranjang/paket_to_delivery',
+        //         type: 'POST',
+        //         data: {
+        //             'data': JSON.stringify(data),
+        //             '_token': token
+        //         },
+        //         success: function (response) {
+        //             window.location.href = url + '/pengantaran';
+        //         }
+        //     })
+        // }
     }
 
     number = (elemen, type) => {
