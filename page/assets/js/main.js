@@ -252,6 +252,10 @@ $(document).ready(function () {
         window.location.href = url + '/order';
     })
 
+     $(document).on('click', '.grid_button_faq', function () {
+        window.location.href = url + '/order';
+    })
+
 
     // $(document).on('click', '.list_menu_paket', function () {
     //     var id = $(this).data('id');
@@ -767,21 +771,21 @@ $(document).ready(function () {
     })
 
     send_to_delivery = (data) => {
-        // if (data == 'Tidak ada session') {
-        //     toastr_notice('error', 'Gagal','Belum Ada Pesanan');
-        // } else {
-        //     $.ajax({
-        //         url: url + '/keranjang/paket_to_delivery',
-        //         type: 'POST',
-        //         data: {
-        //             'data': JSON.stringify(data),
-        //             '_token': token
-        //         },
-        //         success: function (response) {
-        //             window.location.href = url + '/pengantaran';
-        //         }
-        //     })
-        // }
+        if (data == 'Tidak ada session') {
+            toastr_notice('error', 'Gagal','Belum Ada Pesanan');
+        } else {
+            $.ajax({
+                url: url + '/keranjang/paket_to_delivery',
+                type: 'POST',
+                data: {
+                    'data': JSON.stringify(data),
+                    '_token': token
+                },
+                success: function (response) {
+                    window.location.href = url + '/pengantaran';
+                }
+            })
+        }
     }
 
     number = (elemen, type) => {
