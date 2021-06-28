@@ -291,15 +291,21 @@
 </section>
 
 
-
-{{-- <div class="flat_button grid_button_faq">
-   <div class="faq_text">FAQ</div>
-</div> --}}
+<div class="flat_button grid_button_faq">
+   <div class="faq_text">
+   Pesan <span id="subFaqText">Sekarang</span>
+   </div>
+   
+</div> 
 
 @endsection
 @push('skriptHome')
     <script>
         $(function () {
+
+            $('.grid_button_faq').click(function (){
+                window.location.href = url + '/order';
+            });
 
             if (window.matchMedia('(max-width:576px)').matches) {
                 console.log('mobile')

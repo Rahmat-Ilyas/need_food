@@ -787,11 +787,17 @@ footer {
 }
 
 .flat_button{
-    width: 68px;
-    height: 48px;
-    border: 1px solid #EB5757;
-    box-sizing: border-box;
-    border-radius: 9px 0px 0px 9px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ffffff;
+    background: #EB5757;
+    /* box-sizing: border-box; */
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.flat_button:hover{
+    background:#E94242;
 }
 
 .grid_button_flag{
@@ -805,17 +811,39 @@ footer {
     position: fixed;
     bottom: -4px;
     right: 12px;
-    top: 380px;
+    top: 550px;
 }
 
 .faq_text{
     font-family: 'Playfair Display', serif;  
-    color: #EB5757;
-    font-size: 20px;
+    color: #ffffff;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 23px;
+    line-height: 34px;
+    color: #FFFFFF;
+    position: relative;
+    top: 18px;
+    left: 19px;
+    cursor: pointer;
+
+    /* font-size: 20px;
     font-weight: bold;
     position: relative;
     left: 16px;
-    top: 7px;
+    top: 7px; */
+}
+
+#subFaqText{
+    font-family: 'Poppins',serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 21px;
+    color: #FFFFFF;
+    position: relative;
+    top: -11px;
+    left: -2px;
 }
 
 .icofont-shopping-cart{
