@@ -9,6 +9,18 @@
                     <div class="row grid_order">
                         <div class="col-md-3">
                             <div class="titleCard grid_title_paket">Menu</div>
+                            <div id="category_paket_area_mobile">
+                                <nav id="menuMobileCategory">
+                                    <label for=""><span id="labelKategori">Pilih Kategori</span>
+                                       <i class="icofont-caret-down" id="icon_caret_mb"></i>
+                                    </label>
+                                    <ul class="menu_dp_mobile">
+                                        <li> <a href="javascript:void(0)" class="menu_paketMobile" data-text="Home Service" data-action="1"> Home Service</a> </li>
+                                        <li> <a  href="javascript:void(0)" class="menu_paketMobile" data-text="Bahan Saja" data-action="2">Bahan Saja</a> </li>
+                                        <li> <a href="javascript:void(0)" class="menu_paketMobile" data-text="Food Stall" data-action="3">Food Stall</a> </li>
+                                    </ul>
+                                </nav>
+                            </div>
                             <div id="category_paket_area">
                                 <div id="firstMenuPaket" class="menu_paket text-center" data-action="1">
                                     HOME SERVICE
@@ -112,6 +124,12 @@
         $('.box-element').hide();
         // $('.paket_skelton').html(makeleton_paket());
         // $('.makeleton_additonal').html(makeleton_additional());
+
+         $('#category_paket_area_mobile').on('click',function () {
+                 $(this).parent().toggleClass('showContent');
+                 $('.menu_dp_mobile').slideToggle();
+             })
+
     });
 </script>
 @endpush

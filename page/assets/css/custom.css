@@ -1382,6 +1382,10 @@ footer {
     background: #242424;
 }
 
+#category_paket_area_mobile{
+    display: none;
+}
+
 .sub-title-footer {
     font-family: 'Playfair Display', serif;
     font-size: 24px;
@@ -2131,5 +2135,108 @@ footer {
         margin-left: 0px;
         margin-bottom: 62px;
     }
+
+    #category_paket_area{
+        display: none;
+    }
+
+    .card_menu_paket{
+        width: 100%;
+    }
+
+    .name_paket{
+        margin-top: -20px;
+    }
+
+    .item_paket_info{
+        margin-top: -21px;
+    }
+
+     #menuMobileCategory{
+        background: #EB5757;
+        border-radius: 3px;
+        width: 100%;
+        padding: 8px 25px;
+        display: block;
+    }
+
+   .menu_dp_mobile:before{
+       content: '';
+       width: 20px;
+       height: 20px;
+        background: #EB5757;
+        position: absolute;
+           top: -4px;
+        left: 256px;
+        transform: rotate(45deg);
+        z-index: -2;
+    }
+
+
+    #menuMobileCategory label{
+          font-family: 'Poppins', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        /* identical to box height */
+       padding-top: 7px;
+        letter-spacing: -0.01em;
+        color: #FFFFFF;
+    }
+
+    #category_paket_area_mobile{
+        display: block;
+    }
+
+    #icon_caret_mb{
+        float: right;
+        line-height: 10px;
+        margin-left: -13px;
+        position: relative;
+        left: 145px;
+    }
+
+    #menuMobileCategory ul li a{
+         color: #ffffff;
+         text-decoration: none;
+             font-family: 'Poppins', sans-serif;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 26px;
+    }
+
+    #menuMobileCategory ul{
+        position: absolute;
+        background: #EB5757;
+            top: 145px;
+        list-style: none;
+        width: 91%;
+        left: 16px;
+        border-radius: 6px;
+            z-index: 1;
+            display: none;
+
+    }
+
+    #menuMobileCategory ul li{
+              line-height: 40px;
+            cursor: pointer;
+            background: #EB5757;
+            padding-left: -8px;
+            margin-left: -40px;
+            border-radius: 6px;
+    }
+
+    #menuMobileCategory ul li:hover{
+        background: #DF4444;
+    }
+
+    .grid_title_paket{
+        margin-left: 122px;
+        margin-bottom: 18px;
+    }
+
 
 }

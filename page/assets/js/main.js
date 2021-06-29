@@ -176,6 +176,15 @@ $(document).ready(function () {
 
     })
 
+    $('.menu_paketMobile').on('click',function(){
+      var data_action = $(this).attr('data-action');
+      var data_text = $(this).attr('data-text');
+      console.log(data_action);
+      console.log(data_text);
+      $('#labelKategori').html(data_text);
+      get_paket_primary(data_action);
+    })
+
     saveToCart = (id, kategori_menu) => {
         var qty = $(`#paketUtama_input${id}`).val();
         var type = 'paket';
