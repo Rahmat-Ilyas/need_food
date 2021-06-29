@@ -1181,7 +1181,6 @@ class RestfullApiController extends Controller
 	// PEMESANAN
 	public function setPesanan(Request $request)
 	{
-
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'no_telepon' => 'required',
@@ -1551,7 +1550,10 @@ class RestfullApiController extends Controller
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
 				$pemesanan['bahan'] = $this->set_paket($set_paket, $id, 'bahan');
-				$pemesanan['alat'] = $this->set_paket($set_paket, $id, 'alat');
+				if($pemesanan->kategori_menu == 1)
+					$pemesanan['alat'] = $this->set_paket($set_paket, $id, 'alat');
+				else 
+					$pemesanan['alat'] = [];
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
 					$set_paket = [];

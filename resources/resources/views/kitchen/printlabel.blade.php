@@ -119,11 +119,10 @@
 					$.each(data.result, function(key, val) {
 						$('#label-print').append(`
 							<div style="width: 50%; float: left; padding-left: 10px;">
-							<div class="card-box text-center" style="font-size: 11px;">
-							<h4 class="m-t-0"><b>`+ val.kd_pemesanan +`</b></h4>
-							<p class="m-b-0"><b>`+ val.nama +`</b></p>
-							<p class="m-b-0">`+ val.no_telepon +`/`+ val.no_wa +`</p>
-							<p class="m-b-0">`+ val.deskripsi_lokasi +`</p>
+							<div class="card-box text-center" style="font-size: 12px; min-height: 125px; max-height: 125px;">
+							<h4 style="margin-top: -10px;"><b>`+ val.nama +`</b></h4>
+							<h5 style="margin-top: -5px; margin-bottom: 2px;"><b>(TELP) `+ val.no_telepon +`/ (WA) `+ val.no_wa +`</b></h5>
+							<b>`+ val.deskripsi_lokasi +`</b>
 							</div>
 							</div>
 							`);

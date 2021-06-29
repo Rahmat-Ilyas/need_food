@@ -31,6 +31,7 @@
 								<th>Telepon</th>
 								<th>WhatsApp</th>
 								<th>Jadwal Antar</th>
+								<th>Kategori Menu</th>
 								<th>Catatan</th>
 								<th width="60" class="text-center">Detail</th>
 								<th width="60" class="text-center">Aksi</th>
@@ -242,17 +243,27 @@
 							var date = dt.getDate();
 							if (month < 10) month = '0'+month;
 							if (dt.getDate() < 10) date = '0'+dt.getDate();
+							var katmenu = '';
+							var target = '';
+							var disabled = 'disabled';
+							if (val.kategori_menu == 1) {
+								katmenu = 'Home Service';
+								target = '.set-alat';
+								disabled = '';
+							} else if (val.kategori_menu == 2) katmenu = 'Bahan Saja';
+							else if (val.kategori_menu == 3) katmenu = 'Food Stall';
 							dataTable.row.add([
 								val.kd_pemesanan,
 								val.nama,
 								val.no_telepon,
 								val.no_wa,
 								date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
+								katmenu,
 								val.catatan,
 								`<div class="text-center">
 								<a href="#" role="button" class="btn btn-info btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i></a>
 								<a href="#" role="button" class="btn btn-purple btn-sm waves-effect waves-light" id="detail-bahan-psn" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Bahan Pesanan" data-toggle="modal" data-target=".detail-bahan-psn"><i class="fa fa-shopping-basket"></i></a>`,
-								`<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Atur Alat Pesanan" data-toggle="modal" data-target=".set-alat"><i class="md-restaurant-menu"></i></a>
+								`<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="set-alat" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Atur Alat Pesanan" data-toggle="modal" data-target="`+target+`"`+disabled+`><i class="md-restaurant-menu"></i></a>
 								<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="selesai-packing" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Selesai Packing"><i class="md-assignment-turned-in"></i></a>
 								</div>`,
 								]).draw(false);

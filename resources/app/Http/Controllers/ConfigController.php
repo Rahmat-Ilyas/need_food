@@ -68,7 +68,7 @@ class ConfigController extends Controller
 				}
 			} else if ($request->req == 'getviewprint') {
 				$result = [];
-				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->where('status', 'Proccess')->orWhere('status', 'Delivery')->get();
+				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->orWhere('status', 'Delivery')->get();
 				foreach ($pemesanan as $dta) {
 					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
 					$result[] = $dta;
