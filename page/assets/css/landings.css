@@ -790,7 +790,6 @@ footer {
     height: 100px;
     border: 1px solid #ffffff;
     background: #EB5757;
-    /* box-sizing: border-box; */
     border-radius: 50%;
     cursor: pointer;
 }
@@ -1079,7 +1078,9 @@ footer {
     }
 
     .grid_button_faq{
-        left: 300px;
+      left: 262px;
+    position: fixed;
+    top: 543px;
     }
 
     .grid_button_flag{
@@ -1213,6 +1214,21 @@ footer {
 
     .noteFooter{
         font-size: 16px;
+    }
+
+    .flat_button{
+        width: 90px;
+        height: 90px;    
+    }
+
+    .faq_text{
+       font-size: 23px;
+        line-height: 34px;
+        color: #FFFFFF;
+        position: relative;
+        top: 13px;
+        left: 15px;
+
     }
 
 }
