@@ -36,13 +36,21 @@ class ConfigController extends Controller
 				foreach ($pemesanan as $dta) {
 					if ($dta->status == 'New') {
 						$dta['status'] = '<span class="label" style="background-color: #C5E9FF; color: #005789; font-size: 11px;">Pesanan Baru</span>';
-						$dta['chek'] = 'disabled';
+						if ($dta->metode_bayar == 'cod') {
+							$dta['button'] = '<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="confirm-pesanan-cod" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Konfirmasi Pesanan" data-toggle="modal" data-target=".confirm-pesanan-cod"><i class="fa fa-check-circle"></i></a>';
+						} else {
+							$dta['button'] = '<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="belum-bayar" data-toggle1="tooltip" title="Konfirmasi Pesanan"><i class="fa fa-check-circle"></i></a>';
+						}
 					}
 					else if ($dta->status == 'Accept') {
 						$dta['status'] = '<span class="label" style="background-color: #C7FFFF; color: #016B6B; font-size: 11px;">Selesai Bayar</span>';
-						$dta['chek'] = 'data-target=".confirm-pesanan"';
+						$dta['button'] = '<a href="#" role="button" class="btn btn-success btn-sm waves-effect waves-light" id="confirm-pesanan" dta-id="'.$dta->id.'" data-toggle1="tooltip" title="Konfirmasi Pesanan" data-toggle="modal" data-target=".confirm-pesanan"><i class="fa fa-check-circle"></i></a>';
 					}
-					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
+					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' '.$dta->waktu_antar;
+					if ($dta->metode_bayar == 'transfer') 
+						$dta['metode_bayar'] = 'Transfer Bank';
+					else if ($dta->metode_bayar == 'cod') 
+						$dta['metode_bayar'] = 'Case On Delivery (COD)';
 					$result[] = $dta;
 				}
 
@@ -60,7 +68,7 @@ class ConfigController extends Controller
 				}
 			} else if ($request->req == 'getviewprint') {
 				$result = [];
-				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->where('status', 'Proccess')->orWhere('status', 'Delivery')->get();
+				$pemesanan = Pemesanan::orderBy('updated_at', 'desc')->orWhere('status', 'Delivery')->get();
 				foreach ($pemesanan as $dta) {
 					$dta['jadwal_antar'] = date('d/m/Y', strtotime($dta->tanggal_antar)).' ('.$dta->waktu_antar.')';
 					$result[] = $dta;

@@ -106,6 +106,10 @@
 						<span class="col-sm-8 p-0" id="dtl_tanggal_antar"></span>
 					</li>
 					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Metode Bayar: </b>
+						<span class="col-sm-8 p-0" id="dtl_metode_bayar"></span>
+					</li>
+					<li class="list-group-item row">
 						<b class="col-sm-4 p-0">Paket Pesanan: </b>
 						<span class="col-sm-8 p-0 row" id="dtl_paket"></span>
 					</li>
@@ -286,7 +290,7 @@
 					var countAdt = 0;
 					$('#dtl_additional').html('');
 					$.each(data.result.additional, function(key, val) {
-						$('#dtl_additional').append('<p>- '+val.nama_daging+'</p>');
+						$('#dtl_additional').append('<p>- '+val.nama_daging+' ('+val.jumlah+' pax)</p>');
 						countAdt = countAdt + 1;
 					});
 

@@ -68,7 +68,10 @@ class RestfullApiController extends Controller
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
+				if ($supplier) 
+					$rw['supplier'] = $supplier->nama_supplier;
+				else
+					$rw['supplier'] = 'Supplier Lainnya';
 				$riwayat_beli[] = $rw;
 			}
 			$data->riwayat_beli = $riwayat_beli;
@@ -379,7 +382,10 @@ class RestfullApiController extends Controller
 			$riwayat_beli = [];
 			foreach ($riwayat as $rw) {
 				$supplier = Supplier::where('id', $rw->supplier_id)->first();
-				$rw['supplier'] = $supplier->nama_supplier;
+				if ($supplier) 
+					$rw['supplier'] = $supplier->nama_supplier;
+				else
+					$rw['supplier'] = 'Supplier Lainnya';
 				$riwayat_beli[] = $rw;
 			}
 			$data->riwayat_beli = $riwayat_beli;
@@ -1175,7 +1181,6 @@ class RestfullApiController extends Controller
 	// PEMESANAN
 	public function setPesanan(Request $request)
 	{
-
 		$validator = Validator::make($request->all(), [
 			'nama' => 'required',
 			'no_telepon' => 'required',
@@ -1185,6 +1190,7 @@ class RestfullApiController extends Controller
 			'deskripsi_lokasi' => 'required',
 			'latitude' => 'required',
 			'longitude' => 'required',
+			'metode_bayar' => 'required',
 			'paket_id' => 'required|array',
 			'jumlah_paket' => 'required|array',
 			'additional_id' => 'array',
@@ -1221,6 +1227,16 @@ class RestfullApiController extends Controller
 				$pemesanan['waktu_antar'] = $request->waktu_antar.' (Pagi)';
 			else if ($request->waktu_antar <= '23:59')
 				$pemesanan['waktu_antar'] = $request->waktu_antar.' (Sore)';
+
+			// Nomor Telepon
+			$no_telepon = str_replace('-', '', $request->no_telepon);
+			$no_telepon = str_replace(' ', '', $no_telepon);
+			$pemesanan['no_telepon'] = $no_telepon;
+
+			// Nomor WA
+			$no_wa = str_replace('-', '', $request->no_wa);
+			$no_wa = str_replace(' ', '', $no_wa);
+			$pemesanan['no_wa'] = $no_wa;
 			
 			$request->catatan ? $request->catatan : $pemesanan['catatan'] = '-';
 			unset($pemesanan['paket_id']);
@@ -1425,6 +1441,8 @@ class RestfullApiController extends Controller
 		if (count($alatpesanan) > 0) {
 			$result = [];
 			foreach ($alatpesanan as $res) {
+				$alt = Alat::where('id', $res->alat_id)->first();
+				$res['nama_alat'] = $alt ? $alt->nama : 'data alat sudah tidak ada';
 				unset($res['created_at']);
 				unset($res['updated_at']);
 				$result[] = $res;
@@ -1438,7 +1456,7 @@ class RestfullApiController extends Controller
 			return response()->json([
 				'success' => false,
 				'message' => 'Data is empty'
-			], 404);
+			], 200);
 		}
 	}
 
@@ -1523,11 +1541,19 @@ class RestfullApiController extends Controller
 				unset($transaksi['created_at']);
 				unset($transaksi['updated_at']);
 
+				if ($pemesanan->metode_bayar == 'transfer') 
+					$pemesanan['metode_bayar'] = 'Transfer Bank';
+				else if ($pemesanan->metode_bayar == 'cod') 
+					$pemesanan['metode_bayar'] = 'Case On Delivery (COD)';
+
 				$pemesanan['paket'] = $paket;
 				$pemesanan['additional'] = $additional;
 				$pemesanan['transaksi'] = $transaksi;
 				$pemesanan['bahan'] = $this->set_paket($set_paket, $id, 'bahan');
-				$pemesanan['alat'] = $this->set_paket($set_paket, $id, 'alat');
+				if($pemesanan->kategori_menu == 1)
+					$pemesanan['alat'] = $this->set_paket($set_paket, $id, 'alat');
+				else 
+					$pemesanan['alat'] = [];
 			} else {
 				foreach ($pemesanan as $i => $pesanan) {
 					$set_paket = [];
@@ -1567,6 +1593,11 @@ class RestfullApiController extends Controller
 					$transaksi = Transaksi::where('pemesanan_id', $pesanan->id)->first();
 					unset($transaksi['created_at']);
 					unset($transaksi['updated_at']);
+
+					if ($pesanan->metode_bayar == 'transfer') 
+						$pesanan['metode_bayar'] = 'Transfer Bank';
+					else if ($pesanan->metode_bayar == 'cod') 
+						$pesanan['metode_bayar'] = 'Case On Delivery (COD)';
 
 					$pesanan['paket'] = $paket;
 					$pesanan['additional'] = $additional;
@@ -1672,7 +1703,7 @@ class RestfullApiController extends Controller
 		$search = array_column($alat, 'key', 'kategori_alat_id');
 		$alat_fix = [];
 		// Dapat alat minimal 1 paket
-		if ($total_paket >= 1) {
+		if ($total_paket >= 5) {
 			foreach ($search as $fix => $key) {
 				$jumlah = 0;
 				foreach ($alat as $ext) {
@@ -1722,8 +1753,14 @@ class RestfullApiController extends Controller
 				$this->reduceAlatBahan($id);
 			}
 
-			if ($request->status == 'Proccess' || $request->status == 'proccess') {
-				$this->debitkredit($id, 'pesanan');
+			if ($update->metode_bayar == 'cod') {
+				if ($request->status == 'Arrived' || $request->status == 'arrived') {
+					$this->debitkredit($id, 'pesanan');
+				}
+			} else {
+				if ($request->status == 'Proccess' || $request->status == 'proccess') {
+					$this->debitkredit($id, 'pesanan');
+				}
 			}
 
 			// Kirim Pesanan WA ke Pelanggan if status batal dan proccess
@@ -2173,6 +2210,68 @@ class RestfullApiController extends Controller
 		return response()->json([
 			'success' => true,
 			'message' => 'Pengecekan alat selesai'
+		], 200);
+	}
+
+	public function setAlatHilang(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'pemesanan_id' => 'required|integer',
+			'alatpsn_id' => 'required|integer',
+			'jumlah' => 'required|integer'
+		]);
+
+		if ($validator->fails()) {
+			return response()->json([
+				'success' => false,
+				'message' => $validator->errors()
+			], 401);            
+		}
+
+		$altpsn = AlatPesanan::where('id', $request->alatpsn_id)->first();
+		if ($altpsn) {
+			if ($altpsn->jumlah >= $request->jumlah) {
+				$cekalathilang = AlatHilang::where('pemesanan_id', $altpsn->pemesanan_id)->where('alat_id', $altpsn->alat_id)->first();
+				$alat = Alat::where('id', $altpsn->alat_id)->first();
+				if ($cekalathilang) {
+					$jumlah_alat = $alat->jumlah_alat + $cekalathilang->jumlah_hilang;
+					$jumlah_alat = $jumlah_alat - $request->jumlah;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat->jumlah_alat = $jumlah_alat;
+					$alat->save();
+
+					$cekalathilang->jumlah_hilang = $request->jumlah;
+					$cekalathilang->save();
+				} else {
+					$jumlah_alat = $alat->jumlah_alat - $request->jumlah;
+					if ($jumlah_alat < 0) $jumlah_alat = 0;
+					$alat->jumlah_alat = $jumlah_alat;
+					$alat->save();
+
+					$data = [];
+					$data['pemesanan_id'] = $altpsn->pemesanan_id;
+					$data['alat_id'] = $altpsn->alat_id;
+					$data['jumlah_hilang'] = $request->jumlah;
+					AlatHilang::create($data);
+				}
+				$altpsn->status = 'used';
+				$altpsn->save();
+			} else {
+				return response()->json([
+					'success' => false,
+					'message' => 'Jumlah yang di input melebihi ketentuan'
+				], 406);
+			}
+		} else {
+			return response()->json([
+				'success' => false,
+				'message' => 'alat_id tidak ada'
+			], 401);
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Berhasil menginput alat hilang'
 		], 200);
 	}
 
@@ -2976,6 +3075,7 @@ class RestfullApiController extends Controller
 	protected function sendMessageWhatsApp($tipe, $id) 
 	{
 		$rek = DataRekening::first();
+		$getmtdbyr = Pemesanan::where('id', $id)->first();
 		$pemesanan = Pemesanan::where('id', $id)->first();
 		$psn = $this->getDataPesanan($pemesanan, $id);
 
@@ -2998,7 +3098,11 @@ class RestfullApiController extends Controller
 				$additional .= '*'.$adt['nama_daging'].' '.$adt['berat'].' x '.$adt['jumlah'].' Pcs\n';
 			}
 
-			$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';
+			if ($getmtdbyr->metode_bayar == 'transfer') {
+				$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan rincian sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nSilahkan transfer ke rekening dibawah ini:\n'.$rek->nama_bank.'\nNo. Rek: '.$rek->no_rekening.'\nAtas Nama: '.$rek->nama.'\n\nUpload bukti pembayaran di link berikut:\nhttps://kesiniku.com/konfirmasi/'.$token.'\n\n_*Jika link tidak aktif, balas pesan ini untuk mengaktifkan link dan buka kembali_';
+			} else if ($getmtdbyr->metode_bayar == 'cod') {
+				$message = 'Selamat datang di Kesiniku Kak *'.$psn->nama.'*\n🙏🙏😊\nKami sudah terima pesanan anda dengan metode Pembayaran COD rinciannya sebagai berikut: \n\nPaket Pesanan:\n'.$paket.'\nAdditional Daging:\n'.$additional.'\nHarga Paket: Rp. '.number_format($psn->transaksi->harga_paket).'\nHarga Additional: Rp. '.number_format($psn->transaksi->harga_additional).'\nOngkir: Rp. '.number_format($psn->transaksi->biaya_pengiriman).'\nTotal: Rp. '.number_format($psn->transaksi->total_harga).'\n\nDikirim ke: '.$psn->deskripsi_lokasi.'\n\nKami akan segera meninjau pesanan anda, mohon tunggu konfirmasi selanjutnya';
+			}
 
 			$url = 'http://116.203.191.58/api/send_message';
 			$data = array(
@@ -3007,7 +3111,11 @@ class RestfullApiController extends Controller
 				"message" => $message
 			);
 		} else if ($tipe == 'order_accept') {
-			$message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+			if ($getmtdbyr->metode_bayar == 'transfer') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nTerima kasih telah menyelesaikan pembayaran. Pesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+			} else if ($getmtdbyr->metode_bayar == 'cod') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah di konfirmasi, kami akan segara memproses pesanan anda!';
+			}
 
 			$url = 'http://116.203.191.58/api/send_message';
 			$data = array(
@@ -3025,7 +3133,11 @@ class RestfullApiController extends Controller
 				"message" => $message
 			);
 		} else if ($tipe == 'order_done') {
-			$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+			if ($getmtdbyr->metode_bayar == 'transfer') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesa:\nhttps://kesiniku.com/done/'.$token;
+			} else if ($getmtdbyr->metode_bayar == 'cod') {
+				$message = 'Hai, Kak *'.$psn->nama.'*\nPesanan anda telah siap diantar, driver kami telah menuju ke lokasi yang anda daftarkan. Mohon untuk menunggu dan siapkan uang pas senilai Rp. '.number_format($psn->transaksi->total_harga).' untuk pembayaran COD 🙏🙏\n\nSilahkan menikmati pesanan anda, semoga layanan kami memuaskan😊😊\n\nMohon untuk mengklik link berikut apabila telah selesai:\nhttps://kesiniku.com/done/'.$token;
+			}
 
 			$url = 'http://116.203.191.58/api/send_image_url';
 			$img_url = 'https://kesiniku.com/assets/images/pesanan/'.$psn->foto_pesanan;

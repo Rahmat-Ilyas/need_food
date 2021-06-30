@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="host_url" content="{{ url('/') }}">
     <title>KESINIKU | GOOD MEAT MAKES GREAT EXPERIENCE</title>
-    <link rel="shortcut icon" type="image/png" href="images/logo_rio.png" />
+    <link rel="shortcut icon" href="{{ asset('assets/images/fav.png') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('page/assets/css/font-awesome.min.css') }}">

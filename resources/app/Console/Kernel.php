@@ -33,10 +33,12 @@ class Kernel extends ConsoleKernel
                 $day_plus1 = strtotime($dta->created_at)+(86400*1);
                 $day_plus2 = strtotime($dta->created_at)+(86400*2);
 
-                if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus1)) {
-                    $this->sendMessageWhatsApp($dta->id);
-                } else if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus2)) {
-                    $this->sendMessageWhatsApp($dta->id);
+                if ($dta->metode_bayar == 'transfer') {
+                    if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus1)) {
+                        $this->sendMessageWhatsApp($dta->id);
+                    } else if (date('dmY H:i', $this_day) == date('dmY H:i', $day_plus2)) {
+                        $this->sendMessageWhatsApp($dta->id);
+                    }
                 }
 
                 if ($this_day > strtotime($dta->created_at)+(86400*3)) {
@@ -55,7 +57,7 @@ class Kernel extends ConsoleKernel
 
         $no_whatsapp = $pesanan->no_wa;
         $key = '553709ba9cca8ff2d35acbbd3f4e7e07c77267da14eefb11';
-        $message = 'Hai, Kak *'.$pesanan->nama.'*\nAnda belum mengkonfirmasi pembayan, silahkan di konfirmasi segera sebelum pesanan anda dibatalkan!';
+        $message = 'Hai, Kak *'.$pesanan->nama.'*\nAnda belum mengkonfirmasi pembayaran, silahkan di konfirmasi segera sebelum pesanan anda dibatalkan!';
 
         $url = 'http://116.203.191.58/api/send_message';
         $data = array(

@@ -309,6 +309,7 @@
 				<h4 class="modal-title" id="myModalLabel">Data Alat Hilang</h4>
 			</div>
 			<div class="modal-body">
+				<button type="button" class="btn btn-primary btn-rounded waves-effect waves-light m-b-20" id="add-alat-hilang"><i class="md-restaurant-menu"></i> &nbsp;Input Alat Hilang</button>
 				<table class="table table-bordered" id="tableAlatHilang" style="margin-top: -15px; font-size: 13px;">
 					<thead>
 						<tr>

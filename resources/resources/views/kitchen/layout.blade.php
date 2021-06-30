@@ -138,6 +138,7 @@
               <ul class="list-unstyled">
                 <li><a href="{{ url('kitchen/printlabel') }}">Label Pesanan</a></li>
                 <li><a href="{{ url('kitchen/printalatpesan') }}">Alat Pesanan</a></li>
+                <li><a href="{{ url('kitchen/printbahanpesan') }}">Bahan Pesanan</a></li>
               </ul>
             </li>
           </ul>

@@ -52,7 +52,7 @@
 </div>
 
 <!-- MODAL TAMBAH ALAT-->
-<div class="modal modal-add-alat" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+<div class="modal modal-add-alat" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -79,7 +79,7 @@
 					<div class="form-group row">
 						<label class="col-sm-3 control-label">Kategori</label>
 						<div class="col-sm-9">
-							<select name="kategori_id" id="kategori" class="form-control">
+							<select name="kategori_id" id="kategori" class="form-control select2">
 								
 							</select>
 						</div>
@@ -309,8 +309,8 @@
 				<h4 class="modal-title" id="myModalLabel">Data Alat Hilang</h4>
 			</div>
 			<div class="modal-body">
-				<button type="button" class="btn btn-primary btn-rounded waves-effect waves-light m-t-10 m-b-20" data-toggle="modal" data-target=".modal-add-stok"><i class="md-restaurant-menu"></i> &nbsp;Input Alat Hilang</button>
-				<table class="table table-bordered" id="tableAlatHilang" style="margin-top: -15px; font-size: 13px;">
+				<button type="button" class="btn btn-primary btn-rounded waves-effect waves-light m-b-20" id="add-alat-hilang"><i class="md-restaurant-menu"></i> &nbsp;Input Alat Hilang</button>
+				<table class="table table-bordered" id="tableAlatHilang" style="font-size: 13px;">
 					<thead>
 						<tr>
 							<th>No</th>

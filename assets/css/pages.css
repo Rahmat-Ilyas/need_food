@@ -2038,3 +2038,7 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
   background-color: rgba(152, 166, 173, 0.2) !important;
   padding: 20px;
 }
+
+.select2-container--open {
+  z-index: 999999999999;
+}

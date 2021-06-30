@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="host_url" content="{{ url('/') }}">
     <title>KESINIKU | GOOD MEAT MAKES GREAT EXPERIENCE</title>
-    <link rel="shortcut icon" type="image/png" href="images/logo_rio.png" />
+    <link rel="shortcut icon" href="{{ asset('assets/images/fav.png') }}">
     <link rel="stylesheet" href="{{ asset('page/assets/css/bootstrap.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('page/assets/css/font-awesome.min.css') }}">
@@ -242,13 +242,13 @@
                 subTotal = subTotal.match(/\d/g).join("")
                 var ongkir;
                 if (lokasi.includes("Kota Makassar")) {
+                    document.getElementById("biaya_pengiriman").value = '0';
+                    document.getElementById("ongkir").innerHTML = 'Rp 0';
+                    ongkir = 0;
+                } else {
                     document.getElementById("biaya_pengiriman").value = '50000';
                     document.getElementById("ongkir").innerHTML = 'Rp 50,000';
                     ongkir = 50000;
-                } else {
-                    document.getElementById("biaya_pengiriman").value = '100000';
-                    document.getElementById("ongkir").innerHTML = 'Rp 100,000';
-                    ongkir = 100000;
                 }
                 var setTotal = parseInt(subTotal)+ongkir;
                 document.getElementById("setTotal").innerHTML = setTotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

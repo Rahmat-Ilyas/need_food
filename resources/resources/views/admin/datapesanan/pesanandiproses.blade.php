@@ -104,6 +104,10 @@
 						<span class="col-sm-8 p-0" id="dtl_tanggal_antar"></span>
 					</li>
 					<li class="list-group-item row">
+						<b class="col-sm-4 p-0">Metode Bayar: </b>
+						<span class="col-sm-8 p-0" id="dtl_metode_bayar"></span>
+					</li>
+					<li class="list-group-item row">
 						<b class="col-sm-4 p-0">Paket Pesanan: </b>
 						<span class="col-sm-8 p-0 row" id="dtl_paket"></span>
 					</li>
@@ -232,7 +236,7 @@
 							val.deskripsi_lokasi,
 							val.no_telepon,
 							val.no_wa,
-							date+'/'+month+'/'+dt.getFullYear()+' ('+val.waktu_antar+')',
+							date+'/'+month+'/'+dt.getFullYear()+' '+val.waktu_antar,
 							`<div class="text-center">
 							<a href="#" role="button" class="btn btn-primary btn-sm waves-effect waves-light" id="detail-pesanan" dta-id="`+ val.id +`" data-toggle1="tooltip" title="Detail Pesanan" data-toggle="modal" data-target=".detail-pesanan"><i class="fa fa-eye"></i> Detail</a>
 							</div>`,
@@ -303,7 +307,7 @@
 					var countAdt = 0;
 					$('#dtl_additional').html('');
 					$.each(data.result.additional, function(key, val) {
-						$('#dtl_additional').append('<p>- '+val.nama_daging+'</p>');
+						$('#dtl_additional').append('<p>- '+val.nama_daging+' ('+val.jumlah+' pax)</p>');
 						countAdt = countAdt + 1;
 					});
 

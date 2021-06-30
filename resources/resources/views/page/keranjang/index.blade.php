@@ -116,7 +116,7 @@
                       html += '<div class="col-lg-4">';
                       html += '<div class="row form-keranjang">';  
                       html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`mines`)" class="tombol_keranjang_number btn-number"><i class="icofont-minus icon-number_additional"></i> </button>';    
-                      html += ' <input type="text" name="quant[1]" id="input_page_keranjang'+no+'" class="form-nedd-keranjang input-number valueKeranjangInput'+valueOfElement.id+'" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
+                      html += ' <input type="text" name="jumlah[]" id="input_page_keranjang'+no+'" class="form-nedd-keranjang input-number valueKeranjangInput'+valueOfElement.id+'" value="'+valueOfElement.kuantitas+'" min="1" max="1000">';
                       html += '<button type="button" onclick="numberKeranjang(`'+valueOfElement.harga+'`,`input_page_keranjang'+no+'`,`add`)" class="tombol_keranjang_number btn-number"><i class="icofont-plus icon-number_additional"></i></button>';
                       html += ' <div class="icon-delete"><i class="icofont-ui-delete delete_item_keranjang" data-action="'+indexInArray+'"></i></div>';  
                       html += '</div>';
@@ -124,7 +124,7 @@
                       html += '</div>';
                      html += '</div>';
                      html += '<input type="hidden" value="'+valueOfElement.id+'" name="paket_id[]">';
-                     html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
+                     // html += '<input type="hidden" value="'+valueOfElement.kuantitas+'" name="jumlah[]">';
   
                      no++;
 
@@ -211,13 +211,13 @@
                var path_asset_image =  url+'/assets/images/kategori';
                 console.log(response);
                 $('#modal-title').text(title);
-                if (response.message == 'Success get data') {
-                    $('#modal-body').html('');
+                $('#modal-body').html('');
+                if (response.success == true) {
                     $.each(response.result, function (index, val) { 
                         $('#modal-body').append('<table class="table_detail_alat"><thead class="head_row"><tr><th style="width:350px">Item alat</th><th>Jumlah</th></tr></thead><tbody class="body_row"><tr><td><div class="row alat_item"><img src="'+path_asset_image+'/'+val.foto+'" class="img-alat"><div class="text_alat_list">'+val.kategori_alat+'</div></div></td><td><div class="text_alat_jumlah">'+val.jumlah_alat+'</div> </td></tr></tbody></table>');
                     });
                 }else{
-                    $('modal-body').html('<div class="text_title_box_harga"> Alat Tidak Tersedia </div>');
+                    $('#modal-body').html('<div class="text_title_box_harga"> Alat Tidak Tersedia </div>');
                 }
                 $('#exampleModalCenter').modal('show');               
             }
