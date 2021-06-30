@@ -445,13 +445,11 @@ $(document).ready(function () {
         if (valueCurrent >= minValue) {
             $(".btn-number[data-type='minus'][data-field='" + name + "']").removeAttr('disabled')
         } else {
-            alert('Sorry, the minimum value was reached');
             $(this).val($(this).data('oldValue'));
         }
         if (valueCurrent <= maxValue) {
             $(".btn-number[data-type='plus'][data-field='" + name + "']").removeAttr('disabled')
         } else {
-            alert('Sorry, the maximum value was reached');
             $(this).val($(this).data('oldValue'));
         }
 
@@ -722,7 +720,7 @@ $(document).ready(function () {
                             valueOfElement.kuantitas >= 8 ? postToCart(list_pesanan_modal) : status = false;   
                         } 
                     });
-                    alert(status);
+                  
                     if (status == false) {
                         toastr_notice('error', 'Gagal',`Paket Tidak Memenuhi Minimal Pemesanan`);
                     }

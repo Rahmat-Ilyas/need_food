@@ -8,7 +8,7 @@
                 <div class="box">
                     <div class="container box-element">
                         <div class="row">
-                            <div class="title-keranjang-order"> Keranjang Belanja </div>
+                            <div class="title-keranjang-order"> Keranjang Belanja <span id="kategoriCart"></span> </div>
                         </div>
 
                        <div class="row">
@@ -75,9 +75,23 @@
             url     : url+'/getpaket',
             method  : "GET",
             success : function(data) {
+              var kategori = '';
                 data_array_paket = data;
                 console.log(data_array_paket);
             
+              if (data_array_paket[0]['kategori_menu'] == 1) {
+                kategori = 'HOME SERVICE';
+                $('.link_alat_cart').show();
+              }else if (data_array_paket[0]['kategori_menu'] == 2) {
+                 kategori = 'BAHAN SAJA';
+                 $('.link_alat_cart').hide();
+              }else{
+                kategori = 'FOOD STALL';
+                $('.link_alat_cart').hide();
+              }
+
+              $('#kategoriCart').html(kategori);
+
                 if (data_array_paket != 'Tidak ada session') {
                     $.each(data_array_paket, function (indexInArray, valueOfElement) {
                   
