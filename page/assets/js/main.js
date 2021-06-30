@@ -167,12 +167,52 @@ $(document).ready(function () {
     get_paket_primary(1);
 
     $('.menu_paket').on('click', function () {
-        $('.menu_paket').removeClass('active_category');
+             
         var data_action = $(this).attr('data-action');
-        $('#firstMenuPaket').removeClass('active_category');
-        $(this).addClass('active_category');
+        var kategori = '';
+          
 
-        get_paket_primary(data_action);
+            if (tampung.length != 0) {
+
+                  if (tampung[0]['kategori_menu'] == 1) {
+                    kategori = 'Home Service';
+                }else if (tampung[0]['kategori_menu'] == 2) {
+                    kategori = 'Bahan Saja';
+                }else{
+                    kategori = 'Food Stall';
+                }
+
+                swal({
+                title: `Anda sudah memilih menu di kategori ${kategori} !!`,
+                text: `Pindah Kategori akan menghapus semua keranjang !`,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#EB5757",
+                confirmButtonText: "Pindah Kategori!",
+                cancelButtonText: "Tidak, batalkan!",
+                closeOnConfirm: false,
+                closeOnCancel: false
+                }).then((result) => {
+                    if (result.value) {
+      $('.menu_paket').removeClass('active_category');
+                $('#firstMenuPaket').removeClass('active_category');
+                $(this).addClass('active_category');
+                       get_paket_primary(data_action);
+                       tampung = [];
+                       $('.pill_number').html(tampung['length']);
+                    }else{
+                        swal("Oke", "Lanjutkan Pesanan", "info");
+                    }
+                });
+            }else{
+                   $('.menu_paket').removeClass('active_category');
+                $('#firstMenuPaket').removeClass('active_category');
+                $(this).addClass('active_category');
+                 get_paket_primary(data_action);
+            }
+ 
+            
+       
 
     })
 
@@ -499,7 +539,11 @@ $(document).ready(function () {
         var params_additional = '';
         var id_additional_var = '';
         var value_x_checked = '';
-        $('input:checkbox[name=id_additional]:checked').each(function () {
+
+        console.log(tampung);
+       
+       if (tampung.length != 0 ) {
+         $('input:checkbox[name=id_additional]:checked').each(function () {
             var val_this = $(this).val();
 
             value_x_checked = {
@@ -542,6 +586,9 @@ $(document).ready(function () {
         } else {
             toastr_notice('warning','Peringatan','Anda belum memilih paket daging')
         }
+    }else{
+         toastr_notice('warning','Peringatan','Anda belum memilih paket utama')
+    }
 
 
         $(this).attr('data-info', '222');

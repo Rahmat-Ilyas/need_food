@@ -262,7 +262,7 @@
 </script>  
 <script src="{{ asset('page/assets/js/highlight.js') }}"></script>
 <script src="{{ asset('page/assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
-<script src="{{ asset('assets/js/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('assets/js/sweetalert2/sweetalert2.all.min.js') }}"></script>
 <script src="{{ asset('page/assets/js/action.js') }}"></script>
 @stack('skript')
 
